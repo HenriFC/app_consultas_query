@@ -1,0 +1,16 @@
+Criar um ambiente virtual:
+- No terminal: python -m venv venv
+
+Ativar o ambiente virtual:
+- No terminal: .\venv\Scripts\activate
+
+Desativar o ambiente:
+- No terminal: deactivate
+
+Criar um arquivo requirements.txt:
+- No terminal: pip freeze > requirements.txt
+
+Instalar as bibliotecas do arquivo requirements.txt. Lembre-se de ativar o ambiente virtual antes da instalação, caso esteja utilizando um.
+- No terminal: pip install -r .\requirements.txt
+- Caso eu esteja com um ambiente virtual ativo, todos as bibliotecas serão instaladas dentro desse ambiente. Não será instalado no python global do sistema.
+
