@@ -95,11 +95,15 @@ class app_consultas(validar_entry):
 
     # Quadrante onde alocaremos as opções
     def tela_inicial(self):
+        larg_jan = 1000
+        altu_jan = 600
+        larg_tela = self.jan_principal.winfo_screenwidth()
+        altu_tela = self.jan_principal.winfo_screenheight()
         self.jan_principal.title('Agendador de consultas')
         self.jan_principal.config(bg=verde4, )
-        self.jan_principal.geometry('900x600')
-        self.jan_principal.minsize(width='900', height='600')
-        self.jan_principal.maxsize(width='900', height='600')
+        self.jan_principal.geometry('1000x600+0+0')
+        self.jan_principal.minsize(width='100', height='600')
+        self.jan_principal.maxsize(width='1000', height='600')
 
     def frames_principais(self):
         # Frame fundo
@@ -109,7 +113,7 @@ class app_consultas(validar_entry):
         # Frame querys
         self.frm_querys = ttk.Frame(self.frm_back, relief='groove')
         self.etiq_querys = ttk.Label(self.frm_back, text='QUERYS:', background=verde1)
-        self.frm_querys.place(relx=0.01, rely=0.05, relwidth=0.7, relheight=0.43)
+        self.frm_querys.place(relx=0.01, rely=0.05, relheight=0.4, relwidth=0.7)
         self.etiq_querys.place(relx=0.01, rely=0.02, relheight=0.03, relwidth=0.1)
 
         self.frm_divs1 = ttk.Frame(self.frm_back, relief='solid')
@@ -149,31 +153,31 @@ class app_consultas(validar_entry):
         self.lbl_status_programa.place(relx=0.73, rely=0.88, relheight=0.05, relwidth=0.25)
 
     def campo_edicao_query(self):
-        self.edicao_query = Text(self.frm_edicao)
+        self.edicao_query = Text(self.frm_edicao, relief='groove')
         self.scroll_edicao_query = Scrollbar(self.frm_edicao, cursor='arrow')
         self.edicao_query.config(yscrollcommand=self.scroll_edicao_query.set, font=('consolas', 11))
         self.scroll_edicao_query.config(command=self.edicao_query.yview, cursor='arrow')
         self.edicao_query.place(relx=0.001, rely=0.0022, relheight=0.99, relwidth=0.97)
-        self.scroll_edicao_query.place(relx=0.97, rely=0.01, relheight=0.97)    
+        self.scroll_edicao_query.place(relx=0.971, rely=0.01, relheight=0.97)    
 
     def campos_entry(self):
         self.entry_nome = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
         self.etiq_entry_nome = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
-        self.entry_nome.place(relx=0.78, rely=0.195, relheight=0.038, relwidth=0.177)
-        self.etiq_entry_nome.place(relx=0.715, rely=0.20)
+        self.entry_nome.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.193)
+        self.etiq_entry_nome.place(relx=0.715, rely=0.199)
 
         self.entry_nova_query = ttk.Entry(self.frm_back, justify='left', state='disabled')
         self.etiq_nova_query = ttk.Label(self.frm_back, text='NOME:', background=verde1)
-        self.entry_nova_query.place(relx=0.78, rely=0.245, relheight=0.038, relwidth=0.21)
-        self.etiq_nova_query.place(relx=0.715, rely=0.25)
+        self.entry_nova_query.place(relx=0.765, rely=0.245, relheight=0.038, relwidth=0.226)
+        self.etiq_nova_query.place(relx=0.715, rely=0.249)
 
         self.entry_caminho_salvar = ttk.Entry(self.frm_back, justify='left')
         self.etiq_entry_salvar = ttk.Label(self.frm_back, text='LOCAL:', background=verde1)
-        self.entry_caminho_salvar.place(relx=0.78, rely=0.295, relheight=0.038, relwidth=0.21)
-        self.etiq_entry_salvar.place(relx=0.715, rely=0.30)
+        self.entry_caminho_salvar.place(relx=0.765, rely=0.295, relheight=0.038, relwidth=0.226)
+        self.etiq_entry_salvar.place(relx=0.715, rely=0.299)
 
         self.etiq_entry_horario1 = ttk.Label(self.frm_back, text='HORÁRIOS:', background=verde1)
-        self.etiq_entry_horario1.place(relx=0.715, rely=0.350)
+        self.etiq_entry_horario1.place(relx=0.715, rely=0.349)
 
         self.entry_horario1 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario1.place(relx=0.80, rely=0.345, relheight=0.038, relwidth=0.04)
@@ -216,11 +220,11 @@ class app_consultas(validar_entry):
         self.arvore_scripts = ttk.Treeview(self.frm_querys)
         self.arvore_scripts['columns'] = ('Query', 'Horário', 'Local para salvar')
         
-        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow')
+        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow', relief='groove')
         self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set)
         self.scroll_arvore.config(command=self.arvore_scripts.yview)
-        self.arvore_scripts.place(relx=0, rely=0, relheight=1, relwidth=1)
-        self.scroll_arvore.place(relx=0.972, rely=0.005, relheight=0.991)
+        self.arvore_scripts.place(relx=0.001, rely=0.002, relheight=1, relwidth=0.999)
+        self.scroll_arvore.place(relx=0.975, rely=0.005, relheight=0.992)
 
         # Configurando as colunas
         # Primeiro temos a coluna mãe, que possui os controles de expansão e que receberá as demais colunas:
@@ -239,49 +243,63 @@ class app_consultas(validar_entry):
         self.arvore_scripts.heading('Local para salvar', text='Local para salvar', anchor='w')
         self.arvore_scripts.tag_configure('x1', background=verde_claro)
         self.arvore_scripts.tag_configure('x2', background='white')
+        self.arvore_scripts.bind('<ButtonRelease-1>', self.selecionar_item_arvore)
 
         # Imputando dados
 
     def exibir_arvore(self):
         for i in self.arvore_scripts.get_children():
             self.arvore_scripts.delete(i)
-        with open(caminho_json, 'r', encoding='utf8') as js:
-            dados_exibir_arvore = json.load(js)
-            count_pai = 0
-            tag = 'x1'
+        try:
+            with open(caminho_json, 'r', encoding='utf8') as js:
+                dados_exibir_arvore = json.load(js)
+                count_pai = 0
+                tag = 'x1'
 
-            for item, valor in dados_exibir_arvore.items():
-                tag ='x1' if (count_pai % 2) == 0 else 'x2'
-                print(item)
-                self.arvore_scripts.insert(parent='', index='end', iid=count_pai, text='', values=(item, '', valor['caminho_salvar']), tags=tag)
-                count_filho = 0
-                for ext_hora in valor['horario']:
-                    
-                    if ext_hora != '':
-                        id_aux = f'{count_pai}.{count_filho}'
-                        print(ext_hora)
-                        print(id_aux)
-                        self.arvore_scripts.insert(parent='', index='end', iid=id_aux, text='', values=('    '+item, '    '+ext_hora, '    '+valor['caminho_salvar']), tags=tag)
-                        self.arvore_scripts.move(id_aux, count_pai, count_filho)
-                        count_filho += 1
-                count_pai += 1
+                for item, valor in dados_exibir_arvore.items():
+                    tag ='x1' if (count_pai % 2) == 0 else 'x2'
+                    print(item)
+                    self.arvore_scripts.insert(parent='', index='end', iid=count_pai, text='', values=(item, '', valor['caminho_salvar']), tags=tag)
+                    count_filho = 0
+                    for ext_hora in valor['horario']:
+                        
+                        if ext_hora != '':
+                            id_aux = f'{count_pai}.{count_filho}'
+                            print(ext_hora)
+                            print(id_aux)
+                            self.arvore_scripts.insert(parent='', index='end', iid=id_aux, text='', values=('    '+item, '    '+ext_hora, '    '+valor['caminho_salvar']), tags=tag)
+                            self.arvore_scripts.move(id_aux, count_pai, count_filho)
+                            count_filho += 1
+                    count_pai += 1
+        except:
+            pass
 
-    def selecionar_item_arvore(self):
+    def selecionar_item_arvore(self, event):
         # Apagar dados das entry
-        self.limpar_campos()
-
-        # Obter dados da linha selecionada
+        #self.limpar_campos()
 
         # inputar dados nas entrys
+        linha_selec = self.arvore_scripts.selection()[0]
+        dados_selec = self.arvore_scripts.item(linha_selec, "values")
+        print(dados_selec[0])
+        with open(caminho_json, 'r', encoding='utf-8') as js_sel:
+            dados_finais = json.load(js_sel)
+            name = dados_selec[0]
+            loc_salvar = dados_finais[name]['caminho_salvar']
+            horarios = dados_finais[name]['horario']
+            queryx = dados_finais[name]['query']
 
-
-        return
+            print('nome: ', name)
+            print('salvar: ', loc_salvar)
+            print('horarios: ', horarios)
+            print('query: ', queryx)
 
     def alterar_nome_query(self):
 
         return
 
     def acao_botao_nova_query(self):
+        self.limpar_campos()
         self.entry_nova_query['state'] = 'NORMAL'
         self.botao_ok['state'] = 'NORMAL'
         
