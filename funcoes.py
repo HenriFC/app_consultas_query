@@ -1,5 +1,4 @@
 
-import os
 
 class validar_entry():
 
@@ -36,9 +35,5 @@ class validar_entry():
             return False
         return True
 
-            
 
-
-
-
-
+    

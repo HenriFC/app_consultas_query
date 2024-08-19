@@ -9,7 +9,7 @@ from tkinter import messagebox
 
 from autoedge import iniciar_edge
 from coreslayout import *
-from verificacoes import validar_entry
+from funcoes import validar_entry
 
 jan_principal = Tk()
 img = PhotoImage(file='icon2.png')
@@ -19,31 +19,6 @@ s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 caminho_json = 'database.json'
-
-
-
-class funcoes():
-    def __init__(self) -> None:
-        self.iniciar_db()
-
-
-    def iniciar_db(self):
-
-        return
-
-    def selecionar_item(self):
-
-        return
-    
-    def limpar_campos(self):
-        return
-    
-    def add_(self):
-        self.namex = self.entry.get()
-        
-
-        return
-
 
 class app_consultas(validar_entry):
     # Janela principal
@@ -59,8 +34,60 @@ class app_consultas(validar_entry):
         self.campos_entry()
         self.exibir_arvore()
         jan_principal.mainloop()
-    
-    # Abrir o JSON contendo os dados
+
+    def limpar_campos(self):
+        self.entry_nova_query.delete(0, 'end')
+        self.entry_nome.delete(0, 'end')
+        self.entry_caminho_salvar.delete(0, 'end')
+        self.edicao_query.delete('1.0', 'end')
+        self.entry_horario1.delete(0, 'end')
+        self.entry_horario2.delete(0, 'end')
+        self.entry_horario3.delete(0, 'end')        
+        self.entry_horario4.delete(0, 'end')
+        self.entry_horario5.delete(0, 'end')
+        self.entry_horario6.delete(0, 'end')
+        self.entry_horario7.delete(0, 'end')
+        self.entry_horario8.delete(0, 'end')
+        self.entry_horario9.delete(0, 'end')
+        self.entry_horario10.delete(0, 'end')
+        self.entry_horario11.delete(0, 'end')
+        self.entry_horario12.delete(0, 'end')
+
+    def desablitar_campos(self):
+        self.entry_nova_query.config(state='disabled')
+        self.entry_nome.config(state='disabled')
+        self.entry_caminho_salvar.config(state='disabled')
+        self.edicao_query.config(state='disabled')
+        self.entry_horario1.config(state='disabled')
+        self.entry_horario2.config(state='disabled')
+        self.entry_horario3.config(state='disabled')       
+        self.entry_horario4.config(state='disabled')
+        self.entry_horario5.config(state='disabled')
+        self.entry_horario6.config(state='disabled')
+        self.entry_horario7.config(state='disabled')
+        self.entry_horario8.config(state='disabled')
+        self.entry_horario9.config(state='disabled')
+        self.entry_horario10.config(state='disabled')
+        self.entry_horario11.config(state='disabled')
+        self.entry_horario12.config(state='disabled')
+
+    def habilitar_campos(self):
+        self.entry_nova_query.config(state='enabled')
+        self.entry_nome.config(state='enabled')
+        self.entry_caminho_salvar.config(state='enabled')
+        self.edicao_query.config(state='normal')
+        self.entry_horario1.config(state='enabled')
+        self.entry_horario2.config(state='enabled')
+        self.entry_horario3.config(state='enabled')       
+        self.entry_horario4.config(state='enabled')
+        self.entry_horario5.config(state='enabled')
+        self.entry_horario6.config(state='enabled')
+        self.entry_horario7.config(state='enabled')
+        self.entry_horario8.config(state='enabled')
+        self.entry_horario9.config(state='enabled')
+        self.entry_horario10.config(state='enabled')
+        self.entry_horario11.config(state='enabled')
+        self.entry_horario12.config(state='enabled')
 
     def validadores(self):
         self.valid_horario = (self.jan_principal.register(self.validar_entry_horario), '%P')
@@ -103,13 +130,19 @@ class app_consultas(validar_entry):
         self.botao_save.place(relx=0.46, rely=0.95, relheight=0.045, relwidth=0.1)
 
         self.botao_nova_query = ttk.Button(self.frm_back, text='NOVA QUERY', command=self.acao_botao_nova_query)
-        self.botao_nova_query.place(relx=0.73, rely=0.10, relheight=0.04, relwidth=0.12)
+        self.botao_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.12)
         
-        self.botao_excluir_query = ttk.Button(self.frm_back, text='EXCLUIR QUERY', command=funcoes.limpar_campos)
-        self.botao_excluir_query.place(relx=0.86, rely=0.10, relheight=0.04, relwidth=0.12)
+        self.botao_excluir_query = ttk.Button(self.frm_back, text='EXCLUIR QUERY', state='disabled', command=self.limpar_campos)
+        self.botao_excluir_query.place(relx=0.86, rely=0.05, relheight=0.04, relwidth=0.12)
+
+        self.botao_editar_query = ttk.Button(self.frm_back, text='EDITAR QUERY', state='disabled', command=self.acao_botao_nova_query)
+        self.botao_editar_query.place(relx=0.73, rely=0.10, relheight=0.04, relwidth=0.12)
+        
+        self.botao_limpar_campos = ttk.Button(self.frm_back, text='LIMPAR CAMPOS', command=self.limpar_campos)
+        self.botao_limpar_campos.place(relx=0.86, rely=0.10, relheight=0.04, relwidth=0.12)
 
         self.botao_ok = ttk.Button(self.frm_back, text='OK', state='disabled', command=self.acao_botao_ok)
-        self.botao_ok.place(relx=0.94, rely=0.048, relheight=0.043, relwidth=0.04)
+        self.botao_ok.place(relx=0.96, rely=0.1928, relheight=0.042, relwidth=0.03)
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, borderwidth=1, relief='groove', anchor='center')
@@ -124,59 +157,59 @@ class app_consultas(validar_entry):
         self.scroll_edicao_query.place(relx=0.97, rely=0.01, relheight=0.97)    
 
     def campos_entry(self):
-        self.entry_nova_query = ttk.Entry(self.frm_back, justify='left', state='disabled')
-        self.etiq_nova_query = ttk.Label(self.frm_back, text='NOME QUERY:', background=verde1)
-        self.entry_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.21)
-        self.etiq_nova_query.place(relx=0.73, rely=0.02, relheight=0.03, relwidth=0.1)
-
         self.entry_nome = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
-        self.etiq_entry_nome = ttk.Label(self.frm_back, text='NOME:', background=verde1)
-        self.entry_nome.place(relx=0.78, rely=0.195, relheight=0.038, relwidth=0.21)
-        self.etiq_entry_nome.place(relx=0.72, rely=0.20)
+        self.etiq_entry_nome = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
+        self.entry_nome.place(relx=0.78, rely=0.195, relheight=0.038, relwidth=0.177)
+        self.etiq_entry_nome.place(relx=0.715, rely=0.20)
 
-        self.entry_salvar = ttk.Entry(self.frm_back, justify='left')
-        self.etiq_entry_salvar = ttk.Label(self.frm_back, text='SALVAR:', background=verde1)
-        self.entry_salvar.place(relx=0.78, rely=0.245, relheight=0.038, relwidth=0.21)
-        self.etiq_entry_salvar.place(relx=0.72, rely=0.25)
+        self.entry_nova_query = ttk.Entry(self.frm_back, justify='left', state='disabled')
+        self.etiq_nova_query = ttk.Label(self.frm_back, text='NOME:', background=verde1)
+        self.entry_nova_query.place(relx=0.78, rely=0.245, relheight=0.038, relwidth=0.21)
+        self.etiq_nova_query.place(relx=0.715, rely=0.25)
+
+        self.entry_caminho_salvar = ttk.Entry(self.frm_back, justify='left')
+        self.etiq_entry_salvar = ttk.Label(self.frm_back, text='LOCAL:', background=verde1)
+        self.entry_caminho_salvar.place(relx=0.78, rely=0.295, relheight=0.038, relwidth=0.21)
+        self.etiq_entry_salvar.place(relx=0.715, rely=0.30)
 
         self.etiq_entry_horario1 = ttk.Label(self.frm_back, text='HORÁRIOS:', background=verde1)
-        self.etiq_entry_horario1.place(relx=0.72, rely=0.30)
+        self.etiq_entry_horario1.place(relx=0.715, rely=0.350)
 
         self.entry_horario1 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario1.place(relx=0.80, rely=0.295, relheight=0.038, relwidth=0.04)
+        self.entry_horario1.place(relx=0.80, rely=0.345, relheight=0.038, relwidth=0.04)
 
         self.entry_horario2 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario2.place(relx=0.85, rely=0.295, relheight=0.038, relwidth=0.04)
+        self.entry_horario2.place(relx=0.85, rely=0.345, relheight=0.038, relwidth=0.04)
 
         self.entry_horario3 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario3.place(relx=0.9, rely=0.295, relheight=0.038, relwidth=0.04)
+        self.entry_horario3.place(relx=0.9, rely=0.345, relheight=0.038, relwidth=0.04)
 
         self.entry_horario4 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario4.place(relx=0.95, rely=0.295, relheight=0.038, relwidth=0.04)
+        self.entry_horario4.place(relx=0.95, rely=0.345, relheight=0.038, relwidth=0.04)
 
         self.entry_horario5 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario5.place(relx=0.80, rely=0.35, relheight=0.038, relwidth=0.04)
+        self.entry_horario5.place(relx=0.80, rely=0.40, relheight=0.038, relwidth=0.04)
 
         self.entry_horario6 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario6.place(relx=0.85, rely=0.35, relheight=0.038, relwidth=0.04)
+        self.entry_horario6.place(relx=0.85, rely=0.40, relheight=0.038, relwidth=0.04)
 
         self.entry_horario7 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario7.place(relx=0.9, rely=0.35, relheight=0.038, relwidth=0.04)
+        self.entry_horario7.place(relx=0.9, rely=0.40, relheight=0.038, relwidth=0.04)
 
         self.entry_horario8 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario8.place(relx=0.95, rely=0.35, relheight=0.038, relwidth=0.04)
+        self.entry_horario8.place(relx=0.95, rely=0.40, relheight=0.038, relwidth=0.04)
 
         self.entry_horario9 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario9.place(relx=0.80, rely=0.405, relheight=0.038, relwidth=0.04)
+        self.entry_horario9.place(relx=0.80, rely=0.455, relheight=0.038, relwidth=0.04)
 
         self.entry_horario10 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario10.place(relx=0.85, rely=0.405, relheight=0.038, relwidth=0.04)
+        self.entry_horario10.place(relx=0.85, rely=0.455, relheight=0.038, relwidth=0.04)
 
         self.entry_horario11 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario11.place(relx=0.9, rely=0.405, relheight=0.038, relwidth=0.04)
+        self.entry_horario11.place(relx=0.9, rely=0.455, relheight=0.038, relwidth=0.04)
 
         self.entry_horario12 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
-        self.entry_horario12.place(relx=0.95, rely=0.405, relheight=0.038, relwidth=0.04)
+        self.entry_horario12.place(relx=0.95, rely=0.455, relheight=0.038, relwidth=0.04)
 
     def arvore(self):
         # Definindo a árvore e suas colunas
@@ -233,8 +266,9 @@ class app_consultas(validar_entry):
                         count_filho += 1
                 count_pai += 1
 
-    def selecionar_item_arvore(Self):
+    def selecionar_item_arvore(self):
         # Apagar dados das entry
+        self.limpar_campos()
 
         # Obter dados da linha selecionada
 
@@ -243,30 +277,27 @@ class app_consultas(validar_entry):
 
         return
 
-    def alterar_nome_query(sef):
-
-
-        
-
+    def alterar_nome_query(self):
 
         return
-
-
 
     def acao_botao_nova_query(self):
         self.entry_nova_query['state'] = 'NORMAL'
         self.botao_ok['state'] = 'NORMAL'
         
     def acao_botao_ok(self):
-        nova_query_nome = self.entry_nova_query.get()
-
+        #nova_query_nome = self.entry_nova_query.get()
+        return
 
     def acao_botao_start(self):
+        self.limpar_campos()
+        self.desablitar_campos()
         self.lbl_status_programa.config(text='O programa está executando', background=verde0)
         self.botao_start.place_forget()
         self.botao_stop.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
 
     def acao_botao_stop(self):
+        self.habilitar_campos()
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop.place_forget()
         self.botao_start.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
@@ -274,7 +305,7 @@ class app_consultas(validar_entry):
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
         nome_query = self.entry_nome.get().strip()
-        caminho_salvar_query = self.entry_salvar.get()
+        caminho_salvar_query = self.entry_caminho_salvar.get()
         horarios_query = [self.entry_horario1.get(), self.entry_horario2.get(), self.entry_horario3.get(), self.entry_horario4.get(), self.entry_horario5.get(),
                         self.entry_horario6.get(), self.entry_horario7.get(), self.entry_horario8.get(), self.entry_horario9.get(), self.entry_horario10.get(), 
                         self.entry_horario11.get(), self.entry_horario12.get()]
