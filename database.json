@@ -1,1 +1,1 @@
-{"Henri": {"caminho_salvar": "C:\\", "horario": ["12:07", "", "", "", "", "", "", "", "", "", "", ""], "query": "Teste 1 Henri"}, "Teste 2": {"caminho_salvar": "C:\\\\", "horario": ["01:09", "", "", "", "", "", "", "", "", "", "", ""], "query": "Teste 2"}}
+{"Henri": {"horario": ["01:00", "15:00", "", "", "", "", "", "", "", "", "", ""], "nome": "HOST.csv", "caminho_salvar": "C:", "query": "Teste 1"}}

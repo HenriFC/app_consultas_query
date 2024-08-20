@@ -18,6 +18,7 @@ s = ttk.Style()
 s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
+
 caminho_json = 'database.json'
 
 class app_consultas(validar_entry):
@@ -29,15 +30,16 @@ class app_consultas(validar_entry):
         self.frames_principais()
         self.botoes_geral()
         self.label_status()
-        self.arvore()
         self.campo_edicao_query()
         self.campos_entry()
+        self.arvore()
         self.exibir_arvore()
+        self.desablitar_campos()
         jan_principal.mainloop()
 
     def limpar_campos(self):
-        self.entry_nova_query.delete(0, 'end')
-        self.entry_nome.delete(0, 'end')
+        self.entry_nome_arquivo.delete(0, 'end')
+        self.entry_nome_query.delete(0, 'end')
         self.entry_caminho_salvar.delete(0, 'end')
         self.edicao_query.delete('1.0', 'end')
         self.entry_horario1.delete(0, 'end')
@@ -54,8 +56,8 @@ class app_consultas(validar_entry):
         self.entry_horario12.delete(0, 'end')
 
     def desablitar_campos(self):
-        self.entry_nova_query.config(state='disabled')
-        self.entry_nome.config(state='disabled')
+        self.entry_nome_arquivo.config(state='disabled')
+        self.entry_nome_query.config(state='disabled')
         self.entry_caminho_salvar.config(state='disabled')
         self.edicao_query.config(state='disabled')
         self.entry_horario1.config(state='disabled')
@@ -72,8 +74,8 @@ class app_consultas(validar_entry):
         self.entry_horario12.config(state='disabled')
 
     def habilitar_campos(self):
-        self.entry_nova_query.config(state='enabled')
-        self.entry_nome.config(state='enabled')
+        self.entry_nome_arquivo.config(state='enabled')
+        self.entry_nome_query.config(state='enabled')
         self.entry_caminho_salvar.config(state='enabled')
         self.edicao_query.config(state='normal')
         self.entry_horario1.config(state='enabled')
@@ -93,7 +95,6 @@ class app_consultas(validar_entry):
         self.valid_horario = (self.jan_principal.register(self.validar_entry_horario), '%P')
         self.valid_nome = (self.jan_principal.register(self.validar_entry_nome), '%P')
 
-    # Quadrante onde alocaremos as opções
     def tela_inicial(self):
         larg_jan = 1000
         altu_jan = 600
@@ -102,7 +103,7 @@ class app_consultas(validar_entry):
         self.jan_principal.title('Agendador de consultas')
         self.jan_principal.config(bg=verde4, )
         self.jan_principal.geometry('1000x600+0+0')
-        self.jan_principal.minsize(width='100', height='600')
+        self.jan_principal.minsize(width='1000', height='600')
         self.jan_principal.maxsize(width='1000', height='600')
 
     def frames_principais(self):
@@ -130,23 +131,20 @@ class app_consultas(validar_entry):
         self.botao_stop = ttk.Button(self.frm_back, text= 'STOP', command=self.acao_botao_stop)
         self.botao_start.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
 
-        self.botao_save = ttk.Button(self.frm_back, text='SALVAR', command=self.acao_botao_salvar)
-        self.botao_save.place(relx=0.46, rely=0.95, relheight=0.045, relwidth=0.1)
-
         self.botao_nova_query = ttk.Button(self.frm_back, text='NOVA QUERY', command=self.acao_botao_nova_query)
         self.botao_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.12)
         
         self.botao_excluir_query = ttk.Button(self.frm_back, text='EXCLUIR QUERY', state='disabled', command=self.limpar_campos)
         self.botao_excluir_query.place(relx=0.86, rely=0.05, relheight=0.04, relwidth=0.12)
 
-        self.botao_editar_query = ttk.Button(self.frm_back, text='EDITAR QUERY', state='disabled', command=self.acao_botao_nova_query)
+        self.botao_editar_query = ttk.Button(self.frm_back, text='EDITAR QUERY', state='disabled', command=self.acao_botao_editar)
         self.botao_editar_query.place(relx=0.73, rely=0.10, relheight=0.04, relwidth=0.12)
         
-        self.botao_limpar_campos = ttk.Button(self.frm_back, text='LIMPAR CAMPOS', command=self.limpar_campos)
+        self.botao_limpar_campos = ttk.Button(self.frm_back, text='LIMPAR CAMPOS', state='disabled', command=self.limpar_campos)
         self.botao_limpar_campos.place(relx=0.86, rely=0.10, relheight=0.04, relwidth=0.12)
 
-        self.botao_ok = ttk.Button(self.frm_back, text='OK', state='disabled', command=self.acao_botao_ok)
-        self.botao_ok.place(relx=0.96, rely=0.1928, relheight=0.042, relwidth=0.03)
+        self.botao_save = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar)
+        self.botao_save.place(relx=0.46, rely=0.95, relheight=0.045, relwidth=0.1)
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, borderwidth=1, relief='groove', anchor='center')
@@ -161,15 +159,15 @@ class app_consultas(validar_entry):
         self.scroll_edicao_query.place(relx=0.971, rely=0.01, relheight=0.97)    
 
     def campos_entry(self):
-        self.entry_nome = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
-        self.etiq_entry_nome = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
-        self.entry_nome.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.193)
-        self.etiq_entry_nome.place(relx=0.715, rely=0.199)
+        self.entry_nome_query = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
+        self.etiq_entry_nome_query = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
+        self.entry_nome_query.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.226)
+        self.etiq_entry_nome_query.place(relx=0.715, rely=0.199)
 
-        self.entry_nova_query = ttk.Entry(self.frm_back, justify='left', state='disabled')
-        self.etiq_nova_query = ttk.Label(self.frm_back, text='NOME:', background=verde1)
-        self.entry_nova_query.place(relx=0.765, rely=0.245, relheight=0.038, relwidth=0.226)
-        self.etiq_nova_query.place(relx=0.715, rely=0.249)
+        self.entry_nome_arquivo = ttk.Entry(self.frm_back, justify='left', state='disabled')
+        self.etiq_nome_arquivo = ttk.Label(self.frm_back, text='NOME:', background=verde1)
+        self.entry_nome_arquivo.place(relx=0.765, rely=0.245, relheight=0.038, relwidth=0.226)
+        self.etiq_nome_arquivo.place(relx=0.715, rely=0.249)
 
         self.entry_caminho_salvar = ttk.Entry(self.frm_back, justify='left')
         self.etiq_entry_salvar = ttk.Label(self.frm_back, text='LOCAL:', background=verde1)
@@ -217,11 +215,11 @@ class app_consultas(validar_entry):
 
     def arvore(self):
         # Definindo a árvore e suas colunas
-        self.arvore_scripts = ttk.Treeview(self.frm_querys)
-        self.arvore_scripts['columns'] = ('Query', 'Horário', 'Local para salvar')
+        self.arvore_scripts = ttk.Treeview(self.frm_querys, style='arvore_scripts.Treeview')
+        self.arvore_scripts['columns'] = ('Query', 'Horário', 'Nome', 'Local para salvar')
         
         self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow', relief='groove')
-        self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set)
+        self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set, style='Treeview')
         self.scroll_arvore.config(command=self.arvore_scripts.yview)
         self.arvore_scripts.place(relx=0.001, rely=0.002, relheight=1, relwidth=0.999)
         self.scroll_arvore.place(relx=0.975, rely=0.005, relheight=0.992)
@@ -232,6 +230,7 @@ class app_consultas(validar_entry):
         # Demais colunas:
         self.arvore_scripts.column('Query', width=150, minwidth=100)
         self.arvore_scripts.column('Horário', width=70, minwidth=100)
+        self.arvore_scripts.column('Nome', width=150, minwidth=100)
         self.arvore_scripts.column('Local para salvar', width=450, minwidth=100)
 
         # Configurando os títulos
@@ -240,6 +239,7 @@ class app_consultas(validar_entry):
         # Demais colunas:
         self.arvore_scripts.heading('Query', text='Query', anchor='w')
         self.arvore_scripts.heading('Horário', text='Horário', anchor='w')
+        self.arvore_scripts.heading('Nome', text='Nome', anchor='w')
         self.arvore_scripts.heading('Local para salvar', text='Local para salvar', anchor='w')
         self.arvore_scripts.tag_configure('x1', background=verde_claro)
         self.arvore_scripts.tag_configure('x2', background='white')
@@ -259,7 +259,7 @@ class app_consultas(validar_entry):
                 for item, valor in dados_exibir_arvore.items():
                     tag ='x1' if (count_pai % 2) == 0 else 'x2'
                     print(item)
-                    self.arvore_scripts.insert(parent='', index='end', iid=count_pai, text='', values=(item, '', valor['caminho_salvar']), tags=tag)
+                    self.arvore_scripts.insert(parent='', index='end', iid=count_pai, text='', values=(item, '', valor['nome'], valor['caminho_salvar']), tags=tag)
                     count_filho = 0
                     for ext_hora in valor['horario']:
                         
@@ -267,7 +267,7 @@ class app_consultas(validar_entry):
                             id_aux = f'{count_pai}.{count_filho}'
                             print(ext_hora)
                             print(id_aux)
-                            self.arvore_scripts.insert(parent='', index='end', iid=id_aux, text='', values=('    '+item, '    '+ext_hora, '    '+valor['caminho_salvar']), tags=tag)
+                            self.arvore_scripts.insert(parent='', index='end', iid=id_aux, text='', values=('    '+item, '    '+ext_hora, '    '+valor['nome'],'    '+valor['caminho_salvar']), tags=tag)
                             self.arvore_scripts.move(id_aux, count_pai, count_filho)
                             count_filho += 1
                     count_pai += 1
@@ -276,7 +276,8 @@ class app_consultas(validar_entry):
 
     def selecionar_item_arvore(self, event):
         # Apagar dados das entry
-        #self.limpar_campos()
+        self.habilitar_campos()
+        self.limpar_campos()
 
         # inputar dados nas entrys
         linha_selec = self.arvore_scripts.selection()[0]
@@ -284,29 +285,44 @@ class app_consultas(validar_entry):
         print(dados_selec[0])
         with open(caminho_json, 'r', encoding='utf-8') as js_sel:
             dados_finais = json.load(js_sel)
-            name = dados_selec[0]
-            loc_salvar = dados_finais[name]['caminho_salvar']
-            horarios = dados_finais[name]['horario']
-            queryx = dados_finais[name]['query']
+            name_qry = dados_selec[0].strip()
+            horarios = dados_finais[name_qry.strip()]['horario']
+            name_arq = dados_finais[name_qry.strip()]['nome']
+            loc_salvar = dados_finais[name_qry.strip()]['caminho_salvar']
+            queryx = dados_finais[name_qry.strip()]['query']
 
-            print('nome: ', name)
+            print('nome: ', name_arq)
             print('salvar: ', loc_salvar)
             print('horarios: ', horarios)
             print('query: ', queryx)
-
-    def alterar_nome_query(self):
-
-        return
+        self.entry_nome_query.insert(0, name_qry)        
+        self.entry_nome_arquivo.insert(0, name_arq)        
+        self.entry_caminho_salvar.insert(0, loc_salvar)        
+        self.edicao_query.insert(1.0, queryx)
+        self.entry_horario1.insert(0, horarios[0])
+        self.entry_horario1.insert(0, horarios[1])
+        self.entry_horario2.insert(0, horarios[2])
+        self.entry_horario3.insert(0, horarios[3])
+        self.entry_horario4.insert(0, horarios[4])
+        self.entry_horario5.insert(0, horarios[5])
+        self.entry_horario6.insert(0, horarios[6])
+        self.entry_horario7.insert(0, horarios[7])
+        self.entry_horario8.insert(0, horarios[8])
+        self.entry_horario9.insert(0, horarios[9])
+        self.entry_horario10.insert(0, horarios[10])
+        self.entry_horario11.insert(0, horarios[11])
+        self.desablitar_campos()  
+        self.botao_editar_query['state'] = 'normal'
 
     def acao_botao_nova_query(self):
+        self.botao_editar_query['state'] = 'disabled'
+        self.habilitar_campos()
         self.limpar_campos()
-        self.entry_nova_query['state'] = 'NORMAL'
-        self.botao_ok['state'] = 'NORMAL'
-        
-    def acao_botao_ok(self):
-        #nova_query_nome = self.entry_nova_query.get()
-        return
 
+    def acao_botao_editar(self):
+        self.botao_nova_query['state'] = 'disabled'
+        self.habilitar_campos()
+        
     def acao_botao_start(self):
         self.limpar_campos()
         self.desablitar_campos()
@@ -322,14 +338,14 @@ class app_consultas(validar_entry):
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
-        nome_query = self.entry_nome.get().strip()
-        caminho_salvar_query = self.entry_caminho_salvar.get()
+        nome_query = self.entry_nome_query.get().strip()
         horarios_query = [self.entry_horario1.get(), self.entry_horario2.get(), self.entry_horario3.get(), self.entry_horario4.get(), self.entry_horario5.get(),
-                        self.entry_horario6.get(), self.entry_horario7.get(), self.entry_horario8.get(), self.entry_horario9.get(), self.entry_horario10.get(), 
-                        self.entry_horario11.get(), self.entry_horario12.get()]
+                self.entry_horario6.get(), self.entry_horario7.get(), self.entry_horario8.get(), self.entry_horario9.get(), self.entry_horario10.get(), 
+                self.entry_horario11.get(), self.entry_horario12.get()]
+        nome_arquivo = self.entry_nome_arquivo.get().strip()
+        caminho_salvar_query = self.entry_caminho_salvar.get()
         query_script = self.edicao_query.get('1.0', 'end-1c')
 
-        
         # Verifica se o caminho para salvar é válido
         if os.path.isdir(caminho_salvar_query) is False:
             messagebox.showerror('Caminho inválido', 'O caminho inserido para salvamento não é válido.') 
@@ -340,8 +356,9 @@ class app_consultas(validar_entry):
         else:
             dados_script = {
                 nome_query : {
+                    "horario": sorted(horarios_query, key = lambda x: (x is '', x)),
+                    "nome": nome_arquivo,
                     "caminho_salvar": caminho_salvar_query,
-                    "horario": horarios_query,
                     "query": query_script
                     }
                 }
@@ -370,6 +387,7 @@ class app_consultas(validar_entry):
             shutil.move(jstemporario.name, caminho_json)
             print("*" * 150)
         self.exibir_arvore()
+        self.desablitar_campos()
         
     
 
