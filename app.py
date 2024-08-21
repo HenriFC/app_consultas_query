@@ -324,17 +324,27 @@ class app_consultas(validar_entry):
 
 
     def acao_botao_nova_query(self):
+        global nome_antigo_query
+        nome_antigo_query = ''
         self.botao_editar_query['state'] = 'disabled'
-        self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
+        self.botao_save['state'] = 'enabled'
+        try:
+            self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
+        except:
+            pass
         self.habilitar_campos()
         self.limpar_campos()
 
 
     def acao_botao_editar(self):
+        global nome_antigo_query
+        nome_antigo_query = self.entry_nome_query.get().strip()
         self.botao_nova_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
-        self.habilitar_campos()
+        self.botao_editar_query['state'] = 'disabled'
         self.botao_save['state'] = 'normal'
+
+        self.habilitar_campos()
 
 
 
@@ -368,7 +378,8 @@ class app_consultas(validar_entry):
         caminho_salvar_query = self.entry_caminho_salvar.get()
         query_script = self.edicao_query.get('1.0', 'end-1c')
 
-        # Verifica se o caminho para salvar é válido
+
+            
         if nome_query == '':
             messagebox.showinfo('Nome inválido', 'O nome inserido é inválido. Os dados não foram salvos.')
 
@@ -395,24 +406,41 @@ class app_consultas(validar_entry):
                     dados_temp = {}
 
 
-                # Verificamos se os nome da query já está no JSON. Caso esteja, perguntaremos ao usuário se deseja atualizar os dados
-                if nome_query in dados_temp:
-                    if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_query}"?'):
+                if nome_antigo_query == '':
+                    if nome_query in dados_temp:
+                        messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
+                    elif messagebox.askyesno('Salvar', f'Deseja salvar uma nova query com o nome "{nome_query}"?'):
                         dados_temp.update(dados_script)
-                # Se o nome da query não existir no JSON, perguntaremos se realmente deseja salvar um novo registro
+
                 else:
-                    if messagebox.askyesno('Salvar', f'Deseja salvar uma nova query com o nome "{nome_query}"?'):
-                        dados_temp.update(dados_script)
+                    if nome_query in dados_temp:
+                        if nome_query == nome_antigo_query:
+                            if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
+                                dados_temp.pop(nome_antigo_query)
+                                dados_temp.update(dados_script)
+                                self.limpar_campos()
+                                self.desablitar_campos()
+                                self.botao_editar_query['state'] = 'disabled'
+                                self.botao_save['state'] = 'disabled'
+                                self.botao_nova_query['state'] = 'normal'
+                        else:
+                            messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
+                    else:
+                        if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
+                                dados_temp.pop(nome_antigo_query)
+                                dados_temp.update(dados_script)
+                                self.limpar_campos()
+                                self.desablitar_campos()
+                                self.botao_editar_query['state'] = 'disabled'
+                                self.botao_save['state'] = 'disabled'
+                                self.botao_nova_query['state'] = 'normal'
+
                 # Por fim, sobe os dados temporários, alterados ou não, para o JSON:
                 json.dump(dados_temp, jstemporario, ensure_ascii=False)
 
             shutil.move(jstemporario.name, caminho_json)
             print("*" * 150)
-            self.limpar_campos()
-            self.desablitar_campos()
-            self.botao_editar_query['state'] = 'disabled'
-            self.botao_save['state'] = 'disabled'
-            self.botao_nova_query['state'] = 'normal'
+
             self.exibir_arvore()
     
 
