@@ -19,12 +19,17 @@ s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 
+
 caminho_json = 'database.json'
+global nome_antigo_query
+
+
 
 class app_consultas(validar_entry):
     # Janela principal
     def __init__(self):
         self.jan_principal = jan_principal
+        nome_antigo_query = ''
         self.validadores()
         self.tela_inicial()
         self.frames_principais()
@@ -56,22 +61,22 @@ class app_consultas(validar_entry):
         self.entry_horario12.delete(0, 'end')
 
     def desablitar_campos(self):
-        self.entry_nome_arquivo.config(state='disabled')
-        self.entry_nome_query.config(state='disabled')
-        self.entry_caminho_salvar.config(state='disabled')
-        self.edicao_query.config(state='disabled')
-        self.entry_horario1.config(state='disabled')
-        self.entry_horario2.config(state='disabled')
-        self.entry_horario3.config(state='disabled')       
-        self.entry_horario4.config(state='disabled')
-        self.entry_horario5.config(state='disabled')
-        self.entry_horario6.config(state='disabled')
-        self.entry_horario7.config(state='disabled')
-        self.entry_horario8.config(state='disabled')
-        self.entry_horario9.config(state='disabled')
-        self.entry_horario10.config(state='disabled')
-        self.entry_horario11.config(state='disabled')
-        self.entry_horario12.config(state='disabled')
+        self.entry_nome_arquivo.config(state='readonly')
+        self.entry_nome_query.config(state='readonly', foreground='black')
+        self.entry_caminho_salvar.config(state='readonly', foreground='black')
+        self.edicao_query.config(state='disabled', foreground='black')
+        self.entry_horario1.config(state='readonly', foreground='black')
+        self.entry_horario2.config(state='readonly', foreground='black')
+        self.entry_horario3.config(state='readonly', foreground='black')       
+        self.entry_horario4.config(state='readonly', foreground='black')
+        self.entry_horario5.config(state='readonly', foreground='black')
+        self.entry_horario6.config(state='readonly', foreground='black')
+        self.entry_horario7.config(state='readonly', foreground='black')
+        self.entry_horario8.config(state='readonly', foreground='black')
+        self.entry_horario9.config(state='readonly', foreground='black')
+        self.entry_horario10.config(state='readonly', foreground='black')
+        self.entry_horario11.config(state='readonly', foreground='black')
+        self.entry_horario12.config(state='readonly', foreground='black')
 
     def habilitar_campos(self):
         self.entry_nome_arquivo.config(state='enabled')
@@ -144,7 +149,7 @@ class app_consultas(validar_entry):
         self.botao_limpar_campos.place(relx=0.86, rely=0.10, relheight=0.04, relwidth=0.12)
 
         self.botao_save = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar)
-        self.botao_save.place(relx=0.46, rely=0.95, relheight=0.045, relwidth=0.1)
+        self.botao_save.place(relx=0.73, rely=0.52, relheight=0.045, relwidth=0.25)
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, borderwidth=1, relief='groove', anchor='center')
@@ -164,7 +169,7 @@ class app_consultas(validar_entry):
         self.entry_nome_query.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.226)
         self.etiq_entry_nome_query.place(relx=0.715, rely=0.199)
 
-        self.entry_nome_arquivo = ttk.Entry(self.frm_back, justify='left', state='disabled')
+        self.entry_nome_arquivo = ttk.Entry(self.frm_back, justify='left', state='readonly')
         self.etiq_nome_arquivo = ttk.Label(self.frm_back, text='NOME:', background=verde1)
         self.entry_nome_arquivo.place(relx=0.765, rely=0.245, relheight=0.038, relwidth=0.226)
         self.etiq_nome_arquivo.place(relx=0.715, rely=0.249)
@@ -300,38 +305,55 @@ class app_consultas(validar_entry):
         self.entry_caminho_salvar.insert(0, loc_salvar)        
         self.edicao_query.insert(1.0, queryx)
         self.entry_horario1.insert(0, horarios[0])
-        self.entry_horario1.insert(0, horarios[1])
-        self.entry_horario2.insert(0, horarios[2])
-        self.entry_horario3.insert(0, horarios[3])
-        self.entry_horario4.insert(0, horarios[4])
-        self.entry_horario5.insert(0, horarios[5])
-        self.entry_horario6.insert(0, horarios[6])
-        self.entry_horario7.insert(0, horarios[7])
-        self.entry_horario8.insert(0, horarios[8])
-        self.entry_horario9.insert(0, horarios[9])
-        self.entry_horario10.insert(0, horarios[10])
-        self.entry_horario11.insert(0, horarios[11])
-        self.desablitar_campos()  
+        self.entry_horario2.insert(0, horarios[1])
+        self.entry_horario3.insert(0, horarios[2])
+        self.entry_horario4.insert(0, horarios[3])
+        self.entry_horario5.insert(0, horarios[4])
+        self.entry_horario6.insert(0, horarios[5])
+        self.entry_horario7.insert(0, horarios[6])
+        self.entry_horario8.insert(0, horarios[7])
+        self.entry_horario9.insert(0, horarios[8])
+        self.entry_horario10.insert(0, horarios[9])
+        self.entry_horario11.insert(0, horarios[10])
+        self.entry_horario12.insert(0, horarios[11])
+        self.desablitar_campos()
         self.botao_editar_query['state'] = 'normal'
+        self.botao_excluir_query['state'] = 'normal'
+        self.botao_nova_query['state'] = 'normal'
+        self.botao_save['state'] = 'disabled'
+
 
     def acao_botao_nova_query(self):
         self.botao_editar_query['state'] = 'disabled'
+        self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
         self.habilitar_campos()
         self.limpar_campos()
+
 
     def acao_botao_editar(self):
         self.botao_nova_query['state'] = 'disabled'
+        self.botao_excluir_query['state'] = 'disabled'
         self.habilitar_campos()
-        
+        self.botao_save['state'] = 'normal'
+
+
+
     def acao_botao_start(self):
+        self.habilitar_campos()
         self.limpar_campos()
         self.desablitar_campos()
+        self.botao_nova_query['state'] = 'disabled'
+        self.botao_excluir_query['state'] = 'disabled'
+        self.botao_editar_query['state'] = 'disabled'
+        self.botao_limpar_campos['state'] = 'disabled'
+        self.botao_save['state'] = 'disabled'
         self.lbl_status_programa.config(text='O programa está executando', background=verde0)
         self.botao_start.place_forget()
         self.botao_stop.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
+        
+
 
     def acao_botao_stop(self):
-        self.habilitar_campos()
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop.place_forget()
         self.botao_start.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
@@ -347,12 +369,12 @@ class app_consultas(validar_entry):
         query_script = self.edicao_query.get('1.0', 'end-1c')
 
         # Verifica se o caminho para salvar é válido
-        if os.path.isdir(caminho_salvar_query) is False:
+        if nome_query == '':
+            messagebox.showinfo('Nome inválido', 'O nome inserido é inválido. Os dados não foram salvos.')
+
+        elif os.path.isdir(caminho_salvar_query) is False:
             messagebox.showerror('Caminho inválido', 'O caminho inserido para salvamento não é válido.') 
 
-        elif nome_query == '':
-            messagebox.showinfo('Nome inválido', 'O nome inserido é inválido. Os dados não foram salvos.')
-    
         else:
             dados_script = {
                 nome_query : {
@@ -386,9 +408,12 @@ class app_consultas(validar_entry):
 
             shutil.move(jstemporario.name, caminho_json)
             print("*" * 150)
-        self.exibir_arvore()
-        self.desablitar_campos()
-        
+            self.limpar_campos()
+            self.desablitar_campos()
+            self.botao_editar_query['state'] = 'disabled'
+            self.botao_save['state'] = 'disabled'
+            self.botao_nova_query['state'] = 'normal'
+            self.exibir_arvore()
     
 
 
