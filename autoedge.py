@@ -18,4 +18,3 @@ def iniciar_edge():
 
     # Digitando um texto no campo e apertando enter:
     navegador_edge.find_element('xpath', '//*[@id="APjFqb"]').send_keys('Vasco da Gama' + Keys.ENTER)
-

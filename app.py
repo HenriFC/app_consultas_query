@@ -6,7 +6,6 @@ from tkinter import Tk, PhotoImage, Scrollbar, Text
 from tkinter import ttk
 from tkinter import messagebox
 
-
 from autoedge import iniciar_edge
 from coreslayout import *
 from funcoes import validar_entry
