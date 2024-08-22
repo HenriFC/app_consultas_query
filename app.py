@@ -21,7 +21,7 @@ s.configure('frm_back.TFrame', background=verde1)
 
 caminho_json = 'database.json'
 global nome_antigo_query
-
+xx = ''
 
 
 class app_consultas(validar_entry):
