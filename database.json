@@ -1,1 +1,1 @@
-{"Teste 1": {"horario": ["01:00", "08:00", "", "", "", "", "", "", "", "", "", ""], "nome": "teste1.csv", "caminho_salvar": "C:\\\\", "query": "TESTE 1 QUERY x"}}
+{"Teste 1": {"horario": ["01:00", "08:00", "", "", "", "", "", "", "", "", "", ""], "nome": "teste1.csv", "caminho_salvar": "C:\\\\", "query": "TESTE 1 QUERY x"}, "TestE 2": {"horario": ["09:00", "", "", "", "", "", "", "", "", "", "", ""], "nome": "teste2.csv", "caminho_salvar": "c:\\\\", "query": "TEste"}}

@@ -28,7 +28,6 @@ class app_consultas(validar_entry):
     # Janela principal
     def __init__(self):
         self.jan_principal = jan_principal
-        nome_antigo_query = ''
         self.validadores()
         self.tela_inicial()
         self.frames_principais()
@@ -386,10 +385,10 @@ class app_consultas(validar_entry):
 
             
         if nome_query_salvar == '':
-            messagebox.showinfo('Nome inválido', 'O nome inserido é inválido. Os dados não foram salvos.')
+            messagebox.showinfo('NOME INVÁLIDO', 'O nome inserido é inválido. Os dados não foram salvos.')
 
         elif os.path.isdir(caminho_salvar_query) is False:
-            messagebox.showerror('Caminho inválido', 'O caminho inserido para salvamento não é válido.') 
+            messagebox.showerror('CAMINHO INVÁLIDO', 'O caminho inserido para salvamento não é válido.') 
 
         else:
             dados_script = {
@@ -429,7 +428,7 @@ class app_consultas(validar_entry):
                 else:
                     if nome_query_salvar.upper() in validar_nome_existe:
                         if nome_query_salvar.upper() == nome_antigo_query.upper():
-                            if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
+                            if messagebox.askyesno('EDITAR', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
                                 dados_temp.pop(nome_antigo_query)
                                 dados_temp.update(dados_script)
                                 self.limpar_campos()
@@ -440,9 +439,9 @@ class app_consultas(validar_entry):
                                 self.botao_nova_query['state'] = 'normal'
                                 
                         else:
-                            messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
+                            messagebox.showerror('DUPLICIDADE', f'Já existe uma query com o nome "{nome_query_salvar}". \nInsira um novo nome.')
                     else:
-                        if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
+                        if messagebox.askyesno('EDITAR', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
                                 dados_temp.pop(nome_antigo_query)
                                 dados_temp.update(dados_script)
                                 self.limpar_campos()
