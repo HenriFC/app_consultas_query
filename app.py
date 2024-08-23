@@ -21,7 +21,7 @@ s.configure('frm_back.TFrame', background=verde1)
 
 caminho_json = 'database.json'
 global nome_antigo_query
-xx = ''
+
 
 
 class app_consultas(validar_entry):
@@ -138,7 +138,7 @@ class app_consultas(validar_entry):
         self.botao_nova_query = ttk.Button(self.frm_back, text='NOVA QUERY', command=self.acao_botao_nova_query)
         self.botao_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.12)
         
-        self.botao_excluir_query = ttk.Button(self.frm_back, text='EXCLUIR QUERY', state='disabled', command=self.limpar_campos)
+        self.botao_excluir_query = ttk.Button(self.frm_back, text='EXCLUIR QUERY', state='disabled', command=self.acao_botao_excluir)
         self.botao_excluir_query.place(relx=0.86, rely=0.05, relheight=0.04, relwidth=0.12)
 
         self.botao_editar_query = ttk.Button(self.frm_back, text='EDITAR QUERY', state='disabled', command=self.acao_botao_editar)
@@ -262,15 +262,13 @@ class app_consultas(validar_entry):
 
                 for item, valor in dados_exibir_arvore.items():
                     tag ='x1' if (count_pai % 2) == 0 else 'x2'
-                    print(item)
+
                     self.arvore_scripts.insert(parent='', index='end', iid=count_pai, text='', values=(item, '', valor['nome'], valor['caminho_salvar']), tags=tag)
                     count_filho = 0
                     for ext_hora in valor['horario']:
                         
                         if ext_hora != '':
                             id_aux = f'{count_pai}.{count_filho}'
-                            print(ext_hora)
-                            print(id_aux)
                             self.arvore_scripts.insert(parent='', index='end', iid=id_aux, text='', values=('    '+item, '    '+ext_hora, '    '+valor['nome'],'    '+valor['caminho_salvar']), tags=tag)
                             self.arvore_scripts.move(id_aux, count_pai, count_filho)
                             count_filho += 1
@@ -282,11 +280,11 @@ class app_consultas(validar_entry):
         # Apagar dados das entry
         self.habilitar_campos()
         self.limpar_campos()
+        
 
         # inputar dados nas entrys
         linha_selec = self.arvore_scripts.selection()[0]
         dados_selec = self.arvore_scripts.item(linha_selec, "values")
-        print(dados_selec[0])
         with open(caminho_json, 'r', encoding='utf-8') as js_sel:
             dados_finais = json.load(js_sel)
             name_qry = dados_selec[0].strip()
@@ -315,6 +313,7 @@ class app_consultas(validar_entry):
         self.botao_editar_query['state'] = 'normal'
         self.botao_excluir_query['state'] = 'normal'
         self.botao_nova_query['state'] = 'normal'
+        self.botao_limpar_campos['state'] = 'disabled'
         self.botao_save['state'] = 'disabled'
 
     def acao_botao_nova_query(self):
@@ -322,6 +321,7 @@ class app_consultas(validar_entry):
         nome_antigo_query = ''
         self.botao_editar_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
+        self.botao_limpar_campos['state'] = 'normal'
         self.botao_save['state'] = 'enabled'
         try:
             self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
@@ -336,13 +336,24 @@ class app_consultas(validar_entry):
         self.botao_nova_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
         self.botao_editar_query['state'] = 'disabled'
+        self.botao_limpar_campos['state'] = 'normal'
         self.botao_save['state'] = 'normal'
 
         self.habilitar_campos()
 
     def acao_botao_excluir(self):
-        nome_query_excluir = self.entry_nome_query.get().strip().upper()
-        return
+        nome_antigo_query = self.entry_nome_query.get().strip()
+        if messagebox.askyesno('Excluir', f'Deseja excluir a query "{nome_antigo_query}"'):
+            with open(caminho_json, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
+                dados_temp2 = json.load(arquivojs2)
+                print(dados_temp2[nome_antigo_query])
+                dados_temp2.pop(nome_antigo_query)
+                json.dump(dados_temp2, jstemporario2, ensure_ascii=False)
+            shutil.move(jstemporario2.name, caminho_json)
+            self.habilitar_campos()
+            self.limpar_campos()
+            self.desablitar_campos()
+            self.exibir_arvore()
 
     def acao_botao_start(self):
         self.habilitar_campos()
@@ -399,17 +410,21 @@ class app_consultas(validar_entry):
                 except:
                     dados_temp = {}
                 validar_nome_existe = []
+
                 for x in dados_temp:
                     validar_nome_existe.append(str(x).upper())
-                    print("x", validar_nome_existe)
-                    
-
 
                 if nome_antigo_query == '':
                     if nome_query_salvar.upper() in validar_nome_existe:
-                        messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
-                    elif messagebox.askyesno('Salvar', f'Deseja salvar uma nova query com o nome "{nome_query_salvar}"?'):
+                        messagebox.showerror('DUPLICIDADE', f'Já existe uma query com o nome "{nome_query_salvar}". \nInsira um novo nome.')
+                    elif messagebox.askyesno('SALVAR NOVA QUERY', f'Deseja salvar uma nova query com o nome "{nome_query_salvar}"?'):
                         dados_temp.update(dados_script)
+                        self.limpar_campos()
+                        self.desablitar_campos()
+                        self.botao_editar_query['state'] = 'disabled'
+                        self.botao_save['state'] = 'disabled'
+                        self.botao_limpar_campos['state'] = 'disabled'
+                        self.botao_nova_query['state'] = 'normal'
 
                 else:
                     if nome_query_salvar.upper() in validar_nome_existe:
@@ -421,6 +436,7 @@ class app_consultas(validar_entry):
                                 self.desablitar_campos()
                                 self.botao_editar_query['state'] = 'disabled'
                                 self.botao_save['state'] = 'disabled'
+                                self.botao_limpar_campos['state'] = 'disabled'
                                 self.botao_nova_query['state'] = 'normal'
                                 
                         else:
@@ -433,13 +449,14 @@ class app_consultas(validar_entry):
                                 self.desablitar_campos()
                                 self.botao_editar_query['state'] = 'disabled'
                                 self.botao_save['state'] = 'disabled'
+                                self.botao_limpar_campos['state'] = 'disabled'
                                 self.botao_nova_query['state'] = 'normal'
 
                 # Por fim, sobe os dados temporários, alterados ou não, para o JSON:
                 json.dump(dados_temp, jstemporario, ensure_ascii=False)
 
             shutil.move(jstemporario.name, caminho_json)
-            print("*" * 150)
+
 
             self.exibir_arvore()
     
