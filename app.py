@@ -295,10 +295,6 @@ class app_consultas(validar_entry):
             loc_salvar = dados_finais[name_qry.strip()]['caminho_salvar']
             queryx = dados_finais[name_qry.strip()]['query']
 
-            print('nome: ', name_arq)
-            print('salvar: ', loc_salvar)
-            print('horarios: ', horarios)
-            print('query: ', queryx)
         self.entry_nome_query.insert(0, name_qry)        
         self.entry_nome_arquivo.insert(0, name_arq)        
         self.entry_caminho_salvar.insert(0, loc_salvar)        
@@ -321,11 +317,11 @@ class app_consultas(validar_entry):
         self.botao_nova_query['state'] = 'normal'
         self.botao_save['state'] = 'disabled'
 
-
     def acao_botao_nova_query(self):
         global nome_antigo_query
         nome_antigo_query = ''
         self.botao_editar_query['state'] = 'disabled'
+        self.botao_excluir_query['state'] = 'disabled'
         self.botao_save['state'] = 'enabled'
         try:
             self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
@@ -333,7 +329,6 @@ class app_consultas(validar_entry):
             pass
         self.habilitar_campos()
         self.limpar_campos()
-
 
     def acao_botao_editar(self):
         global nome_antigo_query
@@ -345,7 +340,9 @@ class app_consultas(validar_entry):
 
         self.habilitar_campos()
 
-
+    def acao_botao_excluir(self):
+        nome_query_excluir = self.entry_nome_query.get().strip().upper()
+        return
 
     def acao_botao_start(self):
         self.habilitar_campos()
@@ -360,8 +357,6 @@ class app_consultas(validar_entry):
         self.botao_start.place_forget()
         self.botao_stop.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
         
-
-
     def acao_botao_stop(self):
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop.place_forget()
@@ -369,7 +364,7 @@ class app_consultas(validar_entry):
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
-        nome_query = self.entry_nome_query.get().strip()
+        nome_query_salvar = self.entry_nome_query.get().strip()
         horarios_query = [self.entry_horario1.get(), self.entry_horario2.get(), self.entry_horario3.get(), self.entry_horario4.get(), self.entry_horario5.get(),
                 self.entry_horario6.get(), self.entry_horario7.get(), self.entry_horario8.get(), self.entry_horario9.get(), self.entry_horario10.get(), 
                 self.entry_horario11.get(), self.entry_horario12.get()]
@@ -379,7 +374,7 @@ class app_consultas(validar_entry):
 
 
             
-        if nome_query == '':
+        if nome_query_salvar == '':
             messagebox.showinfo('Nome inválido', 'O nome inserido é inválido. Os dados não foram salvos.')
 
         elif os.path.isdir(caminho_salvar_query) is False:
@@ -387,7 +382,7 @@ class app_consultas(validar_entry):
 
         else:
             dados_script = {
-                nome_query : {
+                nome_query_salvar : {
                     "horario": sorted(horarios_query, key = lambda x: (x is '', x)),
                     "nome": nome_arquivo,
                     "caminho_salvar": caminho_salvar_query,
@@ -403,17 +398,22 @@ class app_consultas(validar_entry):
                     dados_temp = json.load(arquivojs)
                 except:
                     dados_temp = {}
+                validar_nome_existe = []
+                for x in dados_temp:
+                    validar_nome_existe.append(str(x).upper())
+                    print("x", validar_nome_existe)
+                    
 
 
                 if nome_antigo_query == '':
-                    if nome_query in dados_temp:
+                    if nome_query_salvar.upper() in validar_nome_existe:
                         messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
-                    elif messagebox.askyesno('Salvar', f'Deseja salvar uma nova query com o nome "{nome_query}"?'):
+                    elif messagebox.askyesno('Salvar', f'Deseja salvar uma nova query com o nome "{nome_query_salvar}"?'):
                         dados_temp.update(dados_script)
 
                 else:
-                    if nome_query in dados_temp:
-                        if nome_query == nome_antigo_query:
+                    if nome_query_salvar.upper() in validar_nome_existe:
+                        if nome_query_salvar.upper() == nome_antigo_query.upper():
                             if messagebox.askyesno('Salvar', f'Deseja sobrescrever os dados da query "{nome_antigo_query}"?'):
                                 dados_temp.pop(nome_antigo_query)
                                 dados_temp.update(dados_script)
@@ -422,6 +422,7 @@ class app_consultas(validar_entry):
                                 self.botao_editar_query['state'] = 'disabled'
                                 self.botao_save['state'] = 'disabled'
                                 self.botao_nova_query['state'] = 'normal'
+                                
                         else:
                             messagebox.showerror('Duplicidade', 'Já existe uma query com o nome inserido. Digite um novo nome')
                     else:
