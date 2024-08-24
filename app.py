@@ -320,8 +320,9 @@ class app_consultas(validar_entry):
         nome_antigo_query = ''
         self.botao_editar_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
+        self.botao_nova_query['state'] = 'disabled'
         self.botao_limpar_campos['state'] = 'normal'
-        self.botao_save['state'] = 'enabled'
+        self.botao_save['state'] = 'normal'
         try:
             self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
         except:
@@ -392,7 +393,7 @@ class app_consultas(validar_entry):
 
         else:
             dados_script = {
-                nome_query_salvar : {
+                    nome_query_salvar : {
                     "horario": sorted(horarios_query, key = lambda x: (x is '', x)),
                     "nome": nome_arquivo,
                     "caminho_salvar": caminho_salvar_query,
@@ -452,7 +453,9 @@ class app_consultas(validar_entry):
                                 self.botao_nova_query['state'] = 'normal'
 
                 # Por fim, sobe os dados temporários, alterados ou não, para o JSON:
-                json.dump(dados_temp, jstemporario, ensure_ascii=False)
+                dados_temp_org = dict(sorted(dados_temp.items(), key=lambda x: x[0]))
+                print(dados_temp_org)
+                json.dump(dados_temp_org, jstemporario, ensure_ascii=False)
 
             shutil.move(jstemporario.name, caminho_json)
 
