@@ -133,7 +133,7 @@ class app_consultas(validar_entry):
     def botoes_geral(self):
         self.botao_start = ttk.Button(self.frm_back, text= 'START', command=self.acao_botao_start)
         self.botao_stop = ttk.Button(self.frm_back, text= 'STOP', command=self.acao_botao_stop)
-        self.botao_start.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
+        self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
 
         self.botao_nova_query = ttk.Button(self.frm_back, text='NOVA QUERY', command=self.acao_botao_nova_query)
         self.botao_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.12)
@@ -152,7 +152,7 @@ class app_consultas(validar_entry):
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, borderwidth=1, relief='groove', anchor='center')
-        self.lbl_status_programa.place(relx=0.73, rely=0.88, relheight=0.05, relwidth=0.25)
+        self.lbl_status_programa.place(relx=0.73, rely=0.80, relheight=0.05, relwidth=0.25)
 
     def campo_edicao_query(self):
         self.edicao_query = Text(self.frm_edicao, relief='groove')
@@ -216,6 +216,11 @@ class app_consultas(validar_entry):
 
         self.entry_horario12 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario12.place(relx=0.95, rely=0.455, relheight=0.038, relwidth=0.04)
+
+        self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
+        self.etiq_entry_usu_google = ttk.Label(self.frm_back, text='USUÁRIO GOOGLE:', background=verde1)
+        self.entry_usu_google.place(relx=0.715, rely=0.906, relheight=0.038, relwidth=0.28)
+        self.etiq_entry_usu_google.place(relx=0.715, rely=0.87)
 
     def arvore(self):
         # Definindo a árvore e suas colunas
@@ -367,12 +372,12 @@ class app_consultas(validar_entry):
         self.botao_save['state'] = 'disabled'
         self.lbl_status_programa.config(text='O programa está executando', background=verde0)
         self.botao_start.place_forget()
-        self.botao_stop.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
+        self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
         
     def acao_botao_stop(self):
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop.place_forget()
-        self.botao_start.place(relx=0.795, rely=0.80, relheight=0.07, relwidth=0.12)
+        self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
