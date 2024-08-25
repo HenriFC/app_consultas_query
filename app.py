@@ -20,10 +20,16 @@ s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 
 
+
+
+
+
 caminho_json = 'database.json'
 global nome_antigo_query
 
+
 class validar_entrys():
+
 
     def validar_entry_nome(self, text):
         if len(text) <= 27:
@@ -38,7 +44,7 @@ class validar_entrys():
         try:
             if len(text) > 5:
                 return False
-
+            
             if len(text) == 1 and int(text[0]) >= 3:
                 return False
 
@@ -56,6 +62,7 @@ class validar_entrys():
 
         except ValueError:
             return False
+
         return True
 
     def validar_tamanho(self, text):
@@ -70,14 +77,12 @@ class validar_entrys():
                 print(i)
                 return True
             if len(i) < 5:
-                return False
+                return False    
             if i[2] != ':':
                 return False
             if ':' in aux_i:
                 print(aux_i)
                 return False
-
-
 
 
 class app_consultas(validar_entrys):
@@ -220,7 +225,7 @@ class app_consultas(validar_entrys):
     def campos_entry(self):
         self.entry_nome_query = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
         self.etiq_entry_nome_query = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
-        self.entry_nome_query.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.226)
+        self.entry_nome_query.place(relx=0.765, rely=0.195, relheight=0.038, relwidth=0.226, bordermode='inside')
         self.etiq_entry_nome_query.place(relx=0.715, rely=0.199)
 
         self.entry_nome_arquivo = ttk.Entry(self.frm_back, justify='left', state='readonly')
@@ -448,7 +453,7 @@ class app_consultas(validar_entrys):
             
         if self.validar_tamanho(nome_query_salvar) is False:
             messagebox.showerror('NOME INVÁLIDO', 'QUERY: O nome inserido para a query é inválido. \nOs dados não foram salvos.')
-
+            
         elif self.validar_tamanho(nome_arquivo) is False:
             messagebox.showerror('NOME INVÁLIDO', 'NOME: o nome inserido para o arquivo é inválido. \nOs dados não foram salvos.')
         
