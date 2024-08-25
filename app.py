@@ -8,7 +8,7 @@ from tkinter import messagebox
 
 from autoedge import iniciar_edge
 from coreslayout import *
-from funcoes import validar_entry
+
 
 jan_principal = Tk()
 img = PhotoImage(file='icon2.png')
@@ -23,9 +23,64 @@ s.configure('frm_back.TFrame', background=verde1)
 caminho_json = 'database.json'
 global nome_antigo_query
 
+class validar_entrys():
+
+    def validar_entry_nome(self, text):
+        if len(text) <= 27:
+            return True
+        return False
 
 
-class app_consultas(validar_entry):
+    def validar_entry_horario(self, text):
+        if text == '': 
+            return True
+
+        try:
+            if len(text) > 5:
+                return False
+
+            if len(text) == 1 and int(text[0]) >= 3:
+                return False
+
+            if len(text) == 2 and int(text[0:2]) >= 24:
+                return False
+
+            if len(text) == 3 and text[2] != ':':
+                return False
+
+            if len(text) == 4 and int(text[3]) >= 6:
+                return False
+
+            if len(text) == 5 and int(text[4]) >= 10:
+                return False
+
+        except ValueError:
+            return False
+        return True
+
+    def validar_tamanho(self, text):
+        if len(text) == 0:
+            return False
+    
+    def validar_tamanho_horario(self, text):
+
+        for i in text:
+            aux_i = i[0:2] + i[3:5]
+            if i == '':
+                print(i)
+                return True
+            if len(i) < 5:
+                return False
+            if i[2] != ':':
+                return False
+            if ':' in aux_i:
+                print(aux_i)
+                return False
+
+
+
+
+class app_consultas(validar_entrys):
     # Janela principal
     def __init__(self):
         self.jan_principal = jan_principal
@@ -219,8 +274,8 @@ class app_consultas(validar_entry):
 
         self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
         self.etiq_entry_usu_google = ttk.Label(self.frm_back, text='USUÁRIO GOOGLE:', background=verde1)
-        self.entry_usu_google.place(relx=0.715, rely=0.906, relheight=0.038, relwidth=0.28)
-        self.etiq_entry_usu_google.place(relx=0.715, rely=0.87)
+        self.entry_usu_google.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.28)
+        self.etiq_entry_usu_google.place(relx=0.715, rely=0.879)
 
     def arvore(self):
         # Definindo a árvore e suas colunas
@@ -382,25 +437,32 @@ class app_consultas(validar_entry):
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
         nome_query_salvar = self.entry_nome_query.get().strip()
-        horarios_query = [self.entry_horario1.get(), self.entry_horario2.get(), self.entry_horario3.get(), self.entry_horario4.get(), self.entry_horario5.get(),
+        horarios_query = sorted([self.entry_horario1.get(), self.entry_horario2.get(), self.entry_horario3.get(), self.entry_horario4.get(), self.entry_horario5.get(),
                 self.entry_horario6.get(), self.entry_horario7.get(), self.entry_horario8.get(), self.entry_horario9.get(), self.entry_horario10.get(), 
-                self.entry_horario11.get(), self.entry_horario12.get()]
+                self.entry_horario11.get(), self.entry_horario12.get()], key = lambda x: (x is '', x))
         nome_arquivo = self.entry_nome_arquivo.get().strip()
         caminho_salvar_query = self.entry_caminho_salvar.get()
         query_script = self.edicao_query.get('1.0', 'end-1c')
 
 
             
-        if nome_query_salvar == '':
-            messagebox.showinfo('NOME INVÁLIDO', 'O nome inserido é inválido. Os dados não foram salvos.')
+        if self.validar_tamanho(nome_query_salvar) is False:
+            messagebox.showerror('NOME INVÁLIDO', 'QUERY: O nome inserido para a query é inválido. \nOs dados não foram salvos.')
 
+        elif self.validar_tamanho(nome_arquivo) is False:
+            messagebox.showerror('NOME INVÁLIDO', 'NOME: o nome inserido para o arquivo é inválido. \nOs dados não foram salvos.')
+        
         elif os.path.isdir(caminho_salvar_query) is False:
-            messagebox.showerror('CAMINHO INVÁLIDO', 'O caminho inserido para salvamento não é válido.') 
+            messagebox.showerror('CAMINHO INVÁLIDO', 'LOCAL: O caminho inserido para salvamento não é válido. Os dados não foram salvos.')
+
+        elif self.validar_tamanho_horario(horarios_query) is False:
+            messagebox.showerror('HORÁRIO INVÁLIDO', 'HORÁRIO: O horário inserido não é válido. \nOs dados não foram salvos.')
+        
 
         else:
             dados_script = {
                     nome_query_salvar : {
-                    "horario": sorted(horarios_query, key = lambda x: (x is '', x)),
+                    "horario": horarios_query,
                     "nome": nome_arquivo,
                     "caminho_salvar": caminho_salvar_query,
                     "query": query_script
@@ -460,7 +522,7 @@ class app_consultas(validar_entry):
 
                 # Por fim, sobe os dados temporários, alterados ou não, para o JSON:
                 dados_temp_org = dict(sorted(dados_temp.items(), key=lambda x: x[0]))
-                print(dados_temp_org)
+
                 json.dump(dados_temp_org, jstemporario, ensure_ascii=False)
 
             shutil.move(jstemporario.name, caminho_json)
