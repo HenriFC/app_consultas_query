@@ -76,8 +76,6 @@ class validar_entrys():
                 print(aux_i)
                 return False
 
-
-
 class app_consultas(validar_entrys):
     # Janela principal
     def __init__(self):
@@ -236,50 +234,63 @@ class app_consultas(validar_entrys):
 
         self.entry_horario1 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario1.place(relx=0.80, rely=0.345, relheight=0.038, relwidth=0.04)
+        self.entry_horario1.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario1.bind('<KeyRelease>', self.completar_horario)
+
 
         self.entry_horario2 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario2.place(relx=0.85, rely=0.345, relheight=0.038, relwidth=0.04)
+        self.entry_horario2.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario2.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario3 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario3.place(relx=0.9, rely=0.345, relheight=0.038, relwidth=0.04)
+        self.entry_horario3.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario3.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario4 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario4.place(relx=0.95, rely=0.345, relheight=0.038, relwidth=0.04)
+        self.entry_horario4.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario4.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario5 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario5.place(relx=0.80, rely=0.40, relheight=0.038, relwidth=0.04)
+        self.entry_horario5.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario5.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario6 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario6.place(relx=0.85, rely=0.40, relheight=0.038, relwidth=0.04)
+        self.entry_horario6.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario6.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario7 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario7.place(relx=0.9, rely=0.40, relheight=0.038, relwidth=0.04)
+        self.entry_horario7.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario7.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario8 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario8.place(relx=0.95, rely=0.40, relheight=0.038, relwidth=0.04)
+        self.entry_horario8.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario8.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario9 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario9.place(relx=0.80, rely=0.455, relheight=0.038, relwidth=0.04)
+        self.entry_horario9.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario9.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario10 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario10.place(relx=0.85, rely=0.455, relheight=0.038, relwidth=0.04)
+        self.entry_horario10.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario10.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario11 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario11.place(relx=0.9, rely=0.455, relheight=0.038, relwidth=0.04)
+        self.entry_horario11.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario11.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_horario12 = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_horario)
         self.entry_horario12.place(relx=0.95, rely=0.455, relheight=0.038, relwidth=0.04)
+        self.entry_horario12.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario12.bind('<KeyRelease>', self.completar_horario)
 
         self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
@@ -287,16 +298,31 @@ class app_consultas(validar_entrys):
         self.entry_usu_google.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.28)
         self.etiq_entry_usu_google.place(relx=0.715, rely=0.879)
 
+    def completar_horario2(sef, event):
+        entry_x = event.widget
+        global xx
+        xx = entry_x.get()
+        print('xx: ', xx)
+
     def completar_horario(self, event):
         entry_molde =  event.widget
         texto_inserido = entry_molde.get()
-
+        aux_molde = event.char
+        aux_back = ''
         if event.keysym == 'BackSpace':
-            if len(texto_inserido) == 3 and texto_inserido.endswith(':'):
+            if texto_inserido.endswith(':'):
+                aux_back = 'x'
                 entry_molde.delete(len(texto_inserido)-1)
+            else:
+                aux_back = ''
             return
         if len(texto_inserido) == 2 and not texto_inserido.endswith(':'):
             entry_molde.insert(2, ':')
+            if len(xx) == 2 and aux_back == 'x':
+                entry_molde.insert(3, aux_molde)
+            if len(xx) == 2:
+                entry_molde.insert(3, aux_molde)
+        print('tex_in: ', texto_inserido)
 
     def arvore(self):
         # Definindo a árvore e suas colunas
