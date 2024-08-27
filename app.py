@@ -151,20 +151,21 @@ class app_consultas(validar_entrys):
         self.valid_nome = (self.jan_principal.register(self.validar_entry_nome), '%P')
 
     def tela_inicial(self):
-        larg_jan = 1000
-        altu_jan = 600
+
         larg_tela = self.jan_principal.winfo_screenwidth()
         altu_tela = self.jan_principal.winfo_screenheight()
+        print(larg_tela)
+        print(altu_tela)
         self.jan_principal.title('Agendador de consultas')
         self.jan_principal.config(bg=verde4, )
-        self.jan_principal.geometry('1000x600+0+0')
-        self.jan_principal.minsize(width='1000', height='600')
-        self.jan_principal.maxsize(width='1000', height='600')
+        self.jan_principal.geometry('1100x600+0+0')
+        self.jan_principal.minsize(width='1100', height='600')
+        self.jan_principal.maxsize(width=larg_tela, height=altu_tela)
 
     def frames_principais(self):
         # Frame fundo
-        self.frm_back = ttk.Frame(jan_principal, width=790, height=590, style='frm_back.TFrame')
-        self.frm_back.place(relx=0.006, rely=0.01, relheight=0.98, relwidth=0.988)
+        self.frm_back = ttk.Frame(jan_principal, style='frm_back.TFrame')
+        self.frm_back.place(relx=0.006, rely=0.01, relheight=0.98, relwidth=0.8)
 
         # Frame querys
         self.frm_querys = ttk.Frame(self.frm_back, relief='groove')
@@ -210,8 +211,8 @@ class app_consultas(validar_entrys):
         self.scroll_edicao_query = Scrollbar(self.frm_edicao, cursor='arrow')
         self.edicao_query.config(yscrollcommand=self.scroll_edicao_query.set, font=('consolas', 11))
         self.scroll_edicao_query.config(command=self.edicao_query.yview, cursor='arrow')
-        self.edicao_query.place(relx=0.001, rely=0.0022, relheight=0.99, relwidth=0.97)
-        self.scroll_edicao_query.place(relx=0.971, rely=0.01, relheight=0.97)    
+        self.edicao_query.place(relx=0.001, rely=0.0022, relheight=0.99, relwidth=0.98)
+        self.scroll_edicao_query.place(anchor='ne', relx=1, rely=0.005, relheight=0.988)    
 
     def campos_entry(self):
         self.entry_nome_query = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
@@ -329,19 +330,19 @@ class app_consultas(validar_entrys):
         self.arvore_scripts = ttk.Treeview(self.frm_querys, style='arvore_scripts.Treeview')
         self.arvore_scripts['columns'] = ('Query', 'Horário', 'Nome', 'Local para salvar')
         
-        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow', relief='groove')
+        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow')
         self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set, style='Treeview')
         self.scroll_arvore.config(command=self.arvore_scripts.yview)
         self.arvore_scripts.place(relx=0.001, rely=0.002, relheight=1, relwidth=0.999)
-        self.scroll_arvore.place(relx=0.975, rely=0.005, relheight=0.992)
+        self.scroll_arvore.place(anchor='ne', relx=1, rely=0.005, relheight=0.992)
 
         # Configurando as colunas
         # Primeiro temos a coluna mãe, que possui os controles de expansão e que receberá as demais colunas:
         self.arvore_scripts.column('#0', width=1)
         # Demais colunas:
         self.arvore_scripts.column('Query', width=150, minwidth=100)
-        self.arvore_scripts.column('Horário', width=70, minwidth=100)
-        self.arvore_scripts.column('Nome', width=150, minwidth=100)
+        self.arvore_scripts.column('Horário', width=70, minwidth=70)
+        self.arvore_scripts.column('Nome', width=120, minwidth=120)
         self.arvore_scripts.column('Local para salvar', width=450, minwidth=100)
 
         # Configurando os títulos
