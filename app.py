@@ -19,7 +19,7 @@ s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 
-caminho_json = 'database.json'
+caminho_db_json = 'database.json'
 global nome_antigo_query
 
 class validar_entrys():
@@ -66,14 +66,12 @@ class validar_entrys():
         for i in text:
             aux_i = i[0:2] + i[3:5]
             if i == '':
-                print(i)
                 return True
             if len(i) < 5:
                 return False    
             if i[2] != ':':
                 return False
             if ':' in aux_i:
-                print(aux_i)
                 return False
 
 class app_consultas(validar_entrys):
@@ -154,8 +152,6 @@ class app_consultas(validar_entrys):
 
         larg_tela = self.jan_principal.winfo_screenwidth()
         altu_tela = self.jan_principal.winfo_screenheight()
-        print(larg_tela)
-        print(altu_tela)
         self.jan_principal.title('Agendador de consultas')
         self.jan_principal.config(bg=verde4, )
         self.jan_principal.geometry('1100x600+0+0')
@@ -303,7 +299,6 @@ class app_consultas(validar_entrys):
         entry_x = event.widget
         global xx
         xx = entry_x.get()
-        print('xx: ', xx)
 
     def completar_horario(self, event):
         entry_molde =  event.widget
@@ -323,7 +318,6 @@ class app_consultas(validar_entrys):
                 entry_molde.insert(3, aux_molde)
             if len(xx) == 2:
                 entry_molde.insert(3, aux_molde)
-        print('tex_in: ', texto_inserido)
 
     def arvore(self):
         # Definindo a árvore e suas colunas
@@ -363,7 +357,7 @@ class app_consultas(validar_entrys):
         for i in self.arvore_scripts.get_children():
             self.arvore_scripts.delete(i)
         try:
-            with open(caminho_json, 'r', encoding='utf8') as js:
+            with open(caminho_db_json, 'r', encoding='utf8') as js:
                 dados_exibir_arvore = json.load(js)
                 count_pai = 0
                 tag = 'x1'
@@ -393,7 +387,7 @@ class app_consultas(validar_entrys):
         # inputar dados nas entrys
         linha_selec = self.arvore_scripts.selection()[0]
         dados_selec = self.arvore_scripts.item(linha_selec, "values")
-        with open(caminho_json, 'r', encoding='utf-8') as js_sel:
+        with open(caminho_db_json, 'r', encoding='utf-8') as js_sel:
             dados_finais = json.load(js_sel)
             name_qry = dados_selec[0].strip()
             horarios = dados_finais[name_qry.strip()]['horario']
@@ -418,15 +412,22 @@ class app_consultas(validar_entrys):
         self.entry_horario11.insert(0, horarios[10])
         self.entry_horario12.insert(0, horarios[11])
         self.desablitar_campos()
-        self.botao_editar_query['state'] = 'normal'
-        self.botao_excluir_query['state'] = 'normal'
-        self.botao_nova_query['state'] = 'normal'
-        self.botao_limpar_campos['state'] = 'disabled'
-        self.botao_save['state'] = 'disabled'
+        estado_botao_stop = str(self.botao_stop['state'])
+        estado_botao_start = str(self.botao_start['state'])
+        if estado_botao_stop == 'normal':
+            pass
+        elif estado_botao_start == 'normal':
+            self.botao_start['state'] = 'normal'
+            self.botao_editar_query['state'] = 'normal'
+            self.botao_excluir_query['state'] = 'normal'
+            self.botao_nova_query['state'] = 'normal'
+            self.botao_limpar_campos['state'] = 'disabled'
+            self.botao_save['state'] = 'disabled'
 
     def acao_botao_nova_query(self):
         global nome_antigo_query
         nome_antigo_query = ''
+        self.botao_start['state'] = 'disabled'
         self.botao_editar_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
         self.botao_nova_query['state'] = 'disabled'
@@ -442,6 +443,7 @@ class app_consultas(validar_entrys):
     def acao_botao_editar(self):
         global nome_antigo_query
         nome_antigo_query = self.entry_nome_query.get().strip()
+        self.botao_start['state'] = 'disabled'
         self.botao_nova_query['state'] = 'disabled'
         self.botao_excluir_query['state'] = 'disabled'
         self.botao_editar_query['state'] = 'disabled'
@@ -453,34 +455,45 @@ class app_consultas(validar_entrys):
     def acao_botao_excluir(self):
         nome_antigo_query = self.entry_nome_query.get().strip()
         if messagebox.askyesno('Excluir', f'Deseja excluir a query "{nome_antigo_query}"'):
-            with open(caminho_json, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
+            with open(caminho_db_json, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
                 dados_temp2 = json.load(arquivojs2)
-                print(dados_temp2[nome_antigo_query])
                 dados_temp2.pop(nome_antigo_query)
                 json.dump(dados_temp2, jstemporario2, ensure_ascii=False)
-            shutil.move(jstemporario2.name, caminho_json)
+            shutil.move(jstemporario2.name, caminho_db_json)
             self.habilitar_campos()
             self.limpar_campos()
             self.desablitar_campos()
             self.exibir_arvore()
 
     def acao_botao_start(self):
-        self.habilitar_campos()
-        self.limpar_campos()
-        self.desablitar_campos()
-        self.botao_nova_query['state'] = 'disabled'
-        self.botao_excluir_query['state'] = 'disabled'
-        self.botao_editar_query['state'] = 'disabled'
-        self.botao_limpar_campos['state'] = 'disabled'
-        self.botao_save['state'] = 'disabled'
-        self.lbl_status_programa.config(text='O programa está executando', background=verde0)
-        self.botao_start.place_forget()
-        self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+        try:
+            with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
+                validar_base = json.load(temp_verif)
+                if validar_base == {}:
+                    messagebox.showerror('ERRO', 'Não existem tarefas a serem executadas!')
+                else:
+                    self.habilitar_campos()
+                    self.limpar_campos()
+                    self.desablitar_campos()
+                    self.botao_nova_query['state'] = 'disabled'
+                    self.botao_excluir_query['state'] = 'disabled'
+                    self.botao_editar_query['state'] = 'disabled'
+                    self.botao_limpar_campos['state'] = 'disabled'
+                    self.botao_save['state'] = 'disabled'
+                    self.lbl_status_programa.config(text='O programa está executando', background=verde0)
+                    self.botao_start['state'] = 'disabled'
+                    self.botao_start.place_forget()
+                    self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+                    self.botao_stop['state'] = 'normal'
+        except:
+            messagebox.showerror('ERRO', 'Base de dados não encontrada')
         
     def acao_botao_stop(self):
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
+        self.botao_stop['state'] = 'disabled'
         self.botao_stop.place_forget()
         self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+        self.botao_start['state'] = 'normal'
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
@@ -501,7 +514,7 @@ class app_consultas(validar_entrys):
             messagebox.showerror('NOME INVÁLIDO', 'NOME: o nome inserido para o arquivo é inválido. \nOs dados não foram salvos.')
         
         elif os.path.isdir(caminho_salvar_query) is False:
-            messagebox.showerror('CAMINHO INVÁLIDO', 'LOCAL: O caminho inserido para salvamento não é válido. Os dados não foram salvos.')
+            messagebox.showerror('CAMINHO INVÁLIDO', 'LOCAL: O caminho inserido para salvamento não é válido. \nOs dados não foram salvos.')
 
         elif self.validar_tamanho_horario(horarios_query) is False:
             messagebox.showerror('HORÁRIO INVÁLIDO', 'HORÁRIO: O horário inserido não é válido. \nOs dados não foram salvos.')
@@ -519,7 +532,7 @@ class app_consultas(validar_entrys):
 
             # Gambiarra alert: utilizaremos um arquivo temporário para que as modificações não ocorram diretamente no JSON.
             #   Abriremos o arquivo JSON 
-            with open(caminho_json, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario:
+            with open(caminho_db_json, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario:
                 # Traremos os dados para uma variável:
                 try:
                     dados_temp = json.load(arquivojs)
@@ -529,7 +542,6 @@ class app_consultas(validar_entrys):
 
                 for x in dados_temp:
                     validar_nome_existe.append(str(x).upper())
-                    lista_rotina = '' 
 
                 if nome_antigo_query == '':
                     if nome_query_salvar.upper() in validar_nome_existe:
@@ -574,9 +586,9 @@ class app_consultas(validar_entrys):
 
                 json.dump(dados_temp_org, jstemporario, ensure_ascii=False)
 
-            shutil.move(jstemporario.name, caminho_json)
+            shutil.move(jstemporario.name, caminho_db_json)
 
-
+            self.botao_start['state'] = 'normal'
             self.exibir_arvore()
     
 
