@@ -7,7 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 from autoedge import iniciar_edge
-from processoprincipal import obter_cronograma
+from processoprincipal import obter_cronograma_status
 from coreslayout import *
 
 
@@ -485,7 +485,7 @@ class app_consultas(validar_entrys):
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
-                    obter_cronograma()
+                    obter_cronograma_status()
 
         except:
             messagebox.showerror('ERRO', 'Base de dados não encontrada')

@@ -1,21 +1,59 @@
 import json
 import shutil
 import tempfile
+from datetime import date
 
 caminho_db_json2 = 'database.json'
+caminho_hist_crono = 'database_cronograma.json'
 
 # Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão 
-def obter_cronograma():
+def obter_cronograma_status():
+    data_atual = (date.today()).strftime('%d.%m.%Y')
+    print(data_atual)
     aux_indice_horario = 0
-    lista_cronograma = ''
-    with open(caminho_db_json2, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as crono_temp:
+    aux_indice_base = 0
+    id = ''
+    ativ = ''
+    arq = ''
+    hor_ini = ''
+    hor_fim = ''
+    stat = ''
+    obs = ''
+
+    try:
+        crono_temp = json.load(caminho_hist_crono)
+    except:
+        crono_temp = {}
+
+
+    registro_crono = {}
+    lista_cronograma = []
+    with open(caminho_db_json2, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
         extracao = json.load(arquivojs)
         for x in extracao.items():
             while aux_indice_horario <= 11:
                 if x[1]['horario'][aux_indice_horario] == '':
                     break
-                print('ATIVIDADE: ', x[0],'horário: ', x[1]['horario'][aux_indice_horario])
+                id = f"{data_atual}.{x[1]['horario'][aux_indice_horario][:2]}.{x[1]['horario'][aux_indice_horario][3:5]}.{x[0]}"
+                ativ = x[0]
+                hor_ini = x[1]['horario'][aux_indice_horario]
+                hor_fim = "__:__"
+                arq = x[1]['nome']
+                stat = ""
+                obs = ""
+                registro_crono = {stat : {
+                    "ID": id,
+                    "ATIVIDADE": ativ,
+                    "HORA INICIO": hor_ini,
+                    "HORA FIM": hor_fim,
+                    "NOME ARQUIVO": arq,
+                    "STATUS": stat,
+                    "OBSERVAÇÃO": obs}}
+                print(registro_crono)
                 aux_indice_horario += 1
             aux_indice_horario = 0
+            aux_indice_base += 1
+
         print('****************************************')
 
+obter_cronograma_status()     
