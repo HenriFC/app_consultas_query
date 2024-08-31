@@ -21,6 +21,7 @@ s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 
 caminho_db_json = 'database.json'
+caminho_hist_crono = 'database_cronograma.json'
 global nome_antigo_query
 
 class validar_entrys():
@@ -89,7 +90,7 @@ class app_consultas(validar_entrys):
         self.arvore()
         self.exibir_arvore()
         self.desablitar_campos()
-        jan_principal.mainloop()
+        jan_principal.mainloop()        
 
     def limpar_campos(self):
         self.entry_nome_arquivo.delete(0, 'end')
@@ -592,10 +593,6 @@ class app_consultas(validar_entrys):
 
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
-    
-
-
-
 
 
 app_consultas()

@@ -6,66 +6,56 @@ from datetime import date
 caminho_db_json2 = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'
 
-# Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão 
+# Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão, ou foram executados
 def obter_cronograma_status():
-    data_atual = (date.today()).strftime('%d.%m.%Y')
-    print(data_atual)
+    data_atual = date.today().strftime('%d.%m.%Y')
     aux_indice_horario = 0
-    aux_indice_base = 0
-    id = ''
-    ativ = ''
-    arq = ''
-    hor_ini = ''
-    hor_fim = ''
-    stat = ''
-    obs = ''
 
+    # Carregar o cronograma existente ou iniciar um novo
     try:
-        crono_temp = json.load(caminho_hist_crono)
-    except:
-        crono_temp = {}
+        with open(caminho_hist_crono, 'r', encoding='utf-8') as crono_file:
+            crono_temp = json.load(crono_file)
+    except FileNotFoundError:
+        crono_temp = []
 
-    
-    registro_crono = {}
-    with open(caminho_db_json2, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+    with open(caminho_db_json2, 'r', encoding='utf-8') as arquivojs:
         extracao = json.load(arquivojs)
-        validar = {}
-        for x in extracao.items():
+        novos_registros = []
+
+        for key, value in extracao.items():
             while aux_indice_horario <= 11:
-                if x[1]['horario'][aux_indice_horario] == '':
+                horario = value['horario'][aux_indice_horario]
+                if horario == '':
                     break
-                id = f"{data_atual}.{x[1]['horario'][aux_indice_horario][:2]}.{x[1]['horario'][aux_indice_horario][3:5]}.{x[0]}"
-                ativ = x[0]
-                hor_ini = x[1]['horario'][aux_indice_horario]
-                hor_fim = "__:__"
-                arq = x[1]['nome']
-                stat = "Pendente"
-                obs = "-"
-                registro_crono = {                    
+
+                # Criar ID único baseado na data e horário
+                id = f"{data_atual}.{horario[:2]}.{horario[3:5]}.{key}"
+                registro_crono = {
                     "ID": id,
-                    "ATIVIDADE": ativ,
-                    "HORA INICIO": hor_ini,
-                    "HORA FIM": hor_fim,
-                    "NOME ARQUIVO": arq,
-                    "STATUS": stat,
-                    "OBSERVAÇÃO": obs
-                    }
+                    "ATIVIDADE": key,
+                    "HORA INICIO": horario,
+                    "HORA FIM": "__:__",
+                    "NOME ARQUIVO": value['nome'],
+                    "STATUS": "Pendente",
+                    "OBSERVAÇÃO": "-"
+                }
 
-                if registro_crono['ID'] in crono_temp:
-                    pass
+                # Verificar se o registro já existe no cronograma
+                if any(item['ID'] == id for item in crono_temp):
+                    pass  # Já registrado, não precisa adicionar
                 else:
-                    validar.update(registro_crono)
+                    novos_registros.append(registro_crono)
 
-                
-
-            
                 aux_indice_horario += 1
-            print(validar)
-            print('ASASASAASS')
+
             aux_indice_horario = 0
-            aux_indice_base += 1
+
+    # Adicionar novos registros ao cronograma
+    crono_temp.extend(novos_registros)
+
+    # Salvar o cronograma atualizado
+    with tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+        json.dump(crono_temp, file_temp, indent=4, ensure_ascii=False)
+        shutil.move(file_temp.name, caminho_hist_crono)
 
 
-        print('****************************************')
-
-obter_cronograma_status()     
