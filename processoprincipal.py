@@ -25,11 +25,11 @@ def obter_cronograma_status():
     except:
         crono_temp = {}
 
-
+    
     registro_crono = {}
-    lista_cronograma = []
     with open(caminho_db_json2, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
         extracao = json.load(arquivojs)
+        validar = {}
         for x in extracao.items():
             while aux_indice_horario <= 11:
                 if x[1]['horario'][aux_indice_horario] == '':
@@ -39,20 +39,32 @@ def obter_cronograma_status():
                 hor_ini = x[1]['horario'][aux_indice_horario]
                 hor_fim = "__:__"
                 arq = x[1]['nome']
-                stat = ""
-                obs = ""
-                registro_crono = {stat : {
+                stat = "Pendente"
+                obs = "-"
+                registro_crono = {                    
                     "ID": id,
                     "ATIVIDADE": ativ,
                     "HORA INICIO": hor_ini,
                     "HORA FIM": hor_fim,
                     "NOME ARQUIVO": arq,
                     "STATUS": stat,
-                    "OBSERVAÇÃO": obs}}
-                print(registro_crono)
+                    "OBSERVAÇÃO": obs
+                    }
+
+                if registro_crono['ID'] in crono_temp:
+                    pass
+                else:
+                    validar.update(registro_crono)
+
+                
+
+            
                 aux_indice_horario += 1
+            print(validar)
+            print('ASASASAASS')
             aux_indice_horario = 0
             aux_indice_base += 1
+
 
         print('****************************************')
 
