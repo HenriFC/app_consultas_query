@@ -13,7 +13,7 @@ def obter_cronograma_status():
 
     # Carregar o cronograma existente ou iniciar um novo
     try:
-        with open(caminho_hist_crono, 'r', encoding='utf-8') as crono_file:
+        with open(caminho_hist_crono, 'r', encoding='utf-8') as crono_file, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
             crono_temp = json.load(crono_file)
     except FileNotFoundError:
         crono_temp = []
@@ -50,12 +50,12 @@ def obter_cronograma_status():
 
             aux_indice_horario = 0
 
-    # Adicionar novos registros ao cronograma
-    crono_temp.extend(novos_registros)
-
-    # Salvar o cronograma atualizado
-    with tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+        # Adicionar novos registros ao cronograma
+        crono_temp.extend(novos_registros)
         json.dump(crono_temp, file_temp, indent=4, ensure_ascii=False)
         shutil.move(file_temp.name, caminho_hist_crono)
 
+    # Salvar o cronograma atualizado
 
+
+obter_cronograma_status()

@@ -22,6 +22,7 @@ s.configure('frm_back.TFrame', background=verde1)
 
 caminho_db_json = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'
+estado_program = 'Parado'
 global nome_antigo_query
 
 class validar_entrys():
@@ -414,11 +415,15 @@ class app_consultas(validar_entrys):
         self.entry_horario11.insert(0, horarios[10])
         self.entry_horario12.insert(0, horarios[11])
         self.desablitar_campos()
-        estado_botao_stop = str(self.botao_stop['state'])
-        estado_botao_start = str(self.botao_start['state'])
-        if estado_botao_stop == 'normal':
-            pass
-        if estado_botao_start == 'normal':
+        if estado_program == 'Executando':
+            #self.botao_start['state'] = 'normal'
+            self.botao_editar_query['state'] = 'disabled'
+            self.botao_excluir_query['state'] = 'disabled'
+            self.botao_nova_query['state'] = 'disabled'
+            self.botao_limpar_campos['state'] = 'disabled'
+            self.botao_save['state'] = 'disabled'
+        elif estado_program == 'Parado':
+            self.botao_start['state'] = 'normal'
             self.botao_editar_query['state'] = 'normal'
             self.botao_excluir_query['state'] = 'normal'
             self.botao_nova_query['state'] = 'normal'
@@ -428,18 +433,21 @@ class app_consultas(validar_entrys):
     def acao_botao_nova_query(self):
         global nome_antigo_query
         nome_antigo_query = ''
-        self.botao_start['state'] = 'disabled'
-        self.botao_editar_query['state'] = 'disabled'
-        self.botao_excluir_query['state'] = 'disabled'
-        self.botao_nova_query['state'] = 'disabled'
-        self.botao_limpar_campos['state'] = 'normal'
-        self.botao_save['state'] = 'normal'
-        try:
-            self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
-        except:
+        if estado_program == 'Executando':
             pass
-        self.habilitar_campos()
-        self.limpar_campos()
+        else:
+            self.botao_start['state'] = 'disabled'
+            self.botao_editar_query['state'] = 'disabled'
+            self.botao_excluir_query['state'] = 'disabled'
+            self.botao_nova_query['state'] = 'disabled'
+            self.botao_limpar_campos['state'] = 'normal'
+            self.botao_save['state'] = 'normal'
+            try:
+                self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
+            except:
+                pass
+            self.habilitar_campos()
+            self.limpar_campos()
 
     def acao_botao_editar(self):
         global nome_antigo_query
@@ -465,8 +473,12 @@ class app_consultas(validar_entrys):
             self.limpar_campos()
             self.desablitar_campos()
             self.exibir_arvore()
+            self.botao_editar_query['state'] = 'disabled'
+            self.botao_excluir_query['state'] = 'disabled'
 
     def acao_botao_start(self):
+        global estado_program
+        estado_program = 'Executando'
         try:
             with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
                 validar_base = json.load(temp_verif)
@@ -486,17 +498,22 @@ class app_consultas(validar_entrys):
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
-                    obter_cronograma_status()
+                    ()
 
         except:
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
         
     def acao_botao_stop(self):
+        global estado_program
+        estado_program = 'Parado'
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop['state'] = 'disabled'
         self.botao_stop.place_forget()
         self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
         self.botao_start['state'] = 'normal'
+        self.botao_nova_query['state'] = 'normal'
+        self.botao_editar_query['state'] = 'normal'
+        self.botao_excluir_query['state'] = 'normal'
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
