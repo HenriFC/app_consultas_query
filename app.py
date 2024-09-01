@@ -604,7 +604,7 @@ class app_consultas(validar_entrys):
                 # Por fim, sobe os dados temporários, alterados ou não, para o JSON:
                 dados_temp_org = dict(sorted(dados_temp.items(), key=lambda x: x[0]))
 
-                json.dump(dados_temp_org, jstemporario, ensure_ascii=False)
+                json.dump(dados_temp_org, jstemporario,indent=4, ensure_ascii=False)
 
             shutil.move(jstemporario.name, caminho_db_json)
 
