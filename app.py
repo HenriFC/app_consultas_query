@@ -7,7 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 from autoedge import iniciar_edge
-from processoprincipal import obter_cronograma_status
+from cronograma_geral import obter_cronograma_status
 from coreslayout import *
 
 
@@ -354,7 +354,6 @@ class app_consultas(validar_entrys):
         self.arvore_scripts.tag_configure('x2', background='white')
         self.arvore_scripts.bind('<ButtonRelease-1>', self.selecionar_item_arvore)
 
-        # Imputando dados
 
     def exibir_arvore(self):
         for i in self.arvore_scripts.get_children():
