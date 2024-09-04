@@ -8,7 +8,8 @@ from tkinter import messagebox
 
 from autoedge import iniciar_edge
 from cronograma_geral import obter_cronograma_status
-from janela_monitor import monitor_tarefas
+from janela_monitor import MonitorTarefas
+from state_exec import estado_programa
 from coreslayout import *
 
 
@@ -20,13 +21,14 @@ s.map('TButton', background=[('active', azul_claro), ('disabled', 'light grey')]
 s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
+s.configure('frm_pass.TFrame', background=verde1)
 
 caminho_db_json = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'
-estado_program = 'Parado'
+
 global nome_antigo_query
 
-class validar_entrys():
+class ValidarEntrys():
 
     def validar_entry_nome(self, text):
         if len(text) <= 27:
@@ -78,7 +80,7 @@ class validar_entrys():
             if ':' in aux_i:
                 return False
 
-class app_consultas(validar_entrys):
+class AppConsultas(ValidarEntrys, MonitorTarefas):
     # Janela principal
     def __init__(self):
         self.jan_principal = jan_principal
@@ -157,9 +159,9 @@ class app_consultas(validar_entrys):
         larg_tela = self.jan_principal.winfo_screenwidth()
         altu_tela = self.jan_principal.winfo_screenheight()
         self.jan_principal.title('Agendador de consultas')
-        self.jan_principal.config(bg=verde4, )
+        self.jan_principal.config(bg=verde4)
         self.jan_principal.geometry('1100x600+0+0')
-        self.jan_principal.minsize(width='1100', height='600')
+        self.jan_principal.minsize(width='900', height='600')
         self.jan_principal.maxsize(width='1100', height='600')
 
     def frames_principais(self):
@@ -203,7 +205,7 @@ class app_consultas(validar_entrys):
         self.botao_save = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar)
         self.botao_save.place(relx=0.73, rely=0.46, relheight=0.045, relwidth=0.25)
 
-        self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=monitor_tarefas)
+        self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=MonitorTarefas)
         self.botao_exibir_monitor.place(relx=0.73, rely=0.60, relheight=0.060, relwidth=0.25)
 
     def label_status(self):
@@ -418,14 +420,14 @@ class app_consultas(validar_entrys):
         self.entry_horario11.insert(0, horarios[10])
         self.entry_horario12.insert(0, horarios[11])
         self.desablitar_campos()
-        if estado_program == 'Executando':
+        if estado_programa == 'Executando':
             #self.botao_start['state'] = 'normal'
             self.botao_editar_query['state'] = 'disabled'
             self.botao_excluir_query['state'] = 'disabled'
             self.botao_nova_query['state'] = 'disabled'
             self.botao_limpar_campos['state'] = 'disabled'
             self.botao_save['state'] = 'disabled'
-        elif estado_program == 'Parado':
+        elif estado_programa == 'Parado':
             self.botao_start['state'] = 'normal'
             self.botao_editar_query['state'] = 'normal'
             self.botao_excluir_query['state'] = 'normal'
@@ -436,7 +438,7 @@ class app_consultas(validar_entrys):
     def acao_botao_nova_query(self):
         global nome_antigo_query
         nome_antigo_query = ''
-        if estado_program == 'Executando':
+        if estado_programa == 'Executando':
             pass
         else:
             self.botao_start['state'] = 'disabled'
@@ -481,14 +483,14 @@ class app_consultas(validar_entrys):
             obter_cronograma_status()
 
     def acao_botao_start(self):
-        global estado_program
-        estado_program = 'Executando'
+        
         try:
             with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
                 validar_base = json.load(temp_verif)
                 if validar_base == {}:
                     messagebox.showerror('ERRO', 'Não existem tarefas a serem executadas!')
                 else:
+                    estado_programa.define_status('Executando')
                     self.habilitar_campos()
                     self.limpar_campos()
                     self.desablitar_campos()
@@ -502,14 +504,15 @@ class app_consultas(validar_entrys):
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
-                    ()
+                    print(estado_programa.obtem_status())
+
 
         except:
+            raise
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
         
     def acao_botao_stop(self):
-        global estado_program
-        estado_program = 'Parado'
+        estado_programa.define_status('Parado')
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
         self.botao_stop['state'] = 'disabled'
         self.botao_stop.place_forget()
@@ -616,5 +619,8 @@ class app_consultas(validar_entrys):
             self.exibir_arvore()
             obter_cronograma_status()
 
+
+        
+
 if __name__ == '__main__':
-    app_consultas()
+    AppConsultas()
