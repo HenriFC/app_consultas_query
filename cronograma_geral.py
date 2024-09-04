@@ -2,8 +2,7 @@ import json
 import shutil
 import tempfile
 from datetime import date, datetime, timedelta
-
-caminho_db_json2 = 'database.json'
+caminho_db_json = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'
 
 # Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão, ou foram executados
@@ -21,7 +20,7 @@ def obter_cronograma_status():
     except FileNotFoundError:
         crono_temp = []
 
-    with open(caminho_db_json2, 'r', encoding='utf-8') as base_dados, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+    with open(caminho_db_json, 'r', encoding='utf-8') as base_dados, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
         extracao = json.load(base_dados)
         novos_registros = []
 
@@ -66,4 +65,4 @@ def obter_cronograma_status():
     # Salvar o cronograma atualizado
 
 
-obter_cronograma_status()
+

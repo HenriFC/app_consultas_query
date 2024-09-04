@@ -1,1 +1,59 @@
-{"Query 01 teste": {"horario": ["08:25", "09:45", "10:54", "11:09", "16:00", "", "", "", "", "", "", ""], "nome": "Nome 01 teste", "caminho_salvar": "C:\\\\", "query": "Query X "}, "Query 02 teste": {"horario": ["09:28", "11:05", "21:45", "22:00", "", "", "", "", "", "", "", ""], "nome": "Nome 02 teste", "caminho_salvar": "C:\\\\", "query": "Query W"}}
+{
+    "Teste01": {
+        "horario": [
+            "03:30",
+            "11:02",
+            "22:57",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "01T.csv",
+        "caminho_salvar": "C:\\\\",
+        "query": "Query X"
+    },
+    "Teste02": {
+        "horario": [
+            "00:00",
+            "03:33",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "02T.csv",
+        "caminho_salvar": "C:\\",
+        "query": "Query Y"
+    },
+    "Teste03": {
+        "horario": [
+            "01:08",
+            "15:00",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "03T.csv",
+        "caminho_salvar": "C:\\\\",
+        "query": "Query Z"
+    }
+}
