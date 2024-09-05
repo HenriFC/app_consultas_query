@@ -2,7 +2,7 @@ import os
 import json
 import shutil
 import tempfile
-from tkinter import Tk, PhotoImage, Scrollbar, Text
+from tkinter import Tk, PhotoImage, Scrollbar, Text, Toplevel
 from tkinter import ttk
 from tkinter import messagebox
 
@@ -205,11 +205,11 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_save = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar)
         self.botao_save.place(relx=0.73, rely=0.46, relheight=0.045, relwidth=0.25)
 
-        self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=MonitorTarefas)
+        self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=self.acao_botao_monitor)
         self.botao_exibir_monitor.place(relx=0.73, rely=0.60, relheight=0.060, relwidth=0.25)
 
     def label_status(self):
-        self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, borderwidth=1, relief='groove', anchor='center')
+        self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, foreground='white', font=('Calibri bold', 11), borderwidth=1, relief='groove', anchor='center')
         self.lbl_status_programa.place(relx=0.73, rely=0.80, relheight=0.05, relwidth=0.25)
 
     def campo_edicao_query(self):
@@ -499,7 +499,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     self.botao_editar_query['state'] = 'disabled'
                     self.botao_limpar_campos['state'] = 'disabled'
                     self.botao_save['state'] = 'disabled'
-                    self.lbl_status_programa.config(text='O programa está executando', background=verde0)
+                    self.lbl_status_programa.config(text='O programa está executando', background=verde_status, foreground='white')
                     self.botao_start['state'] = 'disabled'
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
@@ -513,7 +513,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         
     def acao_botao_stop(self):
         estado_programa.define_status('Parado')
-        self.lbl_status_programa.config(text='O programa está parado', background=vermelho0)
+        self.lbl_status_programa.config(text='O programa está parado', background=vermelho0, foreground='white')
         self.botao_stop['state'] = 'disabled'
         self.botao_stop.place_forget()
         self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
@@ -619,8 +619,11 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.exibir_arvore()
             obter_cronograma_status()
 
-
-        
+    def acao_botao_monitor(self):
+        if not any(isinstance(x, Toplevel) for x in jan_principal.winfo_children()):
+            MonitorTarefas()
+        else:
+            pass
 
 if __name__ == '__main__':
     AppConsultas()
