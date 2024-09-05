@@ -9,7 +9,7 @@ from tkinter import messagebox
 from autoedge import iniciar_edge
 from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
-from state_exec import estado_programa
+from state_exec import estado_programa, estado_database
 from coreslayout import *
 
 
@@ -393,52 +393,55 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         
 
         # inputar dados nas entrys
-        linha_selec = self.arvore_scripts.selection()[0]
-        dados_selec = self.arvore_scripts.item(linha_selec, "values")
-        with open(caminho_db_json, 'r', encoding='utf-8') as js_sel:
-            dados_finais = json.load(js_sel)
-            name_qry = dados_selec[0].strip()
-            horarios = dados_finais[name_qry.strip()]['horario']
-            name_arq = dados_finais[name_qry.strip()]['nome']
-            loc_salvar = dados_finais[name_qry.strip()]['caminho_salvar']
-            queryx = dados_finais[name_qry.strip()]['query']
+        try:
+            linha_selec = self.arvore_scripts.selection()[0]
+            dados_selec = self.arvore_scripts.item(linha_selec, "values")
+            with open(caminho_db_json, 'r', encoding='utf-8') as js_sel:
+                dados_finais = json.load(js_sel)
+                name_qry = dados_selec[0].strip()
+                horarios = dados_finais[name_qry.strip()]['horario']
+                name_arq = dados_finais[name_qry.strip()]['nome']
+                loc_salvar = dados_finais[name_qry.strip()]['caminho_salvar']
+                queryx = dados_finais[name_qry.strip()]['query']
 
-        self.entry_nome_query.insert(0, name_qry)        
-        self.entry_nome_arquivo.insert(0, name_arq)        
-        self.entry_caminho_salvar.insert(0, loc_salvar)        
-        self.edicao_query.insert(1.0, queryx)
-        self.entry_horario1.insert(0, horarios[0])
-        self.entry_horario2.insert(0, horarios[1])
-        self.entry_horario3.insert(0, horarios[2])
-        self.entry_horario4.insert(0, horarios[3])
-        self.entry_horario5.insert(0, horarios[4])
-        self.entry_horario6.insert(0, horarios[5])
-        self.entry_horario7.insert(0, horarios[6])
-        self.entry_horario8.insert(0, horarios[7])
-        self.entry_horario9.insert(0, horarios[8])
-        self.entry_horario10.insert(0, horarios[9])
-        self.entry_horario11.insert(0, horarios[10])
-        self.entry_horario12.insert(0, horarios[11])
-        self.desablitar_campos()
-        if estado_programa == 'Executando':
-            #self.botao_start['state'] = 'normal'
-            self.botao_editar_query['state'] = 'disabled'
-            self.botao_excluir_query['state'] = 'disabled'
-            self.botao_nova_query['state'] = 'disabled'
-            self.botao_limpar_campos['state'] = 'disabled'
-            self.botao_save['state'] = 'disabled'
-        elif estado_programa == 'Parado':
-            self.botao_start['state'] = 'normal'
-            self.botao_editar_query['state'] = 'normal'
-            self.botao_excluir_query['state'] = 'normal'
-            self.botao_nova_query['state'] = 'normal'
-            self.botao_limpar_campos['state'] = 'disabled'
-            self.botao_save['state'] = 'disabled'
-
+            self.entry_nome_query.insert(0, name_qry)        
+            self.entry_nome_arquivo.insert(0, name_arq)        
+            self.entry_caminho_salvar.insert(0, loc_salvar)        
+            self.edicao_query.insert(1.0, queryx)
+            self.entry_horario1.insert(0, horarios[0])
+            self.entry_horario2.insert(0, horarios[1])
+            self.entry_horario3.insert(0, horarios[2])
+            self.entry_horario4.insert(0, horarios[3])
+            self.entry_horario5.insert(0, horarios[4])
+            self.entry_horario6.insert(0, horarios[5])
+            self.entry_horario7.insert(0, horarios[6])
+            self.entry_horario8.insert(0, horarios[7])
+            self.entry_horario9.insert(0, horarios[8])
+            self.entry_horario10.insert(0, horarios[9])
+            self.entry_horario11.insert(0, horarios[10])
+            self.entry_horario12.insert(0, horarios[11])
+            self.desablitar_campos()
+            if estado_programa.obtem_status() == 'Executando':
+                #self.botao_start['state'] = 'normal'
+                self.botao_editar_query['state'] = 'disabled'
+                self.botao_excluir_query['state'] = 'disabled'
+                self.botao_nova_query['state'] = 'disabled'
+                self.botao_limpar_campos['state'] = 'disabled'
+                self.botao_save['state'] = 'disabled'
+            elif estado_programa.obtem_status() in ['Parado', 'Inicio']:
+                self.botao_start['state'] = 'normal'
+                self.botao_editar_query['state'] = 'normal'
+                self.botao_excluir_query['state'] = 'normal'
+                self.botao_nova_query['state'] = 'normal'
+                self.botao_limpar_campos['state'] = 'disabled'
+                self.botao_save['state'] = 'disabled'
+        except IndexError:
+            pass
+        
     def acao_botao_nova_query(self):
         global nome_antigo_query
         nome_antigo_query = ''
-        if estado_programa == 'Executando':
+        if estado_programa.obtem_status() == 'Executando':
             pass
         else:
             self.botao_start['state'] = 'disabled'

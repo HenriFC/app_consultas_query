@@ -2,6 +2,7 @@ import json
 import shutil
 import tempfile
 from datetime import date, datetime, timedelta
+from state_exec import estado_database
 caminho_db_json = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'
 
@@ -30,7 +31,7 @@ def obter_cronograma_status():
                 horario = value["horario"][aux_indice_horario]
                 if horario == '':
                     break
-                horario_validador = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M')
+                horario_validador = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M:%S')
                 if horario_validador < datetime.now():
                     horario_validador += timedelta(days=1)
                     data_atual = horario_validador.strftime('%d.%m.%Y')
@@ -42,6 +43,7 @@ def obter_cronograma_status():
                     "ATIVIDADE": key,
                     "HORA_INICIO": horario,
                     "HORA_FIM": "__:__",
+                    "TEMPO EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],
                     "STATUS": "Pendente",
                     "OBSERVAÇÃO": "-"
@@ -61,6 +63,7 @@ def obter_cronograma_status():
         crono_temp.extend(novos_registros)
         json.dump(crono_temp, file_temp, indent=4, ensure_ascii=False)
     shutil.move(file_temp.name, caminho_hist_crono)
+    estado_database.define_status_database('Modificada')
 
     # Salvar o cronograma atualizado
 
