@@ -31,7 +31,7 @@ def obter_cronograma_status():
                 horario = value["horario"][aux_indice_horario]
                 if horario == '':
                     break
-                horario_validador = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M:%S')
+                horario_validador = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M')
                 if horario_validador < datetime.now():
                     horario_validador += timedelta(days=1)
                     data_atual = horario_validador.strftime('%d.%m.%Y')
@@ -41,9 +41,9 @@ def obter_cronograma_status():
                 registro_crono = {
                     "ID": id,
                     "ATIVIDADE": key,
-                    "HORA_INICIO": horario,
-                    "HORA_FIM": "__:__",
-                    "TEMPO EXEC": "__:__:__",
+                    "HORA_INICIO": horario + ':00',
+                    "HORA_FIM": "__:__:__",
+                    "TEMPO_EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],
                     "STATUS": "Pendente",
                     "OBSERVAÇÃO": "-"
