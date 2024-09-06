@@ -507,11 +507,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
-                    print(estado_programa.obtem_status())
-
-
         except:
-            raise
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
         
     def acao_botao_stop(self):
@@ -621,6 +617,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
             obter_cronograma_status()
+            estado_programa.define_status('Inicio')
 
     def acao_botao_monitor(self):
         if not any(isinstance(x, Toplevel) for x in jan_principal.winfo_children()):

@@ -101,18 +101,36 @@ class MonitorTarefas():
 
     def atualiza_labels(self, itens, labels_lista, frame):
         # Se necessário, cria os widgets uma vez
-        while len(labels_lista) < len(itens):
-            lab0 = ttk.Label(frame, width=5, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab1 = ttk.Label(frame, width=23, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab2 = ttk.Label(frame, width=7, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab3 = ttk.Label(frame, width=7, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab4 = ttk.Label(frame, width=7, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab5 = ttk.Label(frame, width=23, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab6 = ttk.Label(frame, width=23, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
-            lab7 = ttk.Label(frame, width=23, anchor='w', font=('Calibri', 10), justify='left', background=verde1)
+        while len(labels_lista) <= len(itens):
+            lab0 = ttk.Label(frame, width=5, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab1 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab2 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab3 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab4 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab5 = ttk.Label(frame, width=18, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
+            lab7 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 10), justify='center', background=verde1)
             labels_lista.append((lab0, lab1, lab2, lab3, lab4,lab5, lab6, lab7))
 
         # Atualiza o texto dos widgets existentes
+            lab0.config(text='Icon')
+            lab1.config(text='Query')
+            lab2.config(text='Inicio')
+            lab3.config(text='Fim')
+            lab4.config(text='Tempo')
+            lab5.config(text='Nome do arquivo')
+            lab6.config(text='STATUS')
+            lab7.config(text='OBSERVAÇÃO')
+
+            lab0.grid(row=0, column=0, padx=2, pady=2)
+            lab1.grid(row=0, column=1, padx=2, pady=2)
+            lab2.grid(row=0, column=2, padx=2, pady=2)
+            lab3.grid(row=0, column=3, padx=2, pady=2)
+            lab4.grid(row=0, column=4, padx=2, pady=2)
+            lab5.grid(row=0, column=5, padx=2, pady=2)
+            lab6.grid(row=0, column=6, padx=2, pady=2)
+            lab7.grid(row=0, column=7, padx=2, pady=2)
+
         for i, label_item in enumerate(itens):
             tempo_decorrido = label_item['TEMPO_EXEC']
             if label_item['STATUS'] == 'Executando':
@@ -124,6 +142,7 @@ class MonitorTarefas():
                 tempo_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
 
             if i < len(labels_lista):
+                i += 1
                 lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7 = labels_lista[i]
                 lab0.config(text='Icon')
                 lab1.config(text=label_item['ATIVIDADE'])
@@ -131,9 +150,16 @@ class MonitorTarefas():
                 lab3.config(text=label_item['HORA_FIM'])
                 lab4.config(text=tempo_decorrido)
                 lab5.config(text=label_item['NOME_ARQUIVO'])
+                lab6.config(text=label_item['STATUS'])
+                lab7.config(text=label_item['OBSERVAÇÃO'])
 
                 lab0.grid(row=i, column=0, padx=2, pady=2)
                 lab1.grid(row=i, column=1, padx=2, pady=2)
                 lab2.grid(row=i, column=2, padx=2, pady=2)
                 lab3.grid(row=i, column=3, padx=2, pady=2)
                 lab4.grid(row=i, column=4, padx=2, pady=2)
+                lab5.grid(row=i, column=5, padx=2, pady=2)
+                lab6.grid(row=i, column=6, padx=2, pady=2)
+                lab7.grid(row=i, column=7, padx=2, pady=2)
+
+            
