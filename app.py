@@ -334,7 +334,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.arvore_scripts = ttk.Treeview(self.frm_querys, style='arvore_scripts.Treeview')
         self.arvore_scripts['columns'] = ('Query', 'Horário', 'Nome', 'Local para salvar')
         
-        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow')
+        self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow', orient='vertical')
         self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set, style='Treeview')
         self.scroll_arvore.config(command=self.arvore_scripts.yview)
         self.arvore_scripts.place(relx=0.001, rely=0.002, relheight=1, relwidth=0.999)
@@ -617,7 +617,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
             obter_cronograma_status()
-            estado_programa.define_status('Inicio')
+
 
     def acao_botao_monitor(self):
         if not any(isinstance(x, Toplevel) for x in jan_principal.winfo_children()):
