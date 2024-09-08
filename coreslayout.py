@@ -9,4 +9,5 @@ verde1 = '#C9DABF'
 verde2 = '#9CA986'
 verde3 = '#808D7C'
 verde4 = '#5F6F65'
+light_cian = '#DDE6ED'
 

@@ -55,10 +55,10 @@ class MonitorTarefas():
         self.lbl_futuro.place(relx=0.006, rely=0.64)
         self.frm_divisa1 = ttk.Frame(self.frm_fundo, relief='groove')
         self.frm_divisa1.place(relx=0.005, rely=0.06, relheight=0.0015, relwidth=0.77)
-        self.frm_passado_back = ttk.Frame(self.frm_fundo, relief='groove')
-        self.frm_passado_back.place(relx=0.006, rely=0.11, relheight=0.5, relwidth=0.77)
-        self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove')
-        self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29, relwidth=0.77)
+        self.frm_passado_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
+        self.frm_passado_back.place(relx=0.006, rely=0.11, relheight=0.5)
+        self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
+        self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29)
 
  
   #  #  #  #  #  #  #  #  #  #
@@ -67,10 +67,9 @@ class MonitorTarefas():
         self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
         self.canva_passado_finaliz = tk.Canvas(self.frm_passado_finalizadas, borderwidth=0, relief='groove')
         self.scroll_passado_finaliz = ttk.Scrollbar(self.frm_passado_finalizadas, cursor='arrow', orient='vertical', command=self.canva_passado_finaliz.yview)
-        
+        self.frm_passado_finaliz_scr = ttk.Frame(self.canva_passado_finaliz)
 
         self.canva_passado_finaliz.bind('<Configure>', lambda e: self.canva_passado_finaliz.configure(scrollregion=self.canva_passado_finaliz.bbox('all')))
-        self.frm_passado_finaliz_scr = ttk.Frame(self.canva_passado_finaliz)
         self.canva_passado_finaliz.create_window((0, 0), window=self.frm_passado_finaliz_scr, anchor='nw')
         self.canva_passado_finaliz.configure(yscrollcommand=self.scroll_passado_finaliz.set)
         self.canva_passado_finaliz.pack(side='left', fill='both', expand=True, padx=2, pady=2)
@@ -105,7 +104,7 @@ class MonitorTarefas():
 
         # Canvas para o futuro (tarefas pendentes)
         self.frm_futuro_pend = ttk.Frame(self.frm_futuro_back, relief='groove')
-        self.frm_futuro_pend.place(relx=0.001, rely=0.11, relheight=0.89, relwidth=0.998)
+        self.frm_futuro_pend.place(relx=0.001, rely=0.112, relheight=0.89, relwidth=0.998)
 
         self.canva_futuro = tk.Canvas(self.frm_futuro_pend, borderwidth=0, relief='groove')
         self.scroll_futuro = ttk.Scrollbar(self.frm_futuro_pend, cursor='arrow', orient='vertical', command=self.canva_futuro.yview)
@@ -177,33 +176,42 @@ class MonitorTarefas():
         self.janela_monitor.after(1000, self.atualiza_janela_monit)
 
     def insere_titulo(self, frame):
+        
+        lab0 = ttk.Label(frame, width=4, anchor='cente', font=('Calibri', 9), justify='center', background=light_cian)
+        lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab3 = ttk.Label(frame, width=12, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab4 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab5 = ttk.Label(frame, width=12, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab7 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab8 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab9 = ttk.Label(frame, width=19, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab10 = ttk.Label(frame, width=21, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
 
-        lab0 = ttk.Label(frame, width=5, anchor='center', font=('Calibri', 9), justify='center')
-        lab1 = ttk.Label(frame, width=21, anchor='center', font=('Calibri', 9), justify='center')
-        lab2 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-        lab3 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-        lab4 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-        lab5 = ttk.Label(frame, width=18, anchor='center', font=('Calibri', 9), justify='center')
-        lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
-        lab7 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 9), justify='center')
+        lab0.config(text='*', border=10)
+        lab1.config(text='Status')
+        lab2.config(text='Atividade')
+        lab3.config(text='Data')
+        lab4.config(text='Inicio plan.')
+        lab5.config(text='Inicio real')
+        lab6.config(text='Atraso')
+        lab7.config(text='Fim')
+        lab8.config(text='Tempo')
+        lab9.config(text='Nome do arquivo')
+        lab10.config(text='OBSERVAÇÃO')
 
-        lab0.config(text='Icon')
-        lab1.config(text='Query')
-        lab2.config(text='Inicio')
-        lab3.config(text='Fim')
-        lab4.config(text='Tempo')
-        lab5.config(text='Nome do arquivo')
-        lab6.config(text='STATUS')
-        lab7.config(text='OBSERVAÇÃO')
-
-        lab0.grid(row=0, column=0, padx=3, pady=1)
-        lab1.grid(row=0, column=1, padx=2, pady=1)
-        lab2.grid(row=0, column=2, padx=2, pady=1)
-        lab3.grid(row=0, column=3, padx=2, pady=1)
-        lab4.grid(row=0, column=4, padx=2, pady=1)
-        lab5.grid(row=0, column=5, padx=2, pady=1)
-        lab6.grid(row=0, column=6, padx=2, pady=1)
-        lab7.grid(row=0, column=7, padx=2, pady=1)
+        lab0.grid(row=0, column=0, padx=1, pady=1)
+        lab1.grid(row=0, column=1, padx=0, pady=1)
+        lab2.grid(row=0, column=2, padx=0, pady=1)
+        lab3.grid(row=0, column=3, padx=0, pady=1)
+        lab4.grid(row=0, column=4, padx=0, pady=1)
+        lab5.grid(row=0, column=5, padx=0, pady=1)
+        lab6.grid(row=0, column=6, padx=0, pady=1)
+        lab7.grid(row=0, column=7, padx=0, pady=1)
+        lab8.grid(row=0, column=8, padx=0, pady=1)
+        lab9.grid(row=0, column=9, padx=0, pady=1)
+        lab10.grid(row=0, column=10, padx=0, pady=1)
 
     def atualiza_labels(self, itens, labels_lista, frame):
 
@@ -215,15 +223,18 @@ class MonitorTarefas():
 
 
         while len(labels_lista) < len(itens):
-            lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab1 = ttk.Label(frame, width=22, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab2 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab3 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab4 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab5 = ttk.Label(frame, width=18, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            lab7 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
-            labels_lista.append((lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7))
+            lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center')
+            lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center')
+            lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab4 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab5 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab7 = ttk.Label(frame, width=14, anchor='center', font=('Calibri', 9), justify='center')
+            lab8 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
+            lab9 = ttk.Label(frame, width=19, anchor='center', font=('Calibri', 9), justify='center')
+            lab10 = ttk.Label(frame, width=21, anchor='center', font=('Calibri', 9), justify='center')
+            labels_lista.append((lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10))
 
             lab0.grid(row=len(labels_lista) - 1, column=0, padx=2, pady=1)
             lab1.grid(row=len(labels_lista) - 1, column=1, padx=2, pady=1)
@@ -233,6 +244,9 @@ class MonitorTarefas():
             lab5.grid(row=len(labels_lista) - 1, column=5, padx=2, pady=1)
             lab6.grid(row=len(labels_lista) - 1, column=6, padx=2, pady=1)
             lab7.grid(row=len(labels_lista) - 1, column=7, padx=2, pady=1)
+            lab8.grid(row=len(labels_lista) - 1, column=8, padx=2, pady=1)
+            lab9.grid(row=len(labels_lista) - 1, column=9, padx=2, pady=1)
+            lab10.grid(row=len(labels_lista) - 1, column=10, padx=2, pady=1)
 
         for i, item in enumerate(itens):
             tempo_decorrido = item['TEMPO_EXEC']
@@ -245,15 +259,19 @@ class MonitorTarefas():
                 minutos, segundos = divmod(resto, 60)
                 tempo_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
 
-            lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7 = labels_lista[i]
+            lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10 = labels_lista[i]
             lab0.config(text='Icon')
-            lab1.config(text=item['ATIVIDADE'])
-            lab2.config(text=item['HORA_INICIO'])
-            lab3.config(text=item['HORA_FIM'])
-            lab4.config(text=tempo_decorrido)
-            lab5.config(text=item['NOME_ARQUIVO'])
-            lab6.config(text=item['STATUS'])
-            lab7.config(text=item['OBSERVAÇÃO'])
+            lab1.config(text=item['STATUS'])
+            lab2.config(text=item['ATIVIDADE'])
+            lab3.config(text=item['DATA'])
+            lab4.config(text=item['HORA_INICIO_PLAN'])
+            lab5.config(text=item['HORA_INICIO_CONS'])
+            lab6.config(text=item['ATRASO'])
+            lab7.config(text=item['HORA_FIM_CONS'])
+            lab8.config(text=tempo_decorrido)
+            lab9.config(text=item['NOME_ARQUIVO'])
+            lab10.config(text=item['OBSERVAÇÃO'])
+   
 
             lab0.grid(row=i, column=0, padx=0, pady=0)
             lab1.grid(row=i, column=1, padx=0, pady=0)
@@ -263,5 +281,8 @@ class MonitorTarefas():
             lab5.grid(row=i, column=5, padx=0, pady=0)
             lab6.grid(row=i, column=6, padx=0, pady=0)
             lab7.grid(row=i, column=7, padx=0, pady=0)
+            lab8.grid(row=i, column=8, padx=0, pady=0)
+            lab9.grid(row=i, column=9, padx=0, pady=0)
+            lab10.grid(row=i, column=10, padx=0, pady=0)
 
                 

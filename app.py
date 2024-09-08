@@ -21,7 +21,7 @@ s.map('TButton', background=[('active', azul_claro), ('disabled', 'light grey')]
 s.configure('frm_status_start.TFrame', background=verde0)
 s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
-s.configure('frm_pass.TFrame', background=verde1)
+s.configure('frm_pass.TFrame', background=light_cian)
 
 caminho_db_json = 'database.json'
 caminho_hist_crono = 'database_cronograma.json'

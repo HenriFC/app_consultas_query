@@ -41,8 +41,11 @@ def obter_cronograma_status():
                 registro_crono = {
                     "ID": id,
                     "ATIVIDADE": key,
-                    "HORA_INICIO": horario + ':00',
-                    "HORA_FIM": "__:__:__",
+                    "DATA": data_atual,
+                    "HORA_INICIO_PLAN": horario + ':00',
+                    "HORA_INICIO_CONS": "__:__:__",
+                    "ATRASO": "__:__:__",
+                    "HORA_FIM_CONS": "__:__:__",
                     "TEMPO_EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],
                     "STATUS": "Pendente",
