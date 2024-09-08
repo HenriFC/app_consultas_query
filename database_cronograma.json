@@ -46,7 +46,7 @@
         "HORA_FIM": "__:__:__",
         "TEMPO_EXEC": "__:__:__",
         "NOME_ARQUIVO": "02T.csv",
-        "STATUS": "Finalizada",
+        "STATUS": "Executando",
         "OBSERVAÇÃO": "-"
     },
     {
@@ -56,7 +56,7 @@
         "HORA_FIM": "__:__:__",
         "TEMPO_EXEC": "__:__:__",
         "NOME_ARQUIVO": "02T.csv",
-        "STATUS": "Finalizada",
+        "STATUS": "Executando",
         "OBSERVAÇÃO": "-"
     },
     {
@@ -87,6 +87,36 @@
         "TEMPO_EXEC": "__:__:__",
         "NOME_ARQUIVO": "x",
         "STATUS": "Finalizada",
+        "OBSERVAÇÃO": "-"
+    },
+    {
+        "ID": "09.09.2024.01.08.Teste01",
+        "ATIVIDADE": "Teste01",
+        "HORA_INICIO": "01:08:00",
+        "HORA_FIM": "__:__:__",
+        "TEMPO_EXEC": "__:__:__",
+        "NOME_ARQUIVO": "Nam01Test.csv",
+        "STATUS": "Pendente",
+        "OBSERVAÇÃO": "-"
+    },
+    {
+        "ID": "09.09.2024.06.00.Teste01",
+        "ATIVIDADE": "Teste01",
+        "HORA_INICIO": "06:00:00",
+        "HORA_FIM": "__:__:__",
+        "TEMPO_EXEC": "__:__:__",
+        "NOME_ARQUIVO": "Nam01Test.csv",
+        "STATUS": "Pendente",
+        "OBSERVAÇÃO": "-"
+    },
+    {
+        "ID": "09.09.2024.07.00.Teste01",
+        "ATIVIDADE": "Teste01",
+        "HORA_INICIO": "07:00:00",
+        "HORA_FIM": "__:__:__",
+        "TEMPO_EXEC": "__:__:__",
+        "NOME_ARQUIVO": "Nam01Test.csv",
+        "STATUS": "Pendente",
         "OBSERVAÇÃO": "-"
     }
 ]

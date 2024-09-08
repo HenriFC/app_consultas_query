@@ -360,6 +360,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.arvore_scripts.tag_configure('x1', background=verde_claro)
         self.arvore_scripts.tag_configure('x2', background='white')
         self.arvore_scripts.bind('<ButtonRelease-1>', self.selecionar_item_arvore)
+        self.arvore_scripts.bind('<KeyRelease-Down>', self.selecionar_item_arvore)
+        self.arvore_scripts.bind('<KeyRelease-Up>', self.selecionar_item_arvore)
 
     def exibir_arvore(self):
         for i in self.arvore_scripts.get_children():
@@ -617,7 +619,6 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
             obter_cronograma_status()
-
 
     def acao_botao_monitor(self):
         if not any(isinstance(x, Toplevel) for x in jan_principal.winfo_children()):

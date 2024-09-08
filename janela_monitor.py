@@ -57,41 +57,56 @@ class MonitorTarefas():
         self.frm_divisa1.place(relx=0.005, rely=0.06, relheight=0.0015, relwidth=0.77)
         self.frm_passado_back = ttk.Frame(self.frm_fundo, relief='groove')
         self.frm_passado_back.place(relx=0.006, rely=0.11, relheight=0.5, relwidth=0.77)
-        self.frm_passado_finalizadas = ttk.Frame(self.frm_passado_back, relief='groove')
-        self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
-        self.frm_passado_execut = ttk.Frame(self.frm_passado_back, relief='groove')
-        self.frm_passado_execut.place(relx=0.001, rely=0.54, relheight=0.46, relwidth=0.998)
         self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove')
         self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29, relwidth=0.77)
-        self.frm_futuro_pend = ttk.Frame(self.frm_futuro_back, relief='groove')
-        self.frm_futuro_pend.place(relx=0.001, rely=0.11, relheight=0.89, relwidth=0.998)
+
  
   #  #  #  #  #  #  #  #  #  #
-
+        # Canvas para o passado (tarefas finalizadas)
+        self.frm_passado_finalizadas = ttk.Frame(self.frm_passado_back, relief='groove')
+        self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
         self.canva_passado_finaliz = tk.Canvas(self.frm_passado_finalizadas, borderwidth=0, relief='groove')
         self.scroll_passado_finaliz = ttk.Scrollbar(self.frm_passado_finalizadas, cursor='arrow', orient='vertical', command=self.canva_passado_finaliz.yview)
-        self.frm_passado_finaliz_scr = ttk.Frame(self.canva_passado_finaliz)
+        
 
-        self.frm_passado_finaliz_scr.bind('<Configure>', lambda e: self.canva_passado_finaliz.configure(scrollregion=self.canva_passado_finaliz.bbox('all')))
+        self.canva_passado_finaliz.bind('<Configure>', lambda e: self.canva_passado_finaliz.configure(scrollregion=self.canva_passado_finaliz.bbox('all')))
+        self.frm_passado_finaliz_scr = ttk.Frame(self.canva_passado_finaliz)
         self.canva_passado_finaliz.create_window((0, 0), window=self.frm_passado_finaliz_scr, anchor='nw')
         self.canva_passado_finaliz.configure(yscrollcommand=self.scroll_passado_finaliz.set)
         self.canva_passado_finaliz.pack(side='left', fill='both', expand=True, padx=2, pady=2)
         self.scroll_passado_finaliz.place(anchor='ne', relx=0.995, rely=0.005, relheight=0.98)
+        # Evento para scroll by wheel
+        self.canva_passado_finaliz.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        self.frm_passado_finaliz_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
-  #  #  #  #  #  #  #  #  #  #
+
+
+
+        # Canvas para o passado (tarefas em execução)
+        self.frm_passado_execut = ttk.Frame(self.frm_passado_back, relief='groove')
+        self.frm_passado_execut.place(relx=0.001, rely=0.54, relheight=0.46, relwidth=0.998)
 
         self.canva_passado_execut = tk.Canvas(self.frm_passado_execut, borderwidth=0, relief='groove')
         self.scroll_passado_execut = ttk.Scrollbar(self.frm_passado_execut, cursor='arrow', orient='vertical', command=self.canva_passado_execut.yview)
         self.frm_passado_execut_scr = ttk.Frame(self.canva_passado_execut)
 
-        self.frm_passado_execut_scr.bind('<Configure>', lambda e: self.canva_passado_execut.configure(scrollregion=self.canva_passado_execut.bbox('all')))
+        self.canva_passado_execut.bind('<Configure>', lambda e: self.canva_passado_execut.configure(scrollregion=self.canva_passado_execut.bbox('all')))
         self.canva_passado_execut.create_window((0, 0), window=self.frm_passado_execut_scr, anchor='nw')
         self.canva_passado_execut.configure(yscrollcommand=self.scroll_passado_execut.set)
         self.canva_passado_execut.pack(side='left', fill='both', expand=True, padx=2, pady=2)
         self.scroll_passado_execut.place(anchor='ne', relx=0.995, rely=0.005, relheight=0.98)
-        
-  #  #  #  #  #  #  #  #  #  #
-  
+
+        # Evento para scroll by wheel
+        self.canva_passado_execut.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        self.frm_passado_execut_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
+
+
+
+
+        # Canvas para o futuro (tarefas pendentes)
+        self.frm_futuro_pend = ttk.Frame(self.frm_futuro_back, relief='groove')
+        self.frm_futuro_pend.place(relx=0.001, rely=0.11, relheight=0.89, relwidth=0.998)
+
         self.canva_futuro = tk.Canvas(self.frm_futuro_pend, borderwidth=0, relief='groove')
         self.scroll_futuro = ttk.Scrollbar(self.frm_futuro_pend, cursor='arrow', orient='vertical', command=self.canva_futuro.yview)
         self.frm_futuro_scr = ttk.Frame(self.canva_futuro)
@@ -102,9 +117,25 @@ class MonitorTarefas():
         self.canva_futuro.pack(side='left', fill='both', expand=True, padx=2, pady=2)
         self.scroll_futuro.place(anchor='ne', relx=0.998, rely=0.005, relheight=0.98)
 
+        # Evento para scroll by wheel
+        self.canva_futuro.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        self.frm_futuro_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
         self.insere_titulo(self.frm_passado_back)
         self.insere_titulo(self.frm_futuro_back)
+
+    def _on_mouse_wheel(self, event):
+        """
+        Define o comportamento do scroll com a roda do mouse.
+        """
+        widget_containing = self.janela_monitor.winfo_containing(event.x_root, event.y_root)
+
+        if widget_containing == self.canva_passado_finaliz or widget_containing in self.frm_passado_finaliz_scr.winfo_children():
+            self.canva_passado_finaliz.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        elif widget_containing == self.canva_passado_execut or widget_containing in self.frm_passado_execut_scr.winfo_children():
+            self.canva_passado_execut.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        elif widget_containing == self.canva_futuro or widget_containing in self.frm_futuro_scr.winfo_children():
+            self.canva_futuro.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def atualiza_relogio_monit(self):
         hora_atual_exib = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
@@ -184,14 +215,14 @@ class MonitorTarefas():
 
 
         while len(labels_lista) < len(itens):
-            lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center')
-            lab1 = ttk.Label(frame, width=22, anchor='center', font=('Calibri', 9), justify='center')
-            lab2 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-            lab3 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-            lab4 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center')
-            lab5 = ttk.Label(frame, width=18, anchor='center', font=('Calibri', 9), justify='center')
-            lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
-            lab7 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 9), justify='center')
+            lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab1 = ttk.Label(frame, width=22, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab2 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab3 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab4 = ttk.Label(frame, width=7, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab5 = ttk.Label(frame, width=18, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
+            lab7 = ttk.Label(frame, width=23, anchor='center', font=('Calibri', 9), justify='center', background=verde1)
             labels_lista.append((lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7))
 
             lab0.grid(row=len(labels_lista) - 1, column=0, padx=2, pady=1)
@@ -224,13 +255,13 @@ class MonitorTarefas():
             lab6.config(text=item['STATUS'])
             lab7.config(text=item['OBSERVAÇÃO'])
 
-            lab0.grid(row=i, column=0, padx=2, pady=1)
-            lab1.grid(row=i, column=1, padx=2, pady=1)
-            lab2.grid(row=i, column=2, padx=2, pady=1)
-            lab3.grid(row=i, column=3, padx=2, pady=1)
-            lab4.grid(row=i, column=4, padx=2, pady=1)
-            lab5.grid(row=i, column=5, padx=2, pady=1)
-            lab6.grid(row=i, column=6, padx=2, pady=1)
-            lab7.grid(row=i, column=7, padx=2, pady=1)
+            lab0.grid(row=i, column=0, padx=0, pady=0)
+            lab1.grid(row=i, column=1, padx=0, pady=0)
+            lab2.grid(row=i, column=2, padx=0, pady=0)
+            lab3.grid(row=i, column=3, padx=0, pady=0)
+            lab4.grid(row=i, column=4, padx=0, pady=0)
+            lab5.grid(row=i, column=5, padx=0, pady=0)
+            lab6.grid(row=i, column=6, padx=0, pady=0)
+            lab7.grid(row=i, column=7, padx=0, pady=0)
 
                 
