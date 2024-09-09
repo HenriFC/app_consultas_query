@@ -15,7 +15,6 @@ hora_atual_exib_relog = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
 
 class MonitorTarefas():
     def __init__(self):
-     #   self.janela_monitor = janela_monitor                           #remover futuramente (após testes)
         self.janela_monitor = tk.Toplevel()
         self.janela_monitor.title('Monitor de execução')
         self.labels_finalizados = []
@@ -26,15 +25,14 @@ class MonitorTarefas():
         self.frames_monitor()
         self.atualiza_janela_monit()
         self.atualiza_relogio_monit()
-     #   janela_monitor.mainloop()                                      #remover futuramente (após testes)
 
     def tela_ini_monit(self):
 
         larg_tela = self.janela_monitor.winfo_screenwidth()
         altu_tela = self.janela_monitor.winfo_screenheight()
         self.janela_monitor.config(bg=verde4)
-        self.janela_monitor.geometry('1100x600+77+77')
-        self.janela_monitor.minsize(width='800', height='600')
+        self.janela_monitor.geometry('1300x600+50+77')
+        self.janela_monitor.minsize(width='1300', height='600')
         self.janela_monitor.maxsize(width=larg_tela, height=altu_tela)
 
 
@@ -46,9 +44,8 @@ class MonitorTarefas():
         self.lbl_hora_atual_exib = ttk.Label(self.frm_fundo, text=hora_atual_exib_relog, background=verde1, font=('Calibri bold', 15))
         self.lbl_hora_atual_exib.place(relx=0.775, rely=0.005, anchor='ne')
         self.frm_status_prg = ttk.Label(self.frm_fundo, anchor='center', relief='groove', background='', text=estado_programa, font=('Calibri bold', 18), justify='center')
-        self.frm_status_prg.place(relx=0.798, rely=0.03, relheight=0.11, relwidth=0.18)
+        self.frm_status_prg.place(relx=0.81, rely=0.03, relheight=0.08, relwidth=0.18)
 
-  # Frames para receber as janelas "Iniciadas" e "Pendentes"
         self.lbl_passado = ttk.Label(self.frm_fundo, text='Iniciadas:', background=verde1, font=('Calibri bold', 13))
         self.lbl_passado.place(relx=0.006, rely=0.077)
         self.lbl_futuro = ttk.Label(self.frm_fundo, text='Pendentes:', background=verde1, font=('Calibri bold', 13))
@@ -60,9 +57,8 @@ class MonitorTarefas():
         self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
         self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29)
 
- 
   #  #  #  #  #  #  #  #  #  #
-        # Canvas para o passado (tarefas finalizadas)
+
         self.frm_passado_finalizadas = ttk.Frame(self.frm_passado_back, relief='groove')
         self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
         self.canva_passado_finaliz = tk.Canvas(self.frm_passado_finalizadas, borderwidth=0, relief='groove')
@@ -71,17 +67,13 @@ class MonitorTarefas():
 
         self.canva_passado_finaliz.bind('<Configure>', lambda e: self.canva_passado_finaliz.configure(scrollregion=self.canva_passado_finaliz.bbox('all')))
         self.canva_passado_finaliz.create_window((0, 0), window=self.frm_passado_finaliz_scr, anchor='nw')
-        self.canva_passado_finaliz.configure(yscrollcommand=self.scroll_passado_finaliz.set)
+        self.canva_passado_finaliz.configure(yscrollcommand=self.scroll_passado_finaliz.set, bg='white')
         self.canva_passado_finaliz.pack(side='left', fill='both', expand=True, padx=2, pady=2)
-        self.scroll_passado_finaliz.place(anchor='ne', relx=0.995, rely=0.005, relheight=0.98)
-        # Evento para scroll by wheel
+        self.scroll_passado_finaliz.place(anchor='ne', relx=0.998, rely=0.005, relheight=0.98)
+
         self.canva_passado_finaliz.bind_all("<MouseWheel>", self._on_mouse_wheel)
         self.frm_passado_finaliz_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
-
-
-
-        # Canvas para o passado (tarefas em execução)
         self.frm_passado_execut = ttk.Frame(self.frm_passado_back, relief='groove')
         self.frm_passado_execut.place(relx=0.001, rely=0.54, relheight=0.46, relwidth=0.998)
 
@@ -91,18 +83,13 @@ class MonitorTarefas():
 
         self.canva_passado_execut.bind('<Configure>', lambda e: self.canva_passado_execut.configure(scrollregion=self.canva_passado_execut.bbox('all')))
         self.canva_passado_execut.create_window((0, 0), window=self.frm_passado_execut_scr, anchor='nw')
-        self.canva_passado_execut.configure(yscrollcommand=self.scroll_passado_execut.set)
+        self.canva_passado_execut.configure(yscrollcommand=self.scroll_passado_execut.set, bg='white')
         self.canva_passado_execut.pack(side='left', fill='both', expand=True, padx=2, pady=2)
-        self.scroll_passado_execut.place(anchor='ne', relx=0.995, rely=0.005, relheight=0.98)
+        self.scroll_passado_execut.place(anchor='ne', relx=0.998, rely=0.005, relheight=0.98)
 
-        # Evento para scroll by wheel
         self.canva_passado_execut.bind_all("<MouseWheel>", self._on_mouse_wheel)
         self.frm_passado_execut_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
-
-
-
-        # Canvas para o futuro (tarefas pendentes)
         self.frm_futuro_pend = ttk.Frame(self.frm_futuro_back, relief='groove')
         self.frm_futuro_pend.place(relx=0.001, rely=0.112, relheight=0.89, relwidth=0.998)
 
@@ -112,7 +99,7 @@ class MonitorTarefas():
 
         self.frm_futuro_scr.bind('<Configure>', lambda e: self.canva_futuro.configure(scrollregion=self.canva_futuro.bbox('all')))
         self.canva_futuro.create_window((0, 0), window=self.frm_futuro_scr, anchor='nw')
-        self.canva_futuro.configure(yscrollcommand=self.scroll_futuro.set)
+        self.canva_futuro.configure(yscrollcommand=self.scroll_futuro.set, bg='white')
         self.canva_futuro.pack(side='left', fill='both', expand=True, padx=2, pady=2)
         self.scroll_futuro.place(anchor='ne', relx=0.998, rely=0.005, relheight=0.98)
 
@@ -165,7 +152,10 @@ class MonitorTarefas():
                     else:
                         itens_finalizados.append(x)
                 estado_database.define_status_database('Não modificada')
-                print(status_atual_prg)
+                itens_finalizados = sorted(sorted(itens_finalizados, key=lambda reg: reg['HORA_FIM_CONS'], reverse=True), key=lambda reg: reg['DATA'], reverse=True)
+                itens_executando = sorted(sorted(itens_executando, key=lambda reg: reg['HORA_FIM_CONS'], reverse=True), key=lambda reg: reg['DATA'], reverse=True)
+                itens_pendentes = sorted(sorted(itens_pendentes, key=lambda reg: reg['HORA_INICIO_PLAN']), key=lambda reg: reg['DATA'])
+
         
         self.atualiza_labels(itens_finalizados, self.labels_finalizados, self.frm_passado_finaliz_scr)
 
@@ -180,10 +170,10 @@ class MonitorTarefas():
         lab0 = ttk.Label(frame, width=4, anchor='cente', font=('Calibri', 9), justify='center', background=light_cian)
         lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
-        lab3 = ttk.Label(frame, width=12, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
-        lab4 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab4 = ttk.Label(frame, width=14, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab5 = ttk.Label(frame, width=12, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
-        lab6 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab6 = ttk.Label(frame, width=14, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab7 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab8 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab9 = ttk.Label(frame, width=19, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
@@ -248,11 +238,13 @@ class MonitorTarefas():
             lab9.grid(row=len(labels_lista) - 1, column=9, padx=2, pady=1)
             lab10.grid(row=len(labels_lista) - 1, column=10, padx=2, pady=1)
 
+        list_par = stat_cor1
+
         for i, item in enumerate(itens):
             tempo_decorrido = item['TEMPO_EXEC']
 
             if item['STATUS'] == 'Executando':
-                tempo_decorrido_str = f"{item['ID'][6:10]}-{item['ID'][3:5]}-{item['ID'][:2]} {item['HORA_INICIO']}"
+                tempo_decorrido_str = f"{item['ID'][6:10]}-{item['ID'][3:5]}-{item['ID'][:2]} {item['HORA_INICIO_CONS']}"
                 tempo_decorrido = hora_atual - datetime.strptime(tempo_decorrido_str, '%Y-%m-%d %H:%M:%S')
                 total_segundos = int(tempo_decorrido.total_seconds())
                 horas, resto = divmod(total_segundos, 3600)
@@ -260,18 +252,23 @@ class MonitorTarefas():
                 tempo_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
 
             lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10 = labels_lista[i]
-            lab0.config(text='Icon')
-            lab1.config(text=item['STATUS'])
-            lab2.config(text=item['ATIVIDADE'])
-            lab3.config(text=item['DATA'])
-            lab4.config(text=item['HORA_INICIO_PLAN'])
-            lab5.config(text=item['HORA_INICIO_CONS'])
-            lab6.config(text=item['ATRASO'])
-            lab7.config(text=item['HORA_FIM_CONS'])
-            lab8.config(text=tempo_decorrido)
-            lab9.config(text=item['NOME_ARQUIVO'])
-            lab10.config(text=item['OBSERVAÇÃO'])
-   
+
+            if i % 2 == 0:
+                list_par = stat_cor1
+
+
+            lab0.config(text='Icon', background=list_par)
+            lab1.config(text=item['STATUS'], background=list_par)
+            lab2.config(text=item['ATIVIDADE'], background=list_par)
+            lab3.config(text=item['DATA'], background=list_par)
+            lab4.config(text=item['HORA_INICIO_PLAN'], background=list_par)
+            lab5.config(text=item['HORA_INICIO_CONS'], background=list_par)
+            lab6.config(text=item['ATRASO'], background=list_par)
+            lab7.config(text=item['HORA_FIM_CONS'], background=list_par)
+            lab8.config(text=tempo_decorrido, background=list_par)
+            lab9.config(text=item['NOME_ARQUIVO'], background=list_par)
+            lab10.config(text=item['OBSERVAÇÃO'], background=list_par)
+
 
             lab0.grid(row=i, column=0, padx=0, pady=0)
             lab1.grid(row=i, column=1, padx=0, pady=0)
@@ -284,5 +281,6 @@ class MonitorTarefas():
             lab8.grid(row=i, column=8, padx=0, pady=0)
             lab9.grid(row=i, column=9, padx=0, pady=0)
             lab10.grid(row=i, column=10, padx=0, pady=0)
+            list_par = stat_cor2
 
                 
