@@ -11,6 +11,7 @@ from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
 from state_exec import estado_programa, estado_database
 from coreslayout import *
+from iniciar_exec import ControlarExecucao
 
 
 jan_principal = Tk()
@@ -486,31 +487,6 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.botao_editar_query['state'] = 'disabled'
             self.botao_excluir_query['state'] = 'disabled'
             obter_cronograma_status()
-
-    def acao_botao_start(self):
-        
-        try:
-            with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
-                validar_base = json.load(temp_verif)
-                if validar_base == {}:
-                    messagebox.showerror('ERRO', 'Não existem tarefas a serem executadas!')
-                else:
-                    estado_programa.define_status('Executando')
-                    self.habilitar_campos()
-                    self.limpar_campos()
-                    self.desablitar_campos()
-                    self.botao_nova_query['state'] = 'disabled'
-                    self.botao_excluir_query['state'] = 'disabled'
-                    self.botao_editar_query['state'] = 'disabled'
-                    self.botao_limpar_campos['state'] = 'disabled'
-                    self.botao_save['state'] = 'disabled'
-                    self.lbl_status_programa.config(text='O programa está executando', background=verde_status, foreground='white')
-                    self.botao_start['state'] = 'disabled'
-                    self.botao_start.place_forget()
-                    self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
-                    self.botao_stop['state'] = 'normal'
-        except:
-            messagebox.showerror('ERRO', 'Base de dados não encontrada')
         
     def acao_botao_stop(self):
         estado_programa.define_status('Parado')
@@ -626,5 +602,32 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         else:
             pass
 
+    def acao_botao_start(self):
+        
+        try:
+            with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
+                validar_base = json.load(temp_verif)
+                if validar_base == {}:
+                    messagebox.showerror('ERRO', 'Não existem tarefas a serem executadas!')
+                else:
+                    estado_programa.define_status('Executando')
+                    self.habilitar_campos()
+                    self.limpar_campos()
+                    self.desablitar_campos()
+                    self.botao_nova_query['state'] = 'disabled'
+                    self.botao_excluir_query['state'] = 'disabled'
+                    self.botao_editar_query['state'] = 'disabled'
+                    self.botao_limpar_campos['state'] = 'disabled'
+                    self.botao_save['state'] = 'disabled'
+                    self.lbl_status_programa.config(text='O programa está executando', background=verde_status, foreground='white')
+                    self.botao_start['state'] = 'disabled'
+                    self.botao_start.place_forget()
+                    self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+                    self.botao_stop['state'] = 'normal'
+                    ControlarExecucao()
+
+
+        except:
+            messagebox.showerror('ERRO', 'Base de dados não encontrada')
 if __name__ == '__main__':
     AppConsultas()
