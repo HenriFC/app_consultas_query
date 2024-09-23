@@ -3,11 +3,12 @@ import json
 import shutil
 import tempfile
 import threading
+from playwright.sync_api import sync_playwright
 from datetime import date, datetime, timedelta
 import time
 from state_exec import estado_programa, estado_database
 
-PASTA_LOGS = 'logs_exec'
+PASTA_LOGS = 'logs_exec_tarefas'
 CAMINHO_ARQ = 'database_cronograma.json'
 if not os.path.exists(PASTA_LOGS):
     os.makedirs(PASTA_LOGS)
@@ -66,9 +67,20 @@ class GerenciadorTarefas:
         # Sempre que necessário, durante a execução, dumpará informações específicas nesse arquivo, porém o arquivo de dump será um JSON com campos padronizados
         print(f"[{threading.current_thread().name}] {id_tarefa} iniciada.")
         time.sleep(1)
-        print(f"  {id_tarefa}\n  {hr_ini_consulta}\n  {hr_fim_consulta}\n  {nome_arq}\n  {cod_query}")
+
+        with sync_playwright() as pw:
+            # Iniciar edge:
+            navegador = pw.chromium.launch(channel="msedge", headless=False)
+            pagina = navegador.new_page()
+
+            pagina.goto('https://www.google.com/')
+
+
         print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")
 
+    def dump_infos_exec(self, ):
+
+        pass
     def click_botao(self):
         # Define o estado como executando e inicia novas tarefas
         with self.lock:

@@ -14,3 +14,13 @@ Instalar as bibliotecas do arquivo requirements.txt. Lembre-se de ativar o ambie
 - No terminal: pip install -r .\requirements.txt
 - Caso eu esteja com um ambiente virtual ativo, todos as bibliotecas serão instaladas dentro desse ambiente. Não será instalado no python global do sistema.
 
+
+
+
+
+
+=--------------------------------=--------------------------------=--------------------------------=--------------------------------=-----------------------------
+
+Instalar playwright:
+- pip install playwright
+- playwright install
