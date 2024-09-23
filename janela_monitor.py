@@ -1,11 +1,12 @@
 import tkinter as tk
 import json
-
 from time import sleep
 from datetime import datetime, timedelta
 from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
+from cronograma_geral import obter_cronograma_status
+
 
 CAMINHO_HIST_CRONO = 'database_cronograma.json'
 global hora_atual
@@ -126,7 +127,11 @@ class MonitorTarefas():
     def atualiza_relogio_monit(self):
         hora_atual_exib = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
         self.lbl_hora_atual_exib.config(text=hora_atual_exib)
-        self.janela_monitor.after(50, self.atualiza_relogio_monit)
+        self.janela_monitor.after(500, self.atualiza_relogio_monit)
+        print(hora_atual_exib[17:])
+        if hora_atual_exib[17:] in ['00', '10', '20', '30', '40', '50']:
+            obter_cronograma_status()
+
 
     def atualiza_janela_monit(self):
         global itens_finalizados, itens_executando, itens_pendentes, hora_atual
@@ -156,12 +161,13 @@ class MonitorTarefas():
                 itens_executando = sorted(sorted(itens_executando, key=lambda reg: reg['HORA_FIM_CONS'], reverse=True), key=lambda reg: reg['DATA'], reverse=True)
                 itens_pendentes = sorted(sorted(itens_pendentes, key=lambda reg: reg['HORA_INICIO_PLAN']), key=lambda reg: reg['DATA'])
 
-        
+
         self.atualiza_labels(itens_finalizados, self.labels_finalizados, self.frm_passado_finaliz_scr)
 
         self.atualiza_labels(itens_executando, self.labels_executando, self.frm_passado_execut_scr)
 
         self.atualiza_labels(itens_pendentes, self.labels_pendentes, self.frm_futuro_scr)
+
 
         self.janela_monitor.after(1000, self.atualiza_janela_monit)
 

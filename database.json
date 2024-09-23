@@ -1,32 +1,13 @@
 {
-    "Teste 3": {
-        "horario": [
-            "09:08",
-            "13:04",
-            "20:06",
-            "20:50",
-            "20:54",
-            "21:17",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-        ],
-        "nome": "test03.csv",
-        "caminho_salvar": "C:",
-        "query": "Query X"
-    },
     "Teste01": {
         "horario": [
             "01:08",
             "06:00",
-            "07:00",
-            "08:00",
-            "21:15",
-            "22:16",
-            "22:17",
+            "11:26",
+            "11:27",
+            "11:34",
+            "11:47",
+            "",
             "",
             "",
             "",
@@ -37,23 +18,23 @@
         "caminho_salvar": "C:",
         "query": "SELECT\n  CS.ad_id,\n  CS.impressions AS Impressions,\n  CS.advertiser_name AS Advertiser,\n  CONCAT(\"https://adstransparency.google.com/advertiser/\", CS.advertiser_id, \"/creative/\", CS.ad_id, \"?political=&region=\") AS Creative_Page,\nFROM\n  `bigquery-public-data.google_political_ads.creative_stats` AS CS\nWHERE\n  CS.impressions = \"1000000-1250000\"\n  OR CS.impressions = \"1250000-1500000\"\n  OR CS.impressions = \"1500000-1750000\"\n  OR CS.impressions = \"1750000-2000000\"\n  OR CS.impressions = \"2000000-2250000\"\n  OR CS.impressions = \"2250000-2500000\"\n  OR CS.impressions = \"2500000-3000000\"\n  OR CS.impressions = \"3000000-3500000\"\n  OR CS.impressions = \"3500000-4000000\"\n  OR CS.impressions = \"4000000-4500000\"\n  OR CS.impressions = \"4500000-5000000\"\n  OR CS.impressions = \"5000000-6000000\"\n  OR CS.impressions = \"6000000-7000000\"\n  OR CS.impressions = \"7000000-8000000\"\n  OR CS.impressions = \"8000000-9000000\"\n  OR CS.impressions = \"9000000-10000000\"\n  OR CS.impressions = \"≥10000000\";\n"
     },
-    "XX": {
+    "Teste02": {
         "horario": [
-            "16:56",
-            "16:58",
-            "16:59",
-            "17:00",
-            "17:23",
-            "18:20",
-            "20:56",
-            "21:03",
-            "22:29",
+            "01:00",
+            "10:33",
+            "10:42",
+            "11:37",
+            "11:49",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             ""
         ],
-        "nome": "Xxx",
-        "caminho_salvar": "C:",
-        "query": ""
+        "nome": "Nam02Test.csv",
+        "caminho_salvar": "C:\\\\",
+        "query": "Query  Y"
     }
 }

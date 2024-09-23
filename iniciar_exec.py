@@ -3,9 +3,10 @@ import json
 import shutil
 import tempfile
 import threading
+import time
 from playwright.sync_api import sync_playwright
 from datetime import date, datetime, timedelta
-import time
+from cronograma_geral import obter_cronograma_status
 from state_exec import estado_programa, estado_database
 
 PASTA_LOGS = 'logs_exec_tarefas'
@@ -38,7 +39,6 @@ class GerenciadorTarefas:
                                 self.atualiz_item = extracao[item]
                                 self.atualiz_item['STATUS'] = 'Executando'
                                 self.base_atualizada.append(self.atualiz_item)
-                                estado_database.define_status_database('Modificada')
                                 id_tarefa = detal['ID']
                                 hr_ini_consulta = detal['HORA_INICIO_CONS']
                                 hr_fim_consulta = detal['HORA_FIM_CONS']
@@ -51,6 +51,7 @@ class GerenciadorTarefas:
                         
                         json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
                     shutil.move(file_temp.name, CAMINHO_ARQ)
+                    obter_cronograma_status()
 
                     
             time.sleep(1)  # Aguarda antes de verificar novamente
@@ -73,7 +74,7 @@ class GerenciadorTarefas:
             navegador = pw.chromium.launch(channel="msedge", headless=False)
             pagina = navegador.new_page()
 
-            pagina.goto('https://www.google.com/')
+            pagina.goto('https://console.cloud.google.com/bigquery?project=b2w-bee-quickstart&ws=!1m0')
 
 
         print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")
