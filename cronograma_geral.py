@@ -3,8 +3,8 @@ import shutil
 import tempfile
 from datetime import date, datetime, timedelta
 from state_exec import estado_database
-caminho_db_json = 'database.json'
-caminho_hist_crono = 'database_cronograma.json'
+CAMINHO_DB_JSON = 'database.json'
+CAMINHO_HIST_CRONO = 'database_cronograma.json'
 
 # Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão, ou foram executados
 def obter_cronograma_status():
@@ -13,7 +13,7 @@ def obter_cronograma_status():
     # Carregar o cronograma existente ou iniciar um novo
     try:
         # Remover tarefas não iniciadas com data futura. Tarefas não iniciadas
-        with open(caminho_hist_crono, 'r', encoding='utf-8') as crono_file:
+        with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as crono_file:
             crono_temp = json.load(crono_file)
             crono_temp = [y for y in crono_temp if y["STATUS"] != "Pendente"]
 
@@ -21,7 +21,7 @@ def obter_cronograma_status():
     except FileNotFoundError:
         crono_temp = []
 
-    with open(caminho_db_json, 'r', encoding='utf-8') as base_dados, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+    with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as base_dados, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
         extracao = json.load(base_dados)
         novos_registros = []
 
@@ -31,7 +31,8 @@ def obter_cronograma_status():
                 horario = value["horario"][aux_indice_horario]
                 if horario == '':
                     break
-                horario_validador = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M')
+                horario_validador = datetime.strptime(f"{data_atual} {horario}:59", '%d.%m.%Y %H:%M:%S')
+                print(horario_validador, datetime.now())
                 if horario_validador < datetime.now():
                     horario_validador += timedelta(days=1)
                     data_atual = horario_validador.strftime('%d.%m.%Y')
@@ -49,7 +50,8 @@ def obter_cronograma_status():
                     "TEMPO_EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],
                     "STATUS": "Pendente",
-                    "OBSERVAÇÃO": "-"
+                    "OBSERVAÇÃO": "-",
+                    "QUERY": value["query"]
                 }
 
                 # Verificar se o registro já existe no cronograma
@@ -65,7 +67,7 @@ def obter_cronograma_status():
         # Adicionar novos registros ao cronograma
         crono_temp.extend(novos_registros)
         json.dump(crono_temp, file_temp, indent=4, ensure_ascii=False)
-    shutil.move(file_temp.name, caminho_hist_crono)
+    shutil.move(file_temp.name, CAMINHO_HIST_CRONO)
     estado_database.define_status_database('Modificada')
 
     # Salvar o cronograma atualizado

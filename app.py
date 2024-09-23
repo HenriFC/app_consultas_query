@@ -11,7 +11,7 @@ from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
 from state_exec import estado_programa, estado_database
 from coreslayout import *
-from iniciar_exec import ControlarExecucao
+from iniciar_exec import click_start_stop
 
 
 jan_principal = Tk()
@@ -24,8 +24,8 @@ s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 s.configure('frm_pass.TFrame', background=light_cian)
 
-caminho_db_json = 'database.json'
-caminho_hist_crono = 'database_cronograma.json'
+CAMINHO_DB_JSON = 'database.json'
+CAMINHO_HIST_CRONO = 'database_cronograma.json'
 
 global nome_antigo_query
 
@@ -368,7 +368,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         for i in self.arvore_scripts.get_children():
             self.arvore_scripts.delete(i)
         try:
-            with open(caminho_db_json, 'r', encoding='utf8') as js:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf8') as js:
                 dados_exibir_arvore = json.load(js)
                 count_pai = 0
                 tag = 'x1'
@@ -399,7 +399,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         try:
             linha_selec = self.arvore_scripts.selection()[0]
             dados_selec = self.arvore_scripts.item(linha_selec, "values")
-            with open(caminho_db_json, 'r', encoding='utf-8') as js_sel:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as js_sel:
                 dados_finais = json.load(js_sel)
                 name_qry = dados_selec[0].strip()
                 horarios = dados_finais[name_qry.strip()]['horario']
@@ -475,11 +475,11 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
     def acao_botao_excluir(self):
         nome_antigo_query = self.entry_nome_query.get().strip()
         if messagebox.askyesno('Excluir', f'Deseja excluir a query "{nome_antigo_query}"'):
-            with open(caminho_db_json, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
                 dados_temp2 = json.load(arquivojs2)
                 dados_temp2.pop(nome_antigo_query)
                 json.dump(dados_temp2, jstemporario2, ensure_ascii=False)
-            shutil.move(jstemporario2.name, caminho_db_json)
+            shutil.move(jstemporario2.name, CAMINHO_DB_JSON)
             self.habilitar_campos()
             self.limpar_campos()
             self.desablitar_campos()
@@ -498,6 +498,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_nova_query['state'] = 'normal'
         self.botao_editar_query['state'] = 'normal'
         self.botao_excluir_query['state'] = 'normal'
+        click_start_stop()
 
     def acao_botao_salvar(self):
         # Obtém os dados inputados pelo usuário
@@ -536,7 +537,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
             # Gambiarra alert: utilizaremos um arquivo temporário para que as modificações não ocorram diretamente no JSON.
             #   Abriremos o arquivo JSON 
-            with open(caminho_db_json, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as arquivojs, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario:
                 # Traremos os dados para uma variável:
                 try:
                     dados_temp = json.load(arquivojs)
@@ -590,7 +591,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
                 json.dump(dados_temp_org, jstemporario,indent=4, ensure_ascii=False)
 
-            shutil.move(jstemporario.name, caminho_db_json)
+            shutil.move(jstemporario.name, CAMINHO_DB_JSON)
 
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
@@ -605,7 +606,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
     def acao_botao_start(self):
         
         try:
-            with open(caminho_db_json, 'r', encoding='utf-8') as temp_verif:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as temp_verif:
                 validar_base = json.load(temp_verif)
                 if validar_base == {}:
                     messagebox.showerror('ERRO', 'Não existem tarefas a serem executadas!')
@@ -624,7 +625,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     self.botao_start.place_forget()
                     self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
-                    ControlarExecucao()
+                    click_start_stop()
 
 
         except:

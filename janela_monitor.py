@@ -7,7 +7,7 @@ from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
 
-caminho_hist_crono = 'database_cronograma.json'
+CAMINHO_HIST_CRONO = 'database_cronograma.json'
 global hora_atual
 hora_atual = datetime.now()
 hora_atual_exib_relog = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
@@ -139,7 +139,7 @@ class MonitorTarefas():
             self.frm_status_prg.config(text=status_atual_prg, background=verde_status, foreground='white', font=('Calibri bold', 15), justify='center')
 
         if estado_database.obtem_status_database() in ['Modificada', 'Inicio']:
-            with open(caminho_hist_crono, 'r', encoding='utf-8') as arq_temp:
+            with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as arq_temp:
                 itens_finalizados = []
                 itens_executando = []
                 itens_pendentes = []
@@ -243,7 +243,7 @@ class MonitorTarefas():
         for i, item in enumerate(itens):
             tempo_decorrido = item['TEMPO_EXEC']
 
-            if item['STATUS'] == 'Executando':
+            if item['STATUS'] == 'Executando' and item['HORA_INICIO_CONS'] != "__:__:__":
                 tempo_decorrido_str = f"{item['ID'][6:10]}-{item['ID'][3:5]}-{item['ID'][:2]} {item['HORA_INICIO_CONS']}"
                 tempo_decorrido = hora_atual - datetime.strptime(tempo_decorrido_str, '%Y-%m-%d %H:%M:%S')
                 total_segundos = int(tempo_decorrido.total_seconds())
