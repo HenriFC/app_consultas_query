@@ -9,10 +9,23 @@ from datetime import date, datetime, timedelta
 from cronograma_geral import obter_cronograma_status
 from state_exec import estado_programa, estado_database
 
+
+
 PASTA_LOGS = 'logs_exec_tarefas'
 CAMINHO_ARQ = 'database_cronograma.json'
+CAMINHO_DB_EMAIL = 'database_email.json'
+
+
 if not os.path.exists(PASTA_LOGS):
     os.makedirs(PASTA_LOGS)
+
+def obter_email():
+    with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_email:
+        email_entrada = json.load(temp_email)
+        print("lendo email")
+    return email_entrada
+
+
 
 class GerenciadorTarefas:
     def __init__(self):
@@ -44,25 +57,27 @@ class GerenciadorTarefas:
                                 hr_fim_consulta = detal['HORA_FIM_CONS']
                                 nome_arq = detal['NOME_ARQUIVO']
                                 cod_query = detal['QUERY']
+                                caminho_salvar_arq = detal['CAMINHO_SALVAR']
+                                email_entrada = obter_email()
+                                print(email_entrada)
                                 # Inicia essa tarefa:
-                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query)
+                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada)
                             else:
                                 self.base_atualizada.append(extracao[item])
                         
                         json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
                     shutil.move(file_temp.name, CAMINHO_ARQ)
                     obter_cronograma_status()
-
                     
             time.sleep(1)  # Aguarda antes de verificar novamente
 
-    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query):
+    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada):
         # Inicia uma nova tarefa em uma thread separada
-        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query))
+        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada))
         thread_tarefa.start()
         self.threads_tarefas.append(thread_tarefa)
 
-    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query):
+    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada):
         # Iniciar criando um arquivo para receber o log das tarefas
         # Esse arquivo receberá os horários de inicío e fim, erros e etc
         # Sempre que necessário, durante a execução, dumpará informações específicas nesse arquivo, porém o arquivo de dump será um JSON com campos padronizados
@@ -76,6 +91,8 @@ class GerenciadorTarefas:
 
             pagina.goto('https://console.cloud.google.com/bigquery?project=b2w-bee-quickstart&ws=!1m0')
 
+            pagina.wait_for_selector()
+
 
         print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")
 
@@ -86,6 +103,7 @@ class GerenciadorTarefas:
         # Define o estado como executando e inicia novas tarefas
         with self.lock:
             self.executando = estado_programa.obtem_status()
+
 
 # Inicializando o gerenciador e a thread gerenciadora
 gerenciador = GerenciadorTarefas()

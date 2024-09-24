@@ -11,7 +11,7 @@ from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
 from state_exec import estado_programa, estado_database
 from coreslayout import *
-from iniciar_exec import click_start_stop
+from iniciar_exec import click_start_stop, obter_email
 
 
 jan_principal = Tk()
@@ -26,8 +26,12 @@ s.configure('frm_pass.TFrame', background=light_cian)
 
 CAMINHO_DB_JSON = 'database.json'
 CAMINHO_HIST_CRONO = 'database_cronograma.json'
+CAMINHO_DB_EMAIL = 'database_email.json'
 
 global nome_antigo_query
+
+
+
 
 class ValidarEntrys():
 
@@ -95,6 +99,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.arvore()
         self.exibir_arvore()
         self.desablitar_campos()
+        self.atualiz_campo_email()
         jan_principal.mainloop()        
 
     def limpar_campos(self):
@@ -132,6 +137,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.entry_horario10.config(state='readonly', foreground='black')
         self.entry_horario11.config(state='readonly', foreground='black')
         self.entry_horario12.config(state='readonly', foreground='black')
+        self.entry_usu_google.config(state='readonly', foreground='black')
 
     def habilitar_campos(self):
         self.entry_nome_arquivo.config(state='enabled')
@@ -208,6 +214,12 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
         self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=self.acao_botao_monitor)
         self.botao_exibir_monitor.place(relx=0.73, rely=0.60, relheight=0.060, relwidth=0.25)
+
+        self.botao_editar_email = ttk.Button(self.frm_back, text='EDITAR', state='normal', command=self.acao_botao_editar_email)
+        self.botao_editar_email.place(relx=0.896, rely=0.91, relheight=0.041, relwidth=0.05)
+
+        self.botao_salvar_email = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar_email)
+        self.botao_salvar_email.place(relx=0.947, rely=0.91, relheight=0.041, relwidth=0.05)
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, foreground='white', font=('Calibri bold', 11), borderwidth=1, relief='groove', anchor='center')
@@ -301,9 +313,9 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.entry_horario12.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario12.bind('<KeyRelease>', self.completar_horario)
 
-        self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
+        self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key')
         self.etiq_entry_usu_google = ttk.Label(self.frm_back, text='USUÁRIO GOOGLE:', background=verde1)
-        self.entry_usu_google.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.28)
+        self.entry_usu_google.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.18)
         self.etiq_entry_usu_google.place(relx=0.715, rely=0.879)
 
     def completar_horario2(sef, event):
@@ -393,7 +405,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         # Apagar dados das entry
         self.habilitar_campos()
         self.limpar_campos()
-        
+        self.atualiz_campo_email()
 
         # inputar dados nas entrys
         try:
@@ -442,6 +454,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             pass
         
     def acao_botao_nova_query(self):
+        self.atualiz_campo_email()
         global nome_antigo_query
         nome_antigo_query = ''
         if estado_programa.obtem_status() == 'Executando':
@@ -453,6 +466,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.botao_nova_query['state'] = 'disabled'
             self.botao_limpar_campos['state'] = 'normal'
             self.botao_save['state'] = 'normal'
+            self.botao_editar_email['state'] = 'disabled'
             try:
                 self.arvore_scripts.selection_remove(self.arvore_scripts.selection()[0])
             except:
@@ -461,6 +475,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.limpar_campos()
 
     def acao_botao_editar(self):
+        self.atualiz_campo_email()
         global nome_antigo_query
         nome_antigo_query = self.entry_nome_query.get().strip()
         self.botao_start['state'] = 'disabled'
@@ -469,10 +484,12 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_editar_query['state'] = 'disabled'
         self.botao_limpar_campos['state'] = 'normal'
         self.botao_save['state'] = 'normal'
+        self.botao_editar_email['state'] = 'disabled'
 
         self.habilitar_campos()
 
     def acao_botao_excluir(self):
+        self.atualiz_campo_email()
         nome_antigo_query = self.entry_nome_query.get().strip()
         if messagebox.askyesno('Excluir', f'Deseja excluir a query "{nome_antigo_query}"'):
             with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as arquivojs2, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as jstemporario2:
@@ -489,6 +506,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             obter_cronograma_status()
         
     def acao_botao_stop(self):
+        self.atualiz_campo_email()
         estado_programa.define_status('Parado')
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0, foreground='white')
         self.botao_stop['state'] = 'disabled'
@@ -498,6 +516,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_nova_query['state'] = 'normal'
         self.botao_editar_query['state'] = 'normal'
         self.botao_excluir_query['state'] = 'normal'
+        self.botao_salvar_email['state'] = 'disabled'
+        self.botao_editar_email['state'] = 'normal'
         click_start_stop()
 
     def acao_botao_salvar(self):
@@ -595,6 +615,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
             self.botao_start['state'] = 'normal'
             self.exibir_arvore()
+            self.atualiz_campo_email()
             obter_cronograma_status()
 
     def acao_botao_monitor(self):
@@ -603,7 +624,41 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         else:
             pass
 
+    def acao_botao_editar_email(self):
+        self.botao_editar_email['state'] = 'disabled'
+        self.botao_salvar_email['state'] = 'normal'
+        self.entry_usu_google.config(state='enabled')
+
+    def acao_botao_salvar_email(self):
+        self.botao_salvar_email['state'] = 'disabled'
+        self.botao_editar_email['state'] = 'normal'
+        self.entry_usu_google.config(state='disabled')
+        with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as base_email:
+            email_capturado = self.entry_usu_google.get()
+            json.dump(email_capturado, base_email, indent=4, ensure_ascii=False)
+
+
+    def atualiz_campo_email(self):
+        if self.entry_usu_google['state'] == 'enabled':
+            self.entry_usu_google.delete(0, 'end')
+        else:
+            self.entry_usu_google['state'] = 'enabled'
+            self.entry_usu_google.delete(0, 'end')
+        try:
+            with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_leitura_email:
+                email_entrada = json.load(temp_leitura_email)
+                self.entry_usu_google.insert(0, email_entrada)
+        except FileNotFoundError:
+            with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as novo_arq:
+                email_entrada = []
+                json.dump(email_entrada, novo_arq, indent=4, ensure_ascii=False)
+
+        self.botao_editar_email['state'] = 'enabled'
+        self.botao_salvar_email['state'] = 'disabled'
+        self.entry_usu_google['state'] = 'disabled'
+
     def acao_botao_start(self):
+        self.atualiz_campo_email()
         
         try:
             with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as temp_verif:
@@ -620,6 +675,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     self.botao_editar_query['state'] = 'disabled'
                     self.botao_limpar_campos['state'] = 'disabled'
                     self.botao_save['state'] = 'disabled'
+                    self.botao_salvar_email['state'] = 'disabled'
+                    self.botao_editar_email['state'] = 'disabled'
                     self.lbl_status_programa.config(text='O programa está executando', background=verde_status, foreground='white')
                     self.botao_start['state'] = 'disabled'
                     self.botao_start.place_forget()
@@ -630,5 +687,6 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
         except:
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
+
 if __name__ == '__main__':
     AppConsultas()

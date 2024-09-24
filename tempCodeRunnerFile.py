@@ -1,1 +1,1 @@
-from cronograma_geral import obter_cronograma_status
+CAMINHO_DB_EMAIL = 'database_email.json'

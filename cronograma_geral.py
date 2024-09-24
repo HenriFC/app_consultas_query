@@ -29,12 +29,12 @@ def obter_cronograma_status():
             while aux_indice_horario <= 11:
                 data_atual = date.today().strftime('%d.%m.%Y')
                 horario = value["horario"][aux_indice_horario]
-                print(horario)
+                #print(horario)
                 if horario == '':
                     break
                 horario_base_convert = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M')
                 horario_agora_convert = datetime.strptime(f"{data_atual} {datetime.now().strftime('%H:%M')}", '%d.%m.%Y %H:%M')
-                print(horario_base_convert, horario_agora_convert)
+                #print(horario_base_convert, horario_agora_convert)
                 if horario_base_convert < horario_agora_convert:
                     horario_base_convert += timedelta(days=1)
                     data_atual = horario_base_convert.strftime('%d.%m.%Y')
@@ -52,7 +52,8 @@ def obter_cronograma_status():
                         "NOME_ARQUIVO": value["nome"],
                         "STATUS": "Pendente",
                         "OBSERVAÇÃO": "-",
-                        "QUERY": value["query"]
+                        "QUERY": value["query"],
+                        "CAMINHO_SALVAR": value["caminho_salvar"]
                     }
 
                     # Verificar se o registro já existe no cronograma
@@ -77,7 +78,8 @@ def obter_cronograma_status():
                     "NOME_ARQUIVO": value["nome"],
                     "STATUS": "Pendente",
                     "OBSERVAÇÃO": "-",
-                    "QUERY": value["query"]
+                    "QUERY": value["query"],
+                    "CAMINHO_SALVAR": value["caminho_salvar"]
                 }
 
                 # Verificar se o registro já existe no cronograma
