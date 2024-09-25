@@ -137,7 +137,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.entry_horario10.config(state='readonly', foreground='black')
         self.entry_horario11.config(state='readonly', foreground='black')
         self.entry_horario12.config(state='readonly', foreground='black')
-        self.entry_usu_google.config(state='readonly', foreground='black')
+        self.entry_usu_email.config(state='readonly', foreground='black')
+        self.entry_link_query.config(state='readonly', foreground='black')
 
     def habilitar_campos(self):
         self.entry_nome_arquivo.config(state='enabled')
@@ -195,7 +196,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
     def botoes_geral(self):
         self.botao_start = ttk.Button(self.frm_back, text= 'START', command=self.acao_botao_start)
         self.botao_stop = ttk.Button(self.frm_back, text= 'STOP', command=self.acao_botao_stop)
-        self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+        self.botao_start.place(relx=0.795, rely=0.67, relheight=0.07, relwidth=0.12)
 
         self.botao_nova_query = ttk.Button(self.frm_back, text='NOVA QUERY', command=self.acao_botao_nova_query)
         self.botao_nova_query.place(relx=0.73, rely=0.05, relheight=0.04, relwidth=0.12)
@@ -213,7 +214,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_save.place(relx=0.73, rely=0.46, relheight=0.045, relwidth=0.25)
 
         self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=self.acao_botao_monitor)
-        self.botao_exibir_monitor.place(relx=0.73, rely=0.60, relheight=0.060, relwidth=0.25)
+        self.botao_exibir_monitor.place(relx=0.73, rely=0.55, relheight=0.060, relwidth=0.25)
 
         self.botao_editar_email = ttk.Button(self.frm_back, text='EDITAR', state='normal', command=self.acao_botao_editar_email)
         self.botao_editar_email.place(relx=0.896, rely=0.91, relheight=0.041, relwidth=0.05)
@@ -223,7 +224,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, foreground='white', font=('Calibri bold', 11), borderwidth=1, relief='groove', anchor='center')
-        self.lbl_status_programa.place(relx=0.73, rely=0.80, relheight=0.05, relwidth=0.25)
+        self.lbl_status_programa.place(relx=0.73, rely=0.75, relheight=0.05, relwidth=0.25)
 
     def campo_edicao_query(self):
         self.edicao_query = Text(self.frm_edicao, relief='groove')
@@ -313,10 +314,15 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.entry_horario12.bind('<KeyPress>', self.completar_horario2)
         self.entry_horario12.bind('<KeyRelease>', self.completar_horario)
 
-        self.entry_usu_google = ttk.Entry(self.frm_back, justify='left', validate='key')
-        self.etiq_entry_usu_google = ttk.Label(self.frm_back, text='USUÁRIO GOOGLE:', background=verde1)
-        self.entry_usu_google.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.18)
-        self.etiq_entry_usu_google.place(relx=0.715, rely=0.879)
+        self.entry_usu_email = ttk.Entry(self.frm_back, justify='left', validate='key')
+        self.etiq_entry_usu_email = ttk.Label(self.frm_back, text='USUÁRIO PARA LOGIN:', background=verde1)
+        self.entry_usu_email.place(relx=0.715, rely=0.911, relheight=0.038, relwidth=0.18)
+        self.etiq_entry_usu_email.place(relx=0.715, rely=0.879)
+
+        self.entry_link_query = ttk.Entry(self.frm_back, justify='left', validate='key')
+        self.etiq_entry_link_query = ttk.Label(self.frm_back, text='LINK BIG QUERY:', background=verde1)
+        self.entry_link_query.place(relx=0.715, rely=0.84, relheight=0.038, relwidth=0.18)
+        self.etiq_entry_link_query.place(relx=0.715, rely=0.807)
 
     def completar_horario2(sef, event):
         entry_x = event.widget
@@ -511,7 +517,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.lbl_status_programa.config(text='O programa está parado', background=vermelho0, foreground='white')
         self.botao_stop['state'] = 'disabled'
         self.botao_stop.place_forget()
-        self.botao_start.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+        self.botao_start.place(relx=0.795, rely=0.67, relheight=0.07, relwidth=0.12)
         self.botao_start['state'] = 'normal'
         self.botao_nova_query['state'] = 'normal'
         self.botao_editar_query['state'] = 'normal'
@@ -627,35 +633,47 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
     def acao_botao_editar_email(self):
         self.botao_editar_email['state'] = 'disabled'
         self.botao_salvar_email['state'] = 'normal'
-        self.entry_usu_google.config(state='enabled')
+        self.entry_link_query.config(state='enabled')
+        self.entry_usu_email.config(state='enabled')
 
     def acao_botao_salvar_email(self):
         self.botao_salvar_email['state'] = 'disabled'
         self.botao_editar_email['state'] = 'normal'
-        self.entry_usu_google.config(state='disabled')
+        self.entry_usu_email.config(state='disabled')
+        self.entry_link_query.config(state='disabled')
         with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as base_email:
-            email_capturado = self.entry_usu_google.get()
-            json.dump(email_capturado, base_email, indent=4, ensure_ascii=False)
-
+            email_capturado = self.entry_usu_email.get()
+            link_capturado = self.entry_link_query.get()
+            dados = {
+                "EMAIL": email_capturado,
+                "LINK": link_capturado
+            }
+            json.dump(dados, base_email, indent=4, ensure_ascii=False)
 
     def atualiz_campo_email(self):
-        if self.entry_usu_google['state'] == 'enabled':
-            self.entry_usu_google.delete(0, 'end')
+        if self.entry_usu_email['state'] == 'enabled':
+            self.entry_usu_email.delete(0, 'end')
+            self.entry_link_query.delete(0, 'end')
         else:
-            self.entry_usu_google['state'] = 'enabled'
-            self.entry_usu_google.delete(0, 'end')
+            self.entry_usu_email['state'] = 'enabled'
+            self.entry_link_query['state'] = 'enabled'
+            self.entry_usu_email.delete(0, 'end')
+            self.entry_link_query.delete(0, 'end')
         try:
             with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_leitura_email:
-                email_entrada = json.load(temp_leitura_email)
-                self.entry_usu_google.insert(0, email_entrada)
+                dados = json.load(temp_leitura_email)
+                self.entry_usu_email.insert(0, dados["EMAIL"])
+                self.entry_link_query.insert(0, dados["LINK"])
+
         except FileNotFoundError:
             with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as novo_arq:
-                email_entrada = []
-                json.dump(email_entrada, novo_arq, indent=4, ensure_ascii=False)
+                dados = []
+                json.dump(dados, novo_arq, indent=4, ensure_ascii=False)
 
         self.botao_editar_email['state'] = 'enabled'
         self.botao_salvar_email['state'] = 'disabled'
-        self.entry_usu_google['state'] = 'disabled'
+        self.entry_usu_email['state'] = 'disabled'
+        self.entry_link_query['state'] = 'disabled'
 
     def acao_botao_start(self):
         self.atualiz_campo_email()
@@ -680,7 +698,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     self.lbl_status_programa.config(text='O programa está executando', background=verde_status, foreground='white')
                     self.botao_start['state'] = 'disabled'
                     self.botao_start.place_forget()
-                    self.botao_stop.place(relx=0.795, rely=0.72, relheight=0.07, relwidth=0.12)
+                    self.botao_stop.place(relx=0.795, rely=0.67, relheight=0.07, relwidth=0.12)
                     self.botao_stop['state'] = 'normal'
                     click_start_stop()
 

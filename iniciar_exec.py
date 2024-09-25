@@ -21,9 +21,17 @@ if not os.path.exists(PASTA_LOGS):
 
 def obter_email():
     with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_email:
-        email_entrada = json.load(temp_email)
+        dados = json.load(temp_email)
+        email_entrada = dados["EMAIL"]
         print("lendo email")
     return email_entrada
+
+def obter_link():
+    with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_email:
+        dados = json.load(temp_email)
+        link = dados["LINK"]
+        print("lendo email")
+    return link
 
 
 
@@ -59,9 +67,10 @@ class GerenciadorTarefas:
                                 cod_query = detal['QUERY']
                                 caminho_salvar_arq = detal['CAMINHO_SALVAR']
                                 email_entrada = obter_email()
+                                link = obter_link()
                                 print(email_entrada)
                                 # Inicia essa tarefa:
-                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada)
+                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link)
                             else:
                                 self.base_atualizada.append(extracao[item])
                         
@@ -71,13 +80,13 @@ class GerenciadorTarefas:
                     
             time.sleep(1)  # Aguarda antes de verificar novamente
 
-    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada):
+    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link):
         # Inicia uma nova tarefa em uma thread separada
-        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada))
+        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link))
         thread_tarefa.start()
         self.threads_tarefas.append(thread_tarefa)
 
-    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada):
+    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link):
         # Iniciar criando um arquivo para receber o log das tarefas
         # Esse arquivo receberá os horários de inicío e fim, erros e etc
         # Sempre que necessário, durante a execução, dumpará informações específicas nesse arquivo, porém o arquivo de dump será um JSON com campos padronizados
@@ -89,9 +98,16 @@ class GerenciadorTarefas:
             navegador = pw.chromium.launch(channel="msedge", headless=False)
             pagina = navegador.new_page()
 
-            pagina.goto('https://console.cloud.google.com/bigquery?project=b2w-bee-quickstart&ws=!1m0')
+            pagina.goto(link)
 
-            pagina.wait_for_selector()
+            # Obter campos:
+            campo_inserir_email = pagina.get_by_label("E-mail ou telefone")
+            botao_proxima = pagina.get_by_role("button", name="Próxima")
+
+            campo_inserir_email.press_sequentially(email_entrada)
+            botao_proxima.click()
+
+            pagina.pause()
 
 
         print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")

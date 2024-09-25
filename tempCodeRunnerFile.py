@@ -1,1 +1,1 @@
-CAMINHO_DB_EMAIL = 'database_email.json'
+entry_usu_email
