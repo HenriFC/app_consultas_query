@@ -90,22 +90,54 @@ class GerenciadorTarefas:
         # Iniciar criando um arquivo para receber o log das tarefas
         # Esse arquivo receberá os horários de inicío e fim, erros e etc
         # Sempre que necessário, durante a execução, dumpará informações específicas nesse arquivo, porém o arquivo de dump será um JSON com campos padronizados
-        print(f"[{threading.current_thread().name}] {id_tarefa} iniciada.")
+        print(f'[{threading.current_thread().name}] {id_tarefa} iniciada.')
         time.sleep(1)
 
         with sync_playwright() as pw:
             # Iniciar edge:
-            navegador = pw.chromium.launch(channel="msedge", headless=False)
+            navegador = pw.chromium.launch(channel='msedge', headless=False)
             pagina = navegador.new_page()
 
             pagina.goto(link)
 
-            # Obter campos:
-            campo_inserir_email = pagina.get_by_label("E-mail ou telefone")
-            botao_proxima = pagina.get_by_role("button", name="Próxima")
 
-            campo_inserir_email.press_sequentially(email_entrada)
+            # Obter campos login:
+            pagina.wait_for_selector('xpath=//*[@id="identifierId"]')
+            print('encerrou a espera pelo campo "email"')
+            campo_inserir_email = pagina.locator('xpath=//*[@id="identifierId"]')
+
+            pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span')
+            print('encerrou a espera pelo botão"')
+            botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
+
+            campo_inserir_email.fill(email_entrada)
             botao_proxima.click()
+
+            # Dentro da BigQuery: Verificar carregamento da página.
+            print('Dentro da Bigquery. Verificando se carregou corretamente')
+            # verifica se a logo do Google está presente
+            pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
+            print('Logo Google encontrado')
+            # verifica se a lupa da bigquery está presente
+            pagina.wait_for_selector('xpath=//*[@id="panelgoog_1256029785"]/xap-deferred-loader-outlet/pcc-section-nav-bar/div/cfc-section-title/h2/button/cfc-icon[1]/mat-icon/svg')
+            print('Lupa bigquery encontrada')
+            # verifica se a aba "Consulta sem título" está presente
+            pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
+            print('Aba "Consulta sem título" encontrada')
+
+
+
+            # Clicar na aba "Consulta sem título":
+            aba_consulta_em_branco = pagina.locator('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
+            aba_consulta_em_branco.click()
+
+            # Verificar se o campo para inserir código query está presente:
+            pagina.wait_for_selector('xpath=//*[@id="_0rif_panelgoog_1520729473"]/cfc-panel-body/cfc-virtual-viewport/div[1]/bqui-query-editor/shared-query-editor/div/div[3]/div/cfc-code-editor/div/div/div/div[1]/div[2]/div[1]/div[4]')
+            print('Campo de inserção de consultas encontrado')
+            area_digitar_query = pagina.locator('xpath=//*[@id="_0rif_panelgoog_1520729473"]/cfc-panel-body/cfc-virtual-viewport/div[1]/bqui-query-editor/shared-query-editor/div/div[3]/div/cfc-code-editor/div/div/div/div[1]/div[2]/div[1]/div[4]')
+            area_digitar_query.click()
+            area_digitar_query.fill(cod_query)
+
 
             pagina.pause()
 

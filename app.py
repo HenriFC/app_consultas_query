@@ -89,6 +89,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
     # Janela principal
     def __init__(self):
         self.jan_principal = jan_principal
+        self.verificar_bases()
         self.validadores()
         self.tela_inicial()
         self.frames_principais()
@@ -177,10 +178,10 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.frm_back = ttk.Frame(jan_principal, style='frm_back.TFrame')
         self.frm_back.place(relx=0.006, rely=0.01, relheight=0.98, relwidth=0.988)
 
-        # Frame querys
+        # Frame árvore querys
         self.frm_querys = ttk.Frame(self.frm_back, relief='groove')
         self.etiq_querys = ttk.Label(self.frm_back, text='QUERYS:', background=verde1)
-        self.frm_querys.place(relx=0.01, rely=0.05, relheight=0.4, relwidth=0.7)
+        self.frm_querys.place(relx=0.01, rely=0.05, relheight=0.452, relwidth=0.7)
         self.etiq_querys.place(relx=0.01, rely=0.02, relheight=0.03, relwidth=0.1)
 
         # Frame edição
@@ -234,7 +235,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.edicao_query.place(relx=0.001, rely=0.0022, relheight=0.99, relwidth=0.98)
         self.scroll_edicao_query.place(anchor='ne', relx=1, rely=0.005, relheight=0.988)    
 
-    def campos_entry(self):
+    def campos_entry(self): 
         self.entry_nome_query = ttk.Entry(self.frm_back, justify='left', validate='key', validatecommand=self.valid_nome)
         self.etiq_entry_nome_query = ttk.Label(self.frm_back, text='QUERY:', background=verde1)
         self.entry_nome_query.place(relx=0.765, rely=0.17, relheight=0.038, relwidth=0.226, bordermode='inside')
@@ -350,14 +351,14 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
     def arvore(self):
         # Definindo a árvore e suas colunas
-        self.arvore_scripts = ttk.Treeview(self.frm_querys, style='arvore_scripts.Treeview')
+        self.arvore_scripts = ttk.Treeview(self.frm_querys)
         self.arvore_scripts['columns'] = ('Query', 'Horário', 'Nome', 'Local para salvar')
         
         self.scroll_arvore = Scrollbar(self.frm_querys, cursor='arrow', orient='vertical')
         self.arvore_scripts.config(yscrollcommand=self.scroll_arvore.set, style='Treeview')
         self.scroll_arvore.config(command=self.arvore_scripts.yview)
         self.arvore_scripts.place(relx=0.001, rely=0.002, relheight=1, relwidth=0.999)
-        self.scroll_arvore.place(anchor='ne', relx=1, rely=0.005, relheight=0.992)
+        self.scroll_arvore.place(anchor='ne', relx=1, rely=0.005, relheight=0.999)
 
         # Configurando as colunas
         # Primeiro temos a coluna mãe, que possui os controles de expansão e que receberá as demais colunas:
@@ -457,7 +458,11 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                 self.botao_limpar_campos['state'] = 'disabled'
                 self.botao_save['state'] = 'disabled'
         except IndexError:
-            pass
+            self.botao_start['state'] = 'normal'
+            self.botao_nova_query['state'] = 'normal'
+            self.botao_limpar_campos['state'] = 'disabled'
+            self.botao_save['state'] = 'disabled'
+            self.desablitar_campos()
         
     def acao_botao_nova_query(self):
         self.atualiz_campo_email()
@@ -535,9 +540,16 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         nome_arquivo = self.entry_nome_arquivo.get().strip()
         caminho_salvar_query = self.entry_caminho_salvar.get()
         query_script = self.edicao_query.get('1.0', 'end-1c')
+        duplic_horarios_query = horarios_query
+        for x, y in enumerate(horarios_query):
+            for a, b in enumerate(horarios_query):
+                if y == '':
+                    pass
+                elif x != a and y == b:
+                    duplic_horarios_query[a] = ''
 
+        horarios_query = sorted(duplic_horarios_query, key = lambda x: (x is '', x))
 
-            
         if self.validar_tamanho(nome_query_salvar) is False:
             messagebox.showerror('NOME INVÁLIDO', 'QUERY: O nome inserido para a query é inválido. \nOs dados não foram salvos.')
             
@@ -560,6 +572,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
                     "query": query_script
                     }
                 }
+
 
             # Gambiarra alert: utilizaremos um arquivo temporário para que as modificações não ocorram diretamente no JSON.
             #   Abriremos o arquivo JSON 
@@ -645,8 +658,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             email_capturado = self.entry_usu_email.get()
             link_capturado = self.entry_link_query.get()
             dados = {
-                "EMAIL": email_capturado,
-                "LINK": link_capturado
+                "EMAIL": email_capturado.strip(),
+                "LINK": link_capturado.strip()
             }
             json.dump(dados, base_email, indent=4, ensure_ascii=False)
 
@@ -659,16 +672,11 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.entry_link_query['state'] = 'enabled'
             self.entry_usu_email.delete(0, 'end')
             self.entry_link_query.delete(0, 'end')
-        try:
-            with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_leitura_email:
-                dados = json.load(temp_leitura_email)
-                self.entry_usu_email.insert(0, dados["EMAIL"])
-                self.entry_link_query.insert(0, dados["LINK"])
 
-        except FileNotFoundError:
-            with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as novo_arq:
-                dados = []
-                json.dump(dados, novo_arq, indent=4, ensure_ascii=False)
+        with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_leitura_email:
+            dados = json.load(temp_leitura_email)
+            self.entry_usu_email.insert(0, dados["EMAIL"])
+            self.entry_link_query.insert(0, dados["LINK"])
 
         self.botao_editar_email['state'] = 'enabled'
         self.botao_salvar_email['state'] = 'disabled'
@@ -705,6 +713,39 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
 
         except:
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
+
+    def verificar_bases(self):
+
+        # Verificar se a base principal existe:
+        try:
+            with open(CAMINHO_DB_JSON, 'r', encoding='utf-8') as tentativa_abrir:
+                pass
+        except FileNotFoundError:
+            with open(CAMINHO_DB_JSON, 'w', encoding='utf-8') as criando_database:
+                dados_novos = {}
+                json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
+
+        # Verificar se a base e-mail e link existe:
+        try:
+            with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as tentativa_abrir:
+                pass
+        except FileNotFoundError:
+            with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as criando_database:
+                dados_novos = {
+                    "EMAIL": "",
+                    "LINK": ""
+                }
+                json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
+
+        # Verifiar se a base do cronograma existe:                
+        try:
+            with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as tentativa_abrir:
+                pass
+        except FileNotFoundError:
+            with open(CAMINHO_HIST_CRONO, 'w', encoding='utf-8') as criando_database:
+                dados_novos = {}
+                json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     AppConsultas()
