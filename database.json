@@ -1,1 +1,21 @@
-{}
+{
+    "Teste 01": {
+        "horario": [
+            "23:12",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "nome arquivo teste 01.csv",
+        "caminho_salvar": "C://",
+        "query": "SELECT \ndate(roma_dt_registro)    AS DT_REGISTRO_AGRUP\n,roma_dt_situacao         AS DATA_SITUACAO\n,pedv.pedv_dt_registro    AS DATA_REGISTRO   \n,roma_id_agrurom          AS AGRUPAMENTO\n,roma_id_programa         AS PROGRAMA\t\t\n,roma_id_onda             AS ONDA\n,pedv_id_prevol           AS PREVOLUME\n,roma_id_local_dest       AS ID_LOCAL_DESTINO\n,pedv_documento_externo   AS ENTREGA\t\n,pedv_id_rota             AS LOJA  \n,hllj_nome                AS LOJA_NOME\n,loca_id_claloc           AS CLASSE\t\n,roma_id_local_orig       AS ID_LOCAL\n,loca_descricao           AS ENDERECO\n,roma_usuario             AS OPERADOR\n,roma_id_rom              AS ID_ROMANEIO\n,roma_pallet_cheio        AS PALETE_CHEIO\n,roma_situacao            AS SITUACAO\n,CASE\n  WHEN agro_classificacao = 'SI' THEN 'SIMPLES'  \n  WHEN agro_classificacao = 'CO' THEN 'COMPLEXO'\n  ELSE 'SEM PARÂMETRO'  END       AS CLASSIFICACAO\n,roma_tp_rom              AS TIPO_ROM\n,romd_id_item             as ITEM\n,item_cod_terceiro        as COD_TERCEIRO \n,i.item_nome              AS DESCRICAO \n,romd_qt                  AS QUANTIDADE\n,romd_qt_atend            AS QUANTIDADE_ATENDIDA\n,'EG' || agrup.agro_id_coleta     AS EG \n\n\n FROM `b2w-bee-analytics.raw_wms_tables_current.wlasa_romaneio` roma\n\n LEFT JOIN `b2w-bee-analytics.raw_wms_tables_current.wlasa_romaneio_detalhe` romd\n\ton romd.romd_id_rom = roma.roma_id_rom\n        and date(romd.process_time) <= current_date \n\n LEFT JOIN `b2w-bee-analytics.raw_wms_tables_current.wlasa_agrupamento_romaneio` agrup\n      on roma.roma_id_agrurom = agrup.agro_id_agrurom\n      and date(agrup.process_time) <= current_date         \n\n LEFT JOIN  `b2w-bee-analytics.raw_wms_tables_current.wlasa_pedido_cab` pedv \n    ON  roma.roma_id_ped = pedv.pedv_id_ped\n    and date(pedv.process_time) <= current_date       \n\n LEFT JOIN b2w-bee-analytics.raw_wms_tables_current.wlasa_item  AS i\n        ON romd.romd_id_item  = i.item_id_item\n        AND DATE(i.process_time) <= CURRENT_DATE        \n\n  left join `b2w-bee-analytics.raw_wms_tables.wlasa_local` local\n      on   local.loca_id_local  = roma.roma_id_local_orig  \n      and date(local.process_time) <= current_date \n \nleft join `b2w-bee-analytics.raw_wms_tables.wlasa_hora_limite_loja`  nome\n      on hllj_cod_loja = pedv_id_rota\n      and date(nome.process_time) <= current_date  \n\n \n  WHERE DATE(roma.process_time)  <= CURRENT_DATE    \n    AND roma_situacao <> 'LI'\n    AND roma_situacao <> 'CA'\n    AND pedv_id_warranty  = '101'\n    AND roma_id_ressupri IS NULL \n    AND roma_tp_rom  <> 'A'\n    and roma_id_planta = 'UBER' \n"
+    }
+}

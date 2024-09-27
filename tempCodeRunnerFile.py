@@ -1,1 +1,1 @@
-entry_usu_email
+            self.add_para_clipboard(cod_query)

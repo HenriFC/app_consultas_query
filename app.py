@@ -6,7 +6,7 @@ from tkinter import Tk, PhotoImage, Scrollbar, Text, Toplevel
 from tkinter import ttk
 from tkinter import messagebox
 
-from autoedge import iniciar_edge
+#from autoedge import iniciar_edge
 from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
 from state_exec import estado_programa, estado_database

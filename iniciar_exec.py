@@ -4,6 +4,7 @@ import shutil
 import tempfile
 import threading
 import time
+from pyautogui import hotkey
 from playwright.sync_api import sync_playwright
 from datetime import date, datetime, timedelta
 from cronograma_geral import obter_cronograma_status
@@ -97,6 +98,7 @@ class GerenciadorTarefas:
             # Iniciar edge:
             navegador = pw.chromium.launch(channel='msedge', headless=False)
             pagina = navegador.new_page()
+            pagina.set_default_timeout(0)
 
             pagina.goto(link)
 
@@ -118,35 +120,43 @@ class GerenciadorTarefas:
             # verifica se a logo do Google está presente
             pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
             print('Logo Google encontrado')
-            # verifica se a lupa da bigquery está presente
-            pagina.wait_for_selector('xpath=//*[@id="panelgoog_1256029785"]/xap-deferred-loader-outlet/pcc-section-nav-bar/div/cfc-section-title/h2/button/cfc-icon[1]/mat-icon/svg')
-            print('Lupa bigquery encontrada')
             # verifica se a aba "Consulta sem título" está presente
             pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
             print('Aba "Consulta sem título" encontrada')
-
-
 
             # Clicar na aba "Consulta sem título":
             aba_consulta_em_branco = pagina.locator('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
             aba_consulta_em_branco.click()
 
+
             # Verificar se o campo para inserir código query está presente:
-            pagina.wait_for_selector('xpath=//*[@id="_0rif_panelgoog_1520729473"]/cfc-panel-body/cfc-virtual-viewport/div[1]/bqui-query-editor/shared-query-editor/div/div[3]/div/cfc-code-editor/div/div/div/div[1]/div[2]/div[1]/div[4]')
-            print('Campo de inserção de consultas encontrado')
-            area_digitar_query = pagina.locator('xpath=//*[@id="_0rif_panelgoog_1520729473"]/cfc-panel-body/cfc-virtual-viewport/div[1]/bqui-query-editor/shared-query-editor/div/div[3]/div/cfc-code-editor/div/div/div/div[1]/div[2]/div[1]/div[4]')
+            print('Aguardando encontrar botão "Executar" inativo')
+            pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div/cfc-progress-button/div[1]')
+            print('Encontrou botão "Executar"')
+
+
+            print('Aguardando encontrar campo inserir consulta')
+            area_digitar_query = pagina.locator(".view-lines")
             area_digitar_query.click()
-            area_digitar_query.fill(cod_query)
-
-
+            print('Campo consulta encontrado')
+            #area_digitar_query.type(cod_query)
+            self.add_para_clipboard(cod_query)
+            hotkey('ctrl' + 'v')
+            print('Consulta inserida')
+            
             pagina.pause()
 
 
         print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")
 
+    def add_para_clipboard(texto):
+        comando = 'echo ' + texto + '| clip'
+        os.system(comando)
+
     def dump_infos_exec(self, ):
 
         pass
+
     def click_botao(self):
         # Define o estado como executando e inicia novas tarefas
         with self.lock:
