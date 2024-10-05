@@ -218,10 +218,10 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_exibir_monitor.place(relx=0.73, rely=0.55, relheight=0.060, relwidth=0.25)
 
         self.botao_editar_email = ttk.Button(self.frm_back, text='EDITAR', state='normal', command=self.acao_botao_editar_email)
-        self.botao_editar_email.place(relx=0.896, rely=0.91, relheight=0.041, relwidth=0.05)
+        self.botao_editar_email.place(relx=0.896, rely=0.84, relheight=0.11, relwidth=0.05)
 
         self.botao_salvar_email = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar_email)
-        self.botao_salvar_email.place(relx=0.947, rely=0.91, relheight=0.041, relwidth=0.05)
+        self.botao_salvar_email.place(relx=0.947, rely=0.84, relheight=0.11, relwidth=0.05)
 
     def label_status(self):
         self.lbl_status_programa = ttk.Label(self.frm_back, text='O programa está parado', background=vermelho0, foreground='white', font=('Calibri bold', 11), borderwidth=1, relief='groove', anchor='center')
