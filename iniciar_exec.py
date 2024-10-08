@@ -4,8 +4,7 @@ import shutil
 import tempfile
 import threading
 import time
-from pyautogui import hotkey
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 from datetime import date, datetime, timedelta
 from cronograma_geral import obter_cronograma_status
 from state_exec import estado_programa, estado_database
@@ -13,12 +12,16 @@ from state_exec import estado_programa, estado_database
 
 
 PASTA_LOGS = 'logs_exec_tarefas'
+PASTA_DOWNLOAD_TEMP = 'downloads_temp'
 CAMINHO_ARQ = 'database_cronograma.json'
 CAMINHO_DB_EMAIL = 'database_email.json'
 
 
 if not os.path.exists(PASTA_LOGS):
     os.makedirs(PASTA_LOGS)
+
+if not os.path.exists(PASTA_DOWNLOAD_TEMP):
+    os.makedirs(PASTA_DOWNLOAD_TEMP)
 
 def obter_email():
     with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_email:
@@ -99,6 +102,8 @@ class GerenciadorTarefas:
             navegador = pw.chromium.launch(channel='msedge', headless=False)
             pagina = navegador.new_page()
             pagina.set_default_timeout(0)
+            caminho_download_temp = os.path.join(PASTA_DOWNLOAD_TEMP, nome_arq)
+            caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
 
             pagina.goto(link)
 
@@ -106,13 +111,12 @@ class GerenciadorTarefas:
             # Obter campos login:
             pagina.wait_for_selector('xpath=//*[@id="identifierId"]')
             print('encerrou a espera pelo campo "email"')
-            campo_inserir_email = pagina.locator('xpath=//*[@id="identifierId"]')
 
             pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span')
             print('encerrou a espera pelo botão"')
             botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
 
-            campo_inserir_email.fill(email_entrada)
+            pagina.keyboard.insert_text(email_entrada)
             botao_proxima.click()
 
             # Dentro da BigQuery: Verificar carregamento da página.
@@ -138,20 +142,65 @@ class GerenciadorTarefas:
             print('Aguardando encontrar campo inserir consulta')
             area_digitar_query = pagina.locator(".view-lines")
             area_digitar_query.click()
-            print('Campo consulta encontrado')
-            #area_digitar_query.type(cod_query)
-            self.add_para_clipboard(cod_query)
-            hotkey('ctrl' + 'v')
-            print('Consulta inserida')
+            print('Campo consulta encontrado\n')
+
+            #Inserir pelo CTRL+V:
+            pagina.keyboard.insert_text(cod_query)
             
-            pagina.pause()
+            # Executar query:
+            botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
+            botao_executar.click()
+            print('Botão EXECUTAR clicado\n')
+
+            botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
+
+            # Um objeto específico estar visível:
+            expect(botao_cancelar).to_be_visible(timeout=60000)
+            print('Botão CANCELAR visivel')
+            expect(botao_cancelar).to_be_hidden(timeout=240000)
+            print('Botão CANCELAR desapareceu\n')
+
+            # Verificar status de erro...
 
 
-        print(f"[{threading.current_thread().name}] {id_tarefa} concluída.")
+            # Download dos dados em .csv
+            botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+            time.sleep(1)
+            botao_salvar_resultados.click()
+            time.sleep(1)
+            print("Botão 'Salvar resultados' pressionado")
 
-    def add_para_clipboard(texto):
-        comando = 'echo ' + texto + '| clip'
-        os.system(comando)
+            botao_salvar_csv_gdrive = pagina.get_by_role("menuitem", name="CSV (Google Drive) . Salve at")
+            time.sleep(1)
+            
+            botao_salvar_csv_gdrive.click()
+            print("Botão 'CSV Google Drive' pressionado")
+
+            with pagina.expect_popup() as pagina1_inform:
+                pagina.get_by_role("button", name="Acesse o Google Drive.").click()
+            pagina1 = pagina1_inform.value
+
+            print('Dentro do GOOGLE DRIVE')
+            
+            with pagina1.expect_download() as download_inform:
+                try:
+                    pagina1.get_by_label("Fazer o download").click()
+                except:
+                    pass
+            print('solicitou download - fora do "with expect_download"')
+            download = download_inform.value
+            download.save_as(caminho_download_temp)
+            print('salvou no caminho - após o "save_as(caminho download)"')
+            
+            try:
+                shutil.move(caminho_download_temp, caminho_download_final)
+            except:
+                pass
+
+            pagina.close()
+
+        print(f'[{threading.current_thread().name}] {id_tarefa} concluída.')
+
 
     def dump_infos_exec(self, ):
 
