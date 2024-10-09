@@ -9,9 +9,9 @@ from tkinter import messagebox
 #from autoedge import iniciar_edge
 from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
-from state_exec import estado_programa, estado_database
+from state_exec import estado_programa
 from coreslayout import *
-from iniciar_exec import click_start_stop, obter_email
+from iniciar_exec import click_start_stop
 
 
 jan_principal = Tk()
