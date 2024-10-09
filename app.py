@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import shutil
 import tempfile
@@ -15,8 +16,6 @@ from iniciar_exec import click_start_stop
 
 
 jan_principal = Tk()
-img_ico = PhotoImage(file='icon2.png')
-jan_principal.iconphoto(True, img_ico)
 s = ttk.Style()
 s.map('TButton', background=[('active', azul_claro), ('disabled', 'light grey')], foreground=[('active', 'blue'), ('disabled', 'grey')])
 s.configure('frm_status_start.TFrame', background=verde0)
@@ -32,6 +31,16 @@ global nome_antigo_query
 
 
 
+def recurso_img(caminho_relativo):
+    try:
+        caminho_base = sys._MEIPASS
+    except AttributeError:
+        caminho_base = os.path.abspath(".")
+    return os.path.join(caminho_base, caminho_relativo)
+
+caminho_icone = recurso_img('icon.png')
+img_ico = PhotoImage(file=caminho_icone)
+jan_principal.iconphoto(True, img_ico)
 
 class ValidarEntrys():
 
