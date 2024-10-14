@@ -57,31 +57,37 @@ class GerenciadorTarefas:
                 self.base_atualizada = []
                 self.atualiz_item = []
                 if self.executando == 'Executando':
-                    with open(CAMINHO_ARQ, 'r', encoding='utf-8') as crono_original, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
-                        extracao = json.load(crono_original)
-                        for item, detal in enumerate(extracao):
-                            if detal['HORA_INICIO_PLAN'] == self.horario_atual and detal["STATUS"] == 'Pendente' and detal['DATA'] == self.data_atual:
-                                self.atualiz_item = extracao[item]
-                                self.atualiz_item['STATUS'] = 'Executando'
-                                self.base_atualizada.append(self.atualiz_item)
-                                id_tarefa = detal['ID']
-                                hr_ini_consulta = detal['HORA_INICIO_CONS']
-                                hr_fim_consulta = detal['HORA_FIM_CONS']
-                                nome_arq = detal['NOME_ARQUIVO']
-                                cod_query = detal['QUERY']
-                                caminho_salvar_arq = detal['CAMINHO_SALVAR']
-                                email_entrada = obter_email()
-                                link = obter_link()
-                                print(email_entrada)
-                                # Inicia essa tarefa:
-                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link)
-                            else:
-                                self.base_atualizada.append(extracao[item])
+                    for i in range(10): 
+                        try:
+                            with open(CAMINHO_ARQ, 'r', encoding='utf-8') as crono_original, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+                                extracao = json.load(crono_original)
+                                for item, detal in enumerate(extracao):
+                                    if detal['HORA_INICIO_PLAN'] == self.horario_atual and detal["STATUS"] == 'Pendente' and detal['DATA'] == self.data_atual:
+                                        self.atualiz_item = extracao[item]
+                                        self.atualiz_item['STATUS'] = 'Executando'
+                                        self.base_atualizada.append(self.atualiz_item)
+                                        id_tarefa = detal['ID']
+                                        hr_ini_consulta = detal['HORA_INICIO_CONS']
+                                        hr_fim_consulta = detal['HORA_FIM_CONS']
+                                        nome_arq = detal['NOME_ARQUIVO']
+                                        cod_query = detal['QUERY']
+                                        caminho_salvar_arq = detal['CAMINHO_SALVAR']
+                                        email_entrada = obter_email()
+                                        link = obter_link()
+                                        print(email_entrada)
+                                        # Inicia essa tarefa:
+                                        self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link)
+                                    else:
+                                        self.base_atualizada.append(extracao[item])
+                                
+                                json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
+                                print(f'{i} - FOR loop iniciar executado')
+                            shutil.move(file_temp.name, CAMINHO_ARQ)
+                            obter_cronograma_status()
+                            break
+                        except:
+                            time.sleep(1)
                         
-                        json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
-                    shutil.move(file_temp.name, CAMINHO_ARQ)
-                    obter_cronograma_status()
-                    
             time.sleep(1)  # Aguarda antes de verificar novamente
 
     def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link):
@@ -101,101 +107,186 @@ class GerenciadorTarefas:
             # Iniciar edge:
             navegador = pw.chromium.launch(channel='msedge', headless=False)
             pagina = navegador.new_page()
-            pagina.set_default_timeout(0)
             caminho_download_temp = os.path.join(PASTA_DOWNLOAD_TEMP, nome_arq)
             caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
 
+            def inserir_email(pagina, tentativas=10, timeout=2000):
+                # Aguardando a página de login
+                pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=120000)
+                print('encerrou a espera pelo campo "email"')
+                pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span', timeout=120000)
+                print('encerrou a espera pelo botão "Próximo"')
+                for i in range(tentativas):
+                    try:
+                        pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=timeout)
+                        botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
+                        pagina.keyboard.insert_text(email_entrada)
+                        botao_proxima.click()
+                        return True
+                    except:
+                        print(f'Tentativa [{i}] - Não foi possível logar na plataforma')
+                        pagina.wait_for_timeout(1000)
+                return False
+
+# --------------------------------------------------------------------
+            
+            def selecionar_aba_consulta(pagina, tentativas=10, timeout=2000):
+                # Dentro da BigQuery: Verificar carregamento da página.
+                pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-5"]/span[2]', timeout=120000) 
+                print('Aba "boas vindas" encontrada')
+                pagina.wait_for_selector('role=heading[name="Este é o BigQuery Studio."]', timeout=120000)
+                print('Texto "Este é o BigQuery Studio." encontrado')
+                pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]', timeout=120000)
+                print('Aba "Consulta sem título" encontrada')
+                aba_consulta_em_branco = pagina.get_by_role('tab', name='Consulta sem título')
+                for i in range(tentativas):
+                    try:
+                        aba_consulta_em_branco.click()
+                        return True
+                    except:
+                        print(f'Tentativa [{i}] - Editor não encontrado')
+                        pagina.wait_for_timeout(1000)
+                return False
+
+            def inserir_cod_query(pagina, cod_query, tentativas=10, timeout=120000):
+                area_digitar_query = pagina.locator('.view-lines')
+                botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
+                pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
+                for i in range(tentativas):
+                    try:
+                        area_digitar_query.click()
+                        pagina.keyboard.insert_text(cod_query)
+                        botao_executar.wait_for(state='visible', timeout=timeout)
+                        return True
+                    except:
+                        print(f'Tentativa [{i}] - Erro na inserção do código SQL')
+                        pagina.wait_for_timeout(1000)
+                return False
+
+# --------------------------------------------------------------------
+
+            def clicar_em_executar(pagina, tentativas=10, timeout=2000):
+                botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
+                botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
+                for i in range(tentativas):
+                    try:
+                        botao_executar.click()
+                        pagina.wait_for_timeout(2000)
+                        botao_cancelar.wait_for(state='visible', timeout=timeout)
+                        return True
+                    except:
+                        print(f'Tentativa [{i}] - Não foi possível executar a consulta SQL')
+
+                        # Pode não executar - Dumpar raise no log de erro
+                return False
+            
+            def acompanhar_execucao(pagina):
+                try:
+                    botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+                    botao_salvar_resultados.wait_for(state='visible', timeout=1800000)
+                    return True
+                except:
+                    print('Não foi possível encontrar o botão "Salvar Resultados"')
+                return False
+
+            def click_salvar_result(pagina, tentativas=10, timeout=2000):
+                botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+                botao_salvar_csv_gdrive = pagina.get_by_role("menuitem", name="CSV (Google Drive) . Salve at")
+                for i in range(tentativas):
+                    try:
+                        botao_salvar_resultados.click()
+                        pagina.wait_for_timeout(1000)
+                        botao_salvar_csv_gdrive.click()
+                        return True
+                    except:
+                        print(f'Tentativa {i} - Não encontrou o botão "CSV (Google Drive)"')
+                return False
+
+            def nova_aba_gdrive(pagina, tentativas=10):
+                for i in range(tentativas):
+                    try:
+                        with pagina.expect_popup() as pagina1_inform:
+                            pagina.get_by_role('button', name='Acesse o Google Drive.').click()
+                        pagina1 = pagina1_inform.value
+                        break
+                    except:
+                        print(f'Tentativa [{i}] - Não foi possível acessar o Google Drive')
+
+                for i in range(tentativas):
+                    try:
+                        with pagina1.expect_download() as download_inform:
+                            try:
+                                pagina1.get_by_label('Fazer o download').click()
+                            except:
+                                pass
+                        print('solicitou download - fora do "with expect_download"')
+                        download = download_inform.value
+                        download.save_as(caminho_download_temp)
+                        print('salvou no caminho - após o "save_as(caminho download)"')
+                        break
+                    except:
+                        print(f'Tentativa [{i}] - Não foi possível acessar o botão "Fazer o download"')
+                for i in range(tentativas):  
+                    try:
+                        shutil.move(caminho_download_temp, caminho_download_final)
+                        break
+                    except:
+                        print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
+                
+
+
             pagina.goto(link)
 
+            if inserir_email(pagina):
+                print('Email inserido.')
+            else:
+                print('Erro ao inserir email')
 
-            # Obter campos login:
-            pagina.wait_for_selector('xpath=//*[@id="identifierId"]')
-            print('encerrou a espera pelo campo "email"')
+            if selecionar_aba_consulta(pagina):
+                print('Campo inserir consulta em exibição')
+            else:
+                print('Campo inserir consulta não encontrado')
 
-            pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span')
-            print('encerrou a espera pelo botão"')
-            botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
+            if inserir_cod_query(pagina, cod_query):
+                print('Consulta inserida no campo')
+            else:
+                print('Erro ao inserir a consulta')
 
-            pagina.keyboard.insert_text(email_entrada)
-            botao_proxima.click()
+            if clicar_em_executar(pagina):
+                print('Consulta executada')
+            else:
+                print('Erro ao executar a consulta')
 
-            # Dentro da BigQuery: Verificar carregamento da página.
-            print('Dentro da Bigquery. Verificando se carregou corretamente')
-            # verifica se a logo do Google está presente
-            pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
-            print('Logo Google encontrado')
-            # verifica se a aba "Consulta sem título" está presente
-            pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
-            print('Aba "Consulta sem título" encontrada')
+            if acompanhar_execucao(pagina):
+                pass
+            else:
+                print('Erro de execução')
 
-            # Clicar na aba "Consulta sem título":
-            aba_consulta_em_branco = pagina.locator('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]')
-            aba_consulta_em_branco.click()
-
-
-            # Verificar se o campo para inserir código query está presente:
-            print('Aguardando encontrar botão "Executar" inativo')
-            pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div/cfc-progress-button/div[1]')
-            print('Encontrou botão "Executar"')
+            if click_salvar_result(pagina):
+                print('Botão "Salvar Resultados" pressionado')
+            else:
+                print('Não foi possível acessar o botão "Salvar Resultados"')
 
 
-            print('Aguardando encontrar campo inserir consulta')
-            area_digitar_query = pagina.locator(".view-lines")
-            area_digitar_query.click()
-            print('Campo consulta encontrado\n')
+            nova_aba_gdrive(pagina)
+
+
+
 
             #Inserir pelo CTRL+V:
-            pagina.keyboard.insert_text(cod_query)
+
             
             # Executar query:
-            botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
-            botao_executar.click()
-            print('Botão EXECUTAR clicado\n')
-
-            botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
-
-            # Um objeto específico estar visível:
-            expect(botao_cancelar).to_be_visible(timeout=60000)
-            print('Botão CANCELAR visivel')
-            expect(botao_cancelar).to_be_hidden(timeout=240000)
-            print('Botão CANCELAR desapareceu\n')
+ 
 
             # Verificar status de erro...
 
 
             # Download dos dados em .csv
-            botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
-            time.sleep(1)
-            botao_salvar_resultados.click()
-            time.sleep(1)
-            print("Botão 'Salvar resultados' pressionado")
 
-            botao_salvar_csv_gdrive = pagina.get_by_role("menuitem", name="CSV (Google Drive) . Salve at")
-            time.sleep(1)
-            
-            botao_salvar_csv_gdrive.click()
-            print("Botão 'CSV Google Drive' pressionado")
 
-            with pagina.expect_popup() as pagina1_inform:
-                pagina.get_by_role("button", name="Acesse o Google Drive.").click()
-            pagina1 = pagina1_inform.value
 
-            print('Dentro do GOOGLE DRIVE')
-            
-            with pagina1.expect_download() as download_inform:
-                try:
-                    pagina1.get_by_label("Fazer o download").click()
-                except:
-                    pass
-            print('solicitou download - fora do "with expect_download"')
-            download = download_inform.value
-            download.save_as(caminho_download_temp)
-            print('salvou no caminho - após o "save_as(caminho download)"')
-            
-            try:
-                shutil.move(caminho_download_temp, caminho_download_final)
-            except:
-                pass
+
 
             pagina.close()
 

@@ -1,1 +1,40 @@
-{}
+{
+    "Mapeamento": {
+        "horario": [
+            "12:44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "Mapeamento.csv",
+        "caminho_salvar": "C:\\Users\\henrique.fernandes\\OneDrive - americanas s.a\\Área de Trabalho\\lixo",
+        "query": "SELECT DISTINCT\n\nitcl_id_planta                  AS CD\n, itcl_id_claloc                AS CLASSE_LOCAL\n, item_cod_terceiro             AS MATERIAL\n, itcl_id_warranty\t\tAS RESTRICAO\n, itcl_lastro\t\t\tAS UND_LASTRO\n, itcl_nu_camadas\t\tAS CAMADAS\n, itcl_qt_padrao\t\tAS PALETIZ\n, item_id_item\t\t\tAS ITEM\n\n\n\nFROM `b2w-bee-analytics.raw_wms_tables_current.wlasa_item_classe_local` \n\nLEFT JOIN `b2w-bee-analytics.raw_wms_tables_current.wlasa_item`\nON itcl_id_item=item_id_item\n\n \n\nWHERE itcl_id_planta ='UBER'\n\nAND itcl_id_claloc IN ('BIN3','BLOF1','BLOF2','BLOF3','BLOF4','BLOF5','BLOFR','CFB1','CFB2','CFB3','CFB4','CFB5','HOTC','HOTS','INVE1','RISB1','RISB2','SBB1','SBB2','SBB3','SBB4','SBB5','SPB1','TVPP')\n\nORDER BY \nitcl_id_claloc\n"
+    },
+    "Posições": {
+        "horario": [
+            "17:36",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "nome": "Posições.csv",
+        "caminho_salvar": "C:\\Users\\henrique.fernandes\\OneDrive - americanas s.a\\Área de Trabalho\\lixo",
+        "query": "Select distinct \n\nloca_id_planta                                   AS PLANTA   \n,loca_id_claloc                                  AS CLASSE_LOCAL\n,clal_nome                                       AS DESC_CLASSE\n,CASE\n           WHEN clal_in_picking  = 'S' THEN 'BAIXO'           \n                               ELSE 'ALTO'\n                               END               AS NIVEL_CLASSE\n,loca_id_local      AS ID_LOCAL\n,CASE\n           WHEN loca_in_habilitado  = 'S' THEN 'SIM'           \n                               ELSE 'NÃO'\n                               END               AS HABILITADO\n,loca_x1                                         AS RUA                               \n\n,CONCAT( COALESCE(loca_x1,''),COALESCE(loca_x2,''),COALESCE(loca_x3,''),COALESCE(loca_x4,'')) AS ENDERECO\n,CASE\n           WHEN loca_tp_ocup    = 'V' THEN 'VAZIO'           \n                               ELSE 'OCUPADO'\n                               END               AS ESTADO_LOCAL\n\n,loca_dt_alt                                     AS DT_ALTERACAO_LOCAL\n,loca_usuario_alt                                AS USUARIO_ALTERACAO\n\nFROM `b2w-bee-analytics.raw_wms_tables_current.wlasa_local` loca\n\nLEFT JOIN `b2w-bee-analytics.raw_wms_tables_current.wlasa_classe_local` cla  \n      on loca_id_planta = clal_id_planta\n      AND loca_id_claloc = clal_id_claloc\n      AND DATE (cla.process_time) <= CURRENT_DATE  \n\n\nwhere date(loca.process_time) <= current_date \nAND loca_id_planta ='UBER'\n--AND loca_in_habilitado <> 'N' /*DESABILITAR LINHA PARA O RELATÓRIO DA OCUPAÇÃO*/\nAND clal_in_picking = 'S'\nAND loca_id_claloc in ('RISB1','BIN3','CFB1','CFB2','CFB3','CFB4','SBB1','SBB2','SBB3','SPB1','TVPP','BLOF1','BLOF2','BLOF3','BLOF4'\n)\n\n\nORDER BY \nloca_id_claloc"
+    }
+}
