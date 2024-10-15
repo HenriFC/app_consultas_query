@@ -719,8 +719,7 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         except FileNotFoundError:
             with open(CAMINHO_DB_EMAIL, 'w', encoding='utf-8') as criando_database:
                 dados_novos = {
-                    "EMAIL": "",
-                    "LINK": ""
+                    "EMAIL": ""
                 }
                 json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
 
