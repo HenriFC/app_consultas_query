@@ -1,1 +1,1 @@
-            self.add_para_clipboard(cod_query)
+len

@@ -4,6 +4,7 @@ import shutil
 import tempfile
 import threading
 import time
+from pyautogui import press
 from playwright.sync_api import sync_playwright, expect
 from datetime import date, datetime, timedelta
 from cronograma_geral import obter_cronograma_status
@@ -73,7 +74,7 @@ class GerenciadorTarefas:
                                         cod_query = detal['QUERY']
                                         caminho_salvar_arq = detal['CAMINHO_SALVAR']
                                         email_entrada = obter_email()
-                                        link = obter_link()
+                                        link = detal['QUERY']
                                         print(email_entrada)
                                         # Inicia essa tarefa:
                                         self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link)
@@ -82,6 +83,7 @@ class GerenciadorTarefas:
                                 
                                 json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
                                 print(f'{i} - FOR loop iniciar executado')
+                                press('shift')                         
                             shutil.move(file_temp.name, CAMINHO_ARQ)
                             obter_cronograma_status()
                             break
@@ -129,45 +131,13 @@ class GerenciadorTarefas:
                 return False
 
 # --------------------------------------------------------------------
-            
-            def selecionar_aba_consulta(pagina, tentativas=10, timeout=2000):
-                # Dentro da BigQuery: Verificar carregamento da página.
-                pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-5"]/span[2]', timeout=120000) 
-                print('Aba "boas vindas" encontrada')
-                pagina.wait_for_selector('role=heading[name="Este é o BigQuery Studio."]', timeout=120000)
-                print('Texto "Este é o BigQuery Studio." encontrado')
-                pagina.wait_for_selector('xpath=//*[@id="_0rif_mat-tab-link-4"]/span[2]', timeout=120000)
-                print('Aba "Consulta sem título" encontrada')
-                aba_consulta_em_branco = pagina.get_by_role('tab', name='Consulta sem título')
-                for i in range(tentativas):
-                    try:
-                        aba_consulta_em_branco.click()
-                        return True
-                    except:
-                        print(f'Tentativa [{i}] - Editor não encontrado')
-                        pagina.wait_for_timeout(1000)
-                return False
-
-            def inserir_cod_query(pagina, cod_query, tentativas=10, timeout=120000):
-                area_digitar_query = pagina.locator('.view-lines')
-                botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
-                pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
-                for i in range(tentativas):
-                    try:
-                        area_digitar_query.click()
-                        pagina.keyboard.insert_text(cod_query)
-                        botao_executar.wait_for(state='visible', timeout=timeout)
-                        return True
-                    except:
-                        print(f'Tentativa [{i}] - Erro na inserção do código SQL')
-                        pagina.wait_for_timeout(1000)
-                return False
 
 # --------------------------------------------------------------------
 
             def clicar_em_executar(pagina, tentativas=10, timeout=2000):
                 botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
                 botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
+                pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
                 for i in range(tentativas):
                     try:
                         botao_executar.click()
@@ -241,16 +211,6 @@ class GerenciadorTarefas:
                 print('Email inserido.')
             else:
                 print('Erro ao inserir email')
-
-            if selecionar_aba_consulta(pagina):
-                print('Campo inserir consulta em exibição')
-            else:
-                print('Campo inserir consulta não encontrado')
-
-            if inserir_cod_query(pagina, cod_query):
-                print('Consulta inserida no campo')
-            else:
-                print('Erro ao inserir a consulta')
 
             if clicar_em_executar(pagina):
                 print('Consulta executada')
