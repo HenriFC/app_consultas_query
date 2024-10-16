@@ -3,11 +3,9 @@ import sys
 import json
 import shutil
 import tempfile
-from tkinter import Tk, PhotoImage, Scrollbar, Text, Toplevel
+from tkinter import Tk, PhotoImage, Scrollbar, Toplevel
 from tkinter import ttk
 from tkinter import messagebox
-
-#from autoedge import iniciar_edge
 from cronograma_geral import obter_cronograma_status
 from janela_monitor import MonitorTarefas
 from state_exec import estado_programa
@@ -215,8 +213,8 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
         self.botao_save = ttk.Button(self.frm_back, text='SALVAR', state='disabled', command=self.acao_botao_salvar)
         self.botao_save.place(relx=0.01, rely=0.9, relheight=0.05, relwidth=0.31)
 
-        #self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=self.acao_botao_monitor)
-        #self.botao_exibir_monitor.place(relx=0.73, rely=0.55, relheight=0.060, relwidth=0.25)
+        self.botao_exibir_monitor = ttk.Button(self.frm_back, text='EXIBIR MONITOR DE TAREFAS', state='normal', command=self.acao_botao_monitor)
+        self.botao_exibir_monitor.place(relx=0.73, rely=0.55, relheight=0.060, relwidth=0.25)
 
         self.botao_editar_email = ttk.Button(self.frm_back, text='EDITAR', state='normal', command=self.acao_botao_editar_email)
         self.botao_editar_email.place(relx=0.883, rely=0.919, relheight=0.07, relwidth=0.054)

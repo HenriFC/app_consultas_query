@@ -1,7 +1,7 @@
 import tkinter as tk
 import json
 from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime
 from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
@@ -58,8 +58,6 @@ class MonitorTarefas():
         self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
         self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29)
 
-  #  #  #  #  #  #  #  #  #  #
-
         self.frm_passado_finalizadas = ttk.Frame(self.frm_passado_back, relief='groove')
         self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
         self.canva_passado_finaliz = tk.Canvas(self.frm_passado_finalizadas, borderwidth=0, relief='groove')
@@ -104,7 +102,6 @@ class MonitorTarefas():
         self.canva_futuro.pack(side='left', fill='both', expand=True, padx=2, pady=2)
         self.scroll_futuro.place(anchor='ne', relx=0.998, rely=0.005, relheight=0.98)
 
-        # Evento para scroll by wheel
         self.canva_futuro.bind_all("<MouseWheel>", self._on_mouse_wheel)
         self.frm_futuro_scr.bind_all("<MouseWheel>", self._on_mouse_wheel)
 
@@ -112,9 +109,7 @@ class MonitorTarefas():
         self.insere_titulo(self.frm_futuro_back)
 
     def _on_mouse_wheel(self, event):
-        """
-        Define o comportamento do scroll com a roda do mouse.
-        """
+
         widget_containing = self.janela_monitor.winfo_containing(event.x_root, event.y_root)
 
         if widget_containing == self.canva_passado_finaliz or widget_containing in self.frm_passado_finaliz_scr.winfo_children():

@@ -5,10 +5,10 @@ import tempfile
 import threading
 import time
 from pyautogui import press
-from playwright.sync_api import sync_playwright, expect
-from datetime import date, datetime, timedelta
+from playwright.sync_api import sync_playwright
+from datetime import date, datetime
 from cronograma_geral import obter_cronograma_status
-from state_exec import estado_programa, estado_database
+from state_exec import estado_programa
 
 
 
@@ -71,19 +71,18 @@ class GerenciadorTarefas:
                                         hr_ini_consulta = detal['HORA_INICIO_CONS']
                                         hr_fim_consulta = detal['HORA_FIM_CONS']
                                         nome_arq = detal['NOME_ARQUIVO']
-                                        cod_query = detal['QUERY']
                                         caminho_salvar_arq = detal['CAMINHO_SALVAR']
                                         email_entrada = obter_email()
                                         link = detal['QUERY']
                                         print(email_entrada)
                                         # Inicia essa tarefa:
-                                        self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link)
+                                        self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link)
                                     else:
                                         self.base_atualizada.append(extracao[item])
                                 
                                 json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
                                 print(f'{i} - FOR loop iniciar executado')
-                                press('shift')                         
+                                press('shift')
                             shutil.move(file_temp.name, CAMINHO_ARQ)
                             obter_cronograma_status()
                             break
@@ -92,28 +91,37 @@ class GerenciadorTarefas:
                         
             time.sleep(1)  # Aguarda antes de verificar novamente
 
-    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link):
+    def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link):
         # Inicia uma nova tarefa em uma thread separada
-        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link))
+        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link))
         thread_tarefa.start()
         self.threads_tarefas.append(thread_tarefa)
 
-    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, cod_query, caminho_salvar_arq, email_entrada, link):
-        # Iniciar criando um arquivo para receber o log das tarefas
-        # Esse arquivo receberá os horários de inicío e fim, erros e etc
-        # Sempre que necessário, durante a execução, dumpará informações específicas nesse arquivo, porém o arquivo de dump será um JSON com campos padronizados
+    def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link):
         print(f'[{threading.current_thread().name}] {id_tarefa} iniciada.')
         time.sleep(1)
+        
+        def criar_log_execucao(PASTA_LOGS):
+            with open(PASTA_LOGS, 'w', encoding='utf-8') as criando_database:
+                dados_novos = {
+                    "HORA_INICIO_PLAN": "",
+                    "HORA_INICIO_CONS": "",
+                    "ATRASO": "",
+                    "HORA_FIM_CONS": "",
+                    "TEMPO_EXEC": "",
+                    "STATUS": "",
+                    "OBSERVAÇÃO": ""
+                }
+                json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
+
 
         with sync_playwright() as pw:
-            # Iniciar edge:
             navegador = pw.chromium.launch(channel='msedge', headless=False)
             pagina = navegador.new_page()
             caminho_download_temp = os.path.join(PASTA_DOWNLOAD_TEMP, nome_arq)
             caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
 
             def inserir_email(pagina, tentativas=10, timeout=2000):
-                # Aguardando a página de login
                 pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=120000)
                 print('encerrou a espera pelo campo "email"')
                 pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span', timeout=120000)
@@ -130,10 +138,6 @@ class GerenciadorTarefas:
                         pagina.wait_for_timeout(1000)
                 return False
 
-# --------------------------------------------------------------------
-
-# --------------------------------------------------------------------
-
             def clicar_em_executar(pagina, tentativas=10, timeout=2000):
                 botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
                 botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
@@ -146,10 +150,8 @@ class GerenciadorTarefas:
                         return True
                     except:
                         print(f'Tentativa [{i}] - Não foi possível executar a consulta SQL')
-
-                        # Pode não executar - Dumpar raise no log de erro
                 return False
-            
+
             def acompanhar_execucao(pagina):
                 try:
                     botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
@@ -203,7 +205,7 @@ class GerenciadorTarefas:
                     except:
                         print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
                 
-
+            # Início da execução
 
             pagina.goto(link)
 
@@ -229,23 +231,6 @@ class GerenciadorTarefas:
 
 
             nova_aba_gdrive(pagina)
-
-
-
-
-            #Inserir pelo CTRL+V:
-
-            
-            # Executar query:
- 
-
-            # Verificar status de erro...
-
-
-            # Download dos dados em .csv
-
-
-
 
 
             pagina.close()

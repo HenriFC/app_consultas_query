@@ -29,12 +29,10 @@ def obter_cronograma_status():
             while aux_indice_horario <= 11:
                 data_atual = date.today().strftime('%d.%m.%Y')
                 horario = value["horario"][aux_indice_horario]
-                #print(horario)
                 if horario == '':
                     break
                 horario_base_convert = datetime.strptime(f"{data_atual} {horario}", '%d.%m.%Y %H:%M')
                 horario_agora_convert = datetime.strptime(f"{data_atual} {datetime.now().strftime('%H:%M')}", '%d.%m.%Y %H:%M')
-                #print(horario_base_convert, horario_agora_convert)
                 if horario_base_convert < horario_agora_convert:
                     horario_base_convert += timedelta(days=1)
                     data_atual = horario_base_convert.strftime('%d.%m.%Y')
@@ -97,8 +95,4 @@ def obter_cronograma_status():
         json.dump(crono_temp, file_temp, indent=4, ensure_ascii=False)
     shutil.move(file_temp.name, CAMINHO_HIST_CRONO)
     estado_database.define_status_database('Modificada')
-
-    # Salvar o cronograma atualizado
-
-
 
