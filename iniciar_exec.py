@@ -12,17 +12,11 @@ from state_exec import estado_programa
 
 
 
-PASTA_LOGS = 'logs_exec_tarefas'
-PASTA_DOWNLOAD_TEMP = 'downloads_temp'
-CAMINHO_ARQ = 'database_cronograma.json'
-CAMINHO_DB_EMAIL = 'database_email.json'
+PASTA_LOGS = 'data\\logs_exec_tarefas'
+PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp'
+CAMINHO_ARQ = 'data\\database_cronograma.json'
+CAMINHO_DB_EMAIL = 'data\\database_email.json'
 
-
-if not os.path.exists(PASTA_LOGS):
-    os.makedirs(PASTA_LOGS)
-
-if not os.path.exists(PASTA_DOWNLOAD_TEMP):
-    os.makedirs(PASTA_DOWNLOAD_TEMP)
 
 def obter_email():
     with open(CAMINHO_DB_EMAIL, 'r', encoding='utf-8') as temp_email:

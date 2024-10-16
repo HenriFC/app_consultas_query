@@ -8,7 +8,7 @@ from state_exec import estado_programa, estado_database
 from cronograma_geral import obter_cronograma_status
 
 
-CAMINHO_HIST_CRONO = 'database_cronograma.json'
+CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
 global hora_atual
 hora_atual = datetime.now()
 hora_atual_exib_relog = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
