@@ -252,11 +252,12 @@ class GerenciadorTarefas:
                 for i in range(tentativas):  
                     try:
                         shutil.move(caminho_download_temp, caminho_download_final)
-                        atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Finalizada')
+                        atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Finalizado')
                         estado_database.define_status_database('Modificada')
                         break
                     except:
                         print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
+
                 
             # Início da execução
 
@@ -266,21 +267,29 @@ class GerenciadorTarefas:
                 print('Email inserido.')
             else:
                 print('Erro ao inserir email')
+                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível inserir e-mail')
+                estado_database.define_status_database('Modificada')
 
             if clicar_em_executar(pagina):
                 print('Consulta executada')
             else:
                 print('Erro ao executar a consulta')
+                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível executar a consulta')
+                estado_database.define_status_database('Modificada')
 
             if acompanhar_execucao(pagina):
                 pass
             else:
                 print('Erro de execução')
+                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Consulta não finalizada')
+                estado_database.define_status_database('Modificada')
 
             if click_salvar_result(pagina):
                 print('Botão "Salvar Resultados" pressionado')
             else:
                 print('Não foi possível acessar o botão "Salvar Resultados"')
+                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível acessar Google Drive')
+                estado_database.define_status_database('Modificada')
 
 
             nova_aba_gdrive(pagina)

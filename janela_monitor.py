@@ -6,8 +6,6 @@ from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
 from cronograma_geral import obter_cronograma_status
-from emoji import emojize
-
 
 CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
 PASTA_LOGS = 'data\\logs_exec_tarefas\\'
@@ -266,17 +264,23 @@ class MonitorTarefas():
                 minutos2, segundos2 = divmod(resto2, 60)
                 tempo_decorrido = f'{horas2:02}:{minutos2:02}:{segundos2:02}'
 
-            if item['STATUS'] == 'Pendente':
-                icon_status = emojize(':blue_circle:', language='alias', variant='emoji_type', )
-                print(icon_status)
 
             lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10 = labels_lista[i]
 
             if i % 2 == 0:
                 list_par = stat_cor1
 
+            if item['STATUS'] == 'Pendente':
+                # Definir ícone 
+                lab0.config(text='', background='blue')
+            elif item['STATUS'] == 'Executando':
+                # Definir ícone 
+                lab0.config(text='', background='yellow')
+            elif item['STATUS'] == 'Finalizado' == item['OBSERVAÇÃO']:
+                lab0.config(text='', background='green')
+            else:
+                lab0.config(text='', background='red')
 
-            lab0.config(text=icon_status, background=list_par)
             lab1.config(text=item['STATUS'], background=list_par)
             lab2.config(text=item['ATIVIDADE'], background=list_par)
             lab3.config(text=item['DATA'], background=list_par)
