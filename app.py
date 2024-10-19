@@ -25,10 +25,10 @@ CAMINHO_DB_JSON = 'data\\database.json'
 CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
 CAMINHO_DB_EMAIL = 'data\\database_email.json'
 PASTA_DATABASES = 'data'
-PASTA_LOGS = 'data\\logs_exec_tarefas'
-PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp'
+PASTA_LOGS = 'data\\logs_exec_tarefas\\'
+PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp\\'
 
-global nome_antigo_query
+global nome_antigo_query    
 
 def recurso_img(caminho_relativo):
     try:

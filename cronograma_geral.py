@@ -5,19 +5,44 @@ from datetime import date, datetime, timedelta
 from state_exec import estado_database
 CAMINHO_DB_JSON = 'data\\database.json'
 CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
+PASTA_LOGS = 'data\\logs_exec_tarefas\\'
 
 # Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão, ou foram executados
 def obter_cronograma_status():
     aux_indice_horario = 0
+    
+    with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as crono_file, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+        extracao = json.load(crono_file)
+        registros_atualizados = []
+        for i in range(len(extracao)):
+            if extracao[i]['STATUS'] in ('Executando', 'Finalizado'):
+                arq_log_exec = extracao[i]['ID'] + '.json'
 
-    # Carregar o cronograma existente ou iniciar um novo
+                try:
+                    with open(PASTA_LOGS + arq_log_exec, 'r', encoding='utf-8') as temp_log:
+                        log_extraido = json.load(temp_log)
+                        extracao[i]['HORA_INICIO_PLAN'] = log_extraido['HORA_INICIO_PLAN']
+                        extracao[i]['DATA_INICIO_CONS'] = log_extraido['DATA_INICIO_CONS']
+                        extracao[i]['HORA_INICIO_CONS'] = log_extraido['HORA_INICIO_CONS']
+                        extracao[i]['ATRASO'] = log_extraido['ATRASO']
+                        extracao[i]['DATA_FIM_CONS'] = log_extraido['DATA_FIM_CONS']
+                        extracao[i]['HORA_FIM_CONS'] = log_extraido['HORA_FIM_CONS']
+                        extracao[i]['TEMPO_EXEC'] = log_extraido['TEMPO_EXEC']
+                        extracao[i]['STATUS'] = log_extraido['STATUS']
+                        extracao[i]['OBSERVAÇÃO'] = log_extraido['OBSERVAÇÃO']
+                        registros_atualizados.append(extracao[i])
+                except FileNotFoundError:
+                    pass
+            else:
+                registros_atualizados.append(extracao[i])
+        json.dump(registros_atualizados, file_temp, indent=4, ensure_ascii=False)
+    shutil.move(file_temp.name, CAMINHO_HIST_CRONO)
+
     try:
         # Remover tarefas não iniciadas com data futura.
         with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as crono_file:
             crono_temp = json.load(crono_file)
             crono_temp = [y for y in crono_temp if y["STATUS"] != "Pendente"]
-
-
     except FileNotFoundError:
         crono_temp = []
 
@@ -43,8 +68,10 @@ def obter_cronograma_status():
                         "ATIVIDADE": key,
                         "DATA": data_atual,
                         "HORA_INICIO_PLAN": horario + ':00',
+                        "DATA_INICIO_CONS": "__.__.__",
                         "HORA_INICIO_CONS": "__:__:__",
                         "ATRASO": "__:__:__",
+                        "DATA_FIM_CONS": "__.__.__",
                         "HORA_FIM_CONS": "__:__:__",
                         "TEMPO_EXEC": "__:__:__",
                         "NOME_ARQUIVO": value["nome"],
@@ -69,8 +96,10 @@ def obter_cronograma_status():
                     "ATIVIDADE": key,
                     "DATA": data_atual,
                     "HORA_INICIO_PLAN": horario + ':00',
+                    "DATA_INICIO_CONS": "",
                     "HORA_INICIO_CONS": "__:__:__",
                     "ATRASO": "__:__:__",
+                    "DATA_FIM_CONS": "",
                     "HORA_FIM_CONS": "__:__:__",
                     "TEMPO_EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],

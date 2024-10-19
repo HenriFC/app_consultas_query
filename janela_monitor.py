@@ -6,9 +6,11 @@ from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
 from cronograma_geral import obter_cronograma_status
+from emoji import emojize
 
 
 CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
+PASTA_LOGS = 'data\\logs_exec_tarefas\\'
 global hora_atual
 hora_atual = datetime.now()
 hora_atual_exib_relog = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
@@ -123,7 +125,6 @@ class MonitorTarefas():
         hora_atual_exib = hora_atual.strftime('%d/%m/%Y %H:%M:%S')
         self.lbl_hora_atual_exib.config(text=hora_atual_exib)
         self.janela_monitor.after(500, self.atualiza_relogio_monit)
-        print(hora_atual_exib[17:])
         if hora_atual_exib[17:] in ['00', '10', '20', '30', '40', '50']:
             obter_cronograma_status()
 
@@ -139,6 +140,7 @@ class MonitorTarefas():
             self.frm_status_prg.config(text=status_atual_prg, background=verde_status, foreground='white', font=('Calibri bold', 15), justify='center')
 
         if estado_database.obtem_status_database() in ['Modificada', 'Inicio']:
+            obter_cronograma_status()
             with open(CAMINHO_HIST_CRONO, 'r', encoding='utf-8') as arq_temp:
                 itens_finalizados = []
                 itens_executando = []
@@ -168,7 +170,7 @@ class MonitorTarefas():
 
     def insere_titulo(self, frame):
         
-        lab0 = ttk.Label(frame, width=4, anchor='cente', font=('Calibri', 9), justify='center', background=light_cian)
+        lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
@@ -214,7 +216,7 @@ class MonitorTarefas():
 
 
         while len(labels_lista) < len(itens):
-            lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center')
+            lab0 = ttk.Label(frame, width=5, anchor='center', font=('Calibri', 9), justify='center')
             lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
             lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center')
             lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
@@ -242,15 +244,31 @@ class MonitorTarefas():
         list_par = stat_cor1
 
         for i, item in enumerate(itens):
-            tempo_decorrido = item['TEMPO_EXEC']
 
-            if item['STATUS'] == 'Executando' and item['HORA_INICIO_CONS'] != "__:__:__":
-                tempo_decorrido_str = f"{item['ID'][6:10]}-{item['ID'][3:5]}-{item['ID'][:2]} {item['HORA_INICIO_CONS']}"
-                tempo_decorrido = hora_atual - datetime.strptime(tempo_decorrido_str, '%Y-%m-%d %H:%M:%S')
-                total_segundos = int(tempo_decorrido.total_seconds())
+            # Cálculo de tempo atraso. Ajustar para obter as novas datas e horários de início diretamente do cronograma
+
+            tempo_decorrido = item['TEMPO_EXEC']
+            atraso_decorrido = item['ATRASO']
+
+            if item['STATUS'] == 'Executando' and item['HORA_INICIO_CONS'] == "__:__:__" and item['DATA_INICIO_CONS'] != "__.__.__" and item['ATRASO'] == "__:__:__":
+                atraso_decorrido_str = f"{item['DATA_INICIO_CONS']} {item['HORA_INICIO_PLAN']}"
+                atraso_decorrido = hora_atual - datetime.strptime(atraso_decorrido_str, '%d.%m.%Y %H:%M:%S')
+                total_segundos = int(atraso_decorrido.total_seconds())
                 horas, resto = divmod(total_segundos, 3600)
                 minutos, segundos = divmod(resto, 60)
-                tempo_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
+                atraso_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
+
+            if item['STATUS'] == 'Executando' and item['HORA_INICIO_CONS'] != "__:__:__" and item['TEMPO_EXEC'] == "__:__:__":
+                tempo_decorrido_str = f"{item['DATA_INICIO_CONS']} {item['HORA_INICIO_CONS']}"
+                tempo_decorrido = hora_atual - datetime.strptime(tempo_decorrido_str, '%d.%m.%Y %H:%M:%S')
+                total_segundos2 = int(tempo_decorrido.total_seconds())
+                horas2, resto2 = divmod(total_segundos2, 3600)
+                minutos2, segundos2 = divmod(resto2, 60)
+                tempo_decorrido = f'{horas2:02}:{minutos2:02}:{segundos2:02}'
+
+            if item['STATUS'] == 'Pendente':
+                icon_status = emojize(':blue_circle:', language='alias', variant='emoji_type', )
+                print(icon_status)
 
             lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10 = labels_lista[i]
 
@@ -258,13 +276,13 @@ class MonitorTarefas():
                 list_par = stat_cor1
 
 
-            lab0.config(text='Icon', background=list_par)
+            lab0.config(text=icon_status, background=list_par)
             lab1.config(text=item['STATUS'], background=list_par)
             lab2.config(text=item['ATIVIDADE'], background=list_par)
             lab3.config(text=item['DATA'], background=list_par)
             lab4.config(text=item['HORA_INICIO_PLAN'], background=list_par)
             lab5.config(text=item['HORA_INICIO_CONS'], background=list_par)
-            lab6.config(text=item['ATRASO'], background=list_par)
+            lab6.config(text=atraso_decorrido, background=list_par)
             lab7.config(text=item['HORA_FIM_CONS'], background=list_par)
             lab8.config(text=tempo_decorrido, background=list_par)
             lab9.config(text=item['NOME_ARQUIVO'], background=list_par)

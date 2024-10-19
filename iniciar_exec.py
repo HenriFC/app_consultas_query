@@ -8,12 +8,12 @@ from pyautogui import press
 from playwright.sync_api import sync_playwright
 from datetime import date, datetime
 from cronograma_geral import obter_cronograma_status
-from state_exec import estado_programa
+from state_exec import estado_programa, estado_database
 
 
 
-PASTA_LOGS = 'data\\logs_exec_tarefas'
-PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp'
+PASTA_LOGS = 'data\\logs_exec_tarefas\\'
+PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp\\'
 CAMINHO_ARQ = 'data\\database_cronograma.json'
 CAMINHO_DB_EMAIL = 'data\\database_email.json'
 
@@ -68,7 +68,7 @@ class GerenciadorTarefas:
                                         caminho_salvar_arq = detal['CAMINHO_SALVAR']
                                         email_entrada = obter_email()
                                         link = detal['QUERY']
-                                        print(email_entrada)
+                                        print('Atualizando status EXECUTANDO\n', email_entrada)
                                         # Inicia essa tarefa:
                                         self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link)
                                     else:
@@ -78,6 +78,7 @@ class GerenciadorTarefas:
                                 print(f'{i} - FOR loop iniciar executado')
                                 press('shift')
                             shutil.move(file_temp.name, CAMINHO_ARQ)
+                            time.sleep(1)
                             obter_cronograma_status()
                             break
                         except:
@@ -94,20 +95,42 @@ class GerenciadorTarefas:
     def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link):
         print(f'[{threading.current_thread().name}] {id_tarefa} iniciada.')
         time.sleep(1)
-        
-        def criar_log_execucao(PASTA_LOGS):
-            with open(PASTA_LOGS, 'w', encoding='utf-8') as criando_database:
-                dados_novos = {
-                    "HORA_INICIO_PLAN": "",
-                    "HORA_INICIO_CONS": "",
-                    "ATRASO": "",
-                    "HORA_FIM_CONS": "",
-                    "TEMPO_EXEC": "",
-                    "STATUS": "",
-                    "OBSERVAÇÃO": ""
-                }
-                json.dump(dados_novos, criando_database, indent=4, ensure_ascii=False)
 
+        ARQ_LOG_TAREFA = PASTA_LOGS + id_tarefa + '.json'
+        hora_atual = datetime.now().strftime('%H:%M')
+        data_atual = datetime.now().strftime('%Y-%m-%d')
+        
+        def criar_log_execucao():
+            try:
+                with open(ARQ_LOG_TAREFA, 'r', encoding='utf-8') as criando_log:
+                    pass
+            except FileNotFoundError:
+                with open(ARQ_LOG_TAREFA, 'w', encoding='utf-8') as criando_log:
+                    dados_novos = {
+                        "HORA_INICIO_PLAN": "__:__:__",
+                        "DATA_INICIO_CONS": "__.__.__",
+                        "HORA_INICIO_CONS": "__:__:__",
+                        "ATRASO": "__:__:__",
+                        "DATA_FIM_CONS": "__.__.__",
+                        "HORA_FIM_CONS": "__:__:__",
+                        "TEMPO_EXEC": "__:__:__",
+                        "STATUS": "Executando",
+                        "OBSERVAÇÃO": ""
+                    }
+                    json.dump(dados_novos, criando_log, indent=4, ensure_ascii=False)
+        
+        def atualizar_log_execucao(reg1, valor1, reg2=None, valor2=None, reg3=None, valor3=None, reg4=None, valor4=None):
+            with open(ARQ_LOG_TAREFA, 'r', encoding='utf-8') as dados_log, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+                novos_dados = json.load(dados_log)
+                novos_dados[reg1] = valor1
+                novos_dados[reg2] = valor2
+                novos_dados[reg3] = valor3
+                novos_dados[reg4] = valor4
+                json.dump(novos_dados, file_temp, indent=4, ensure_ascii=False)
+            shutil.move(file_temp.name, ARQ_LOG_TAREFA)
+            time.sleep(1)
+
+        criar_log_execucao()
 
         with sync_playwright() as pw:
             navegador = pw.chromium.launch(channel='msedge', headless=False)
@@ -116,6 +139,8 @@ class GerenciadorTarefas:
             caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
 
             def inserir_email(pagina, tentativas=10, timeout=2000):
+                atualizar_log_execucao('OBSERVAÇÃO', 'Realizando login')
+                estado_database.define_status_database('Modificada')
                 pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=120000)
                 print('encerrou a espera pelo campo "email"')
                 pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span', timeout=120000)
@@ -134,25 +159,45 @@ class GerenciadorTarefas:
 
             def clicar_em_executar(pagina, tentativas=10, timeout=2000):
                 botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
-                botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
                 pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
                 for i in range(tentativas):
                     try:
                         botao_executar.click()
-                        pagina.wait_for_timeout(2000)
-                        botao_cancelar.wait_for(state='visible', timeout=timeout)
+                        global data_inicio
+                        global hora_inicio
+                        data_inicio = date.today().strftime('%d.%m.%Y')
+                        hora_inicio = datetime.now().strftime('%H:%M:%S')
+                        atualizar_log_execucao('DATA_INICIO_CONS', data_inicio, 'HORA_INICIO_PLAN', hora_inicio, 'OBSERVAÇÃO', 'Botão "Executar" pressionado. Aguardando início')
+                        estado_database.define_status_database('Modificada')
                         return True
                     except:
                         print(f'Tentativa [{i}] - Não foi possível executar a consulta SQL')
                 return False
 
             def acompanhar_execucao(pagina):
+                botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
+                botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
                 try:
-                    botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+                    botao_cancelar.wait_for(state='visible', timeout=1800000)
+                    global data_final
+                    global hora_final
+                    data_final = date.today().strftime('%d.%m.%Y')
+                    hora_final = datetime.now().strftime('%H:%M:%S')
+
+                    atraso_decorrido_str = f"{data_inicio} {hora_inicio}"
+                    atraso_decorrido = datetime.now() - datetime.strptime(atraso_decorrido_str, '%d.%m.%Y %H:%M:%S')
+                    total_segundos = int(atraso_decorrido.total_seconds())
+                    horas, resto = divmod(total_segundos, 3600)
+                    minutos, segundos = divmod(resto, 60)
+                    atraso_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
+
+                    
+                    atualizar_log_execucao('DATA_INICIO_CONS', data_final, 'HORA_INICIO_CONS', hora_final, 'ATRASO', atraso_decorrido, 'OBSERVAÇÃO', 'Consulta em execução')
+                    estado_database.define_status_database('Modificada')
                     botao_salvar_resultados.wait_for(state='visible', timeout=1800000)
                     return True
                 except:
-                    print('Não foi possível encontrar o botão "Salvar Resultados"')
+                    print('Não foi possível encontrar o botão "Salvar Resultados". A consulta falhou.')
                 return False
 
             def click_salvar_result(pagina, tentativas=10, timeout=2000):
@@ -161,6 +206,18 @@ class GerenciadorTarefas:
                 for i in range(tentativas):
                     try:
                         botao_salvar_resultados.click()
+                        data_atual = date.today().strftime('%d.%m.%Y')
+                        hora_atual = datetime.now().strftime('%H:%M:%S')
+
+                        tempo_exec_str = f"{data_final} {hora_final}"
+                        tempo_exec = datetime.now() - datetime.strptime(tempo_exec_str, '%d.%m.%Y %H:%M:%S')
+                        total_segundos = int(tempo_exec.total_seconds())
+                        horas, resto = divmod(total_segundos, 3600)
+                        minutos, segundos = divmod(resto, 60)
+                        tempo_exec = f'{horas:02}:{minutos:02}:{segundos:02}'
+                        
+                        atualizar_log_execucao('DATA_FIM_CONS', data_atual, 'HORA_FIM_CONS', hora_atual, 'TEMPO_EXEC', tempo_exec, 'OBSERVAÇÃO', 'Exportando arquivo')
+                        estado_database.define_status_database('Modificada')
                         pagina.wait_for_timeout(1000)
                         botao_salvar_csv_gdrive.click()
                         return True
@@ -195,6 +252,8 @@ class GerenciadorTarefas:
                 for i in range(tentativas):  
                     try:
                         shutil.move(caminho_download_temp, caminho_download_final)
+                        atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Finalizada')
+                        estado_database.define_status_database('Modificada')
                         break
                     except:
                         print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
