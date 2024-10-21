@@ -52,37 +52,36 @@ class GerenciadorTarefas:
                 self.base_atualizada = []
                 self.atualiz_item = []
                 if self.executando == 'Executando':
-                    for i in range(10): 
-                        try:
-                            with open(CAMINHO_ARQ, 'r', encoding='utf-8') as crono_original, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
-                                extracao = json.load(crono_original)
-                                for item, detal in enumerate(extracao):
-                                    if detal['HORA_INICIO_PLAN'] == self.horario_atual and detal["STATUS"] == 'Pendente' and detal['DATA'] == self.data_atual:
-                                        self.atualiz_item = extracao[item]
-                                        self.atualiz_item['STATUS'] = 'Executando'
-                                        self.base_atualizada.append(self.atualiz_item)
-                                        id_tarefa = detal['ID']
-                                        hr_ini_consulta = detal['HORA_INICIO_CONS']
-                                        hr_fim_consulta = detal['HORA_FIM_CONS']
-                                        nome_arq = detal['NOME_ARQUIVO']
-                                        caminho_salvar_arq = detal['CAMINHO_SALVAR']
-                                        email_entrada = obter_email()
-                                        link = detal['QUERY']
-                                        print('Atualizando status EXECUTANDO\n', email_entrada)
-                                        # Inicia essa tarefa:
-                                        self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link)
-                                    else:
-                                        self.base_atualizada.append(extracao[item])
-                                
+                    with open(CAMINHO_ARQ, 'r', encoding='utf-8') as crono_original, tempfile.NamedTemporaryFile('w', delete=False, encoding='utf-8') as file_temp:
+                        extracao = json.load(crono_original)
+                        for item, detal in enumerate(extracao):
+                            if detal['HORA_INICIO_PLAN'] == self.horario_atual and detal["STATUS"] == 'Pendente' and detal['DATA'] == self.data_atual:
+                                self.atualiz_item = extracao[item]
+                                self.atualiz_item['STATUS'] = 'Executando'
+                                self.base_atualizada.append(self.atualiz_item)
+                                id_tarefa = detal['ID']
+                                hr_ini_consulta = detal['HORA_INICIO_CONS']
+                                hr_fim_consulta = detal['HORA_FIM_CONS']
+                                nome_arq = detal['NOME_ARQUIVO']
+                                caminho_salvar_arq = detal['CAMINHO_SALVAR']
+                                email_entrada = obter_email()
+                                link = detal['QUERY']
+                                # Inicia essa tarefa:
+                                self.iniciar_tarefa(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link)
+                            else:
+                                self.base_atualizada.append(extracao[item])
+                        for i in range(10):
+                            try:
                                 json.dump(self.base_atualizada, file_temp,indent=4, ensure_ascii=False)
-                                print(f'{i} - FOR loop iniciar executado')
-                                press('shift')
-                            shutil.move(file_temp.name, CAMINHO_ARQ)
-                            time.sleep(1)
-                            obter_cronograma_status()
-                            break
-                        except:
-                            time.sleep(1)
+                                break
+                            except:
+                                time.sleep(1)
+                        press('shift')
+                    shutil.move(file_temp.name, CAMINHO_ARQ)
+                    time.sleep(1)
+                    obter_cronograma_status()
+                    
+
                         
             time.sleep(1)  # Aguarda antes de verificar novamente
 
@@ -94,7 +93,6 @@ class GerenciadorTarefas:
 
     def executar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link):
         print(f'[{threading.current_thread().name}] {id_tarefa} iniciada.')
-        time.sleep(1)
 
         ARQ_LOG_TAREFA = PASTA_LOGS + id_tarefa + '.json'
         hora_atual = datetime.now().strftime('%H:%M')

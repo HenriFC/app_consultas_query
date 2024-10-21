@@ -1,7 +1,7 @@
 import tkinter as tk
 import json
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from tkinter import ttk
 from coreslayout import *
 from state_exec import estado_programa, estado_database
@@ -45,7 +45,7 @@ class MonitorTarefas():
         self.lbl_hora_atual_exib = ttk.Label(self.frm_fundo, text=hora_atual_exib_relog, background=verde1, font=('Calibri bold', 15))
         self.lbl_hora_atual_exib.place(relx=0.775, rely=0.005, anchor='ne')
         self.frm_status_prg = ttk.Label(self.frm_fundo, anchor='center', relief='groove', background='', text=estado_programa, font=('Calibri bold', 18), justify='center')
-        self.frm_status_prg.place(relx=0.81, rely=0.03, relheight=0.08, relwidth=0.18)
+        self.frm_status_prg.place(relx=0.81, rely=0.015, relheight=0.08, relwidth=0.18)
 
         self.lbl_passado = ttk.Label(self.frm_fundo, text='Iniciadas:', background=verde1, font=('Calibri bold', 13))
         self.lbl_passado.place(relx=0.006, rely=0.077)
@@ -145,11 +145,19 @@ class MonitorTarefas():
                 itens_pendentes = []
                 crono_arq_conteudo = json.load(arq_temp)
                 for x in crono_arq_conteudo:
-                    if x['STATUS'] == 'Pendente':
-                        itens_pendentes.append(x)
-                    elif x['STATUS'] == 'Executando':
-                        itens_executando.append(x)
+                    if x['DATA_FIM_CONS'] == '__.__.__':
+                        dias_passou = 0
                     else:
+                        data_fim_cons = datetime.strptime(x['DATA_FIM_CONS'], '%d.%m.%Y')
+                        data_hj = datetime.strftime(datetime.now(), '%d.%m.%Y')
+                        data_hj_convert = datetime.strptime(data_hj, '%d.%m.%Y')
+                        dias_passou = timedelta.total_seconds(data_hj_convert - data_fim_cons) / 3600 / 24
+                        print(dias_passou)
+                    if x['STATUS'] == 'Pendente' and int(dias_passou) <2:
+                        itens_pendentes.append(x)
+                    elif x['STATUS'] == 'Executando' and int(dias_passou) <2:
+                        itens_executando.append(x)
+                    elif x['STATUS'] == 'Finalizado' and int(dias_passou) <2:
                         itens_finalizados.append(x)
                 estado_database.define_status_database('Não modificada')
                 itens_finalizados = sorted(sorted(itens_finalizados, key=lambda reg: reg['HORA_FIM_CONS'], reverse=True), key=lambda reg: reg['DATA'], reverse=True)
@@ -192,7 +200,7 @@ class MonitorTarefas():
         lab9.config(text='Nome do arquivo')
         lab10.config(text='OBSERVAÇÃO')
 
-        lab0.grid(row=0, column=0, padx=1, pady=1)
+        lab0.grid(row=0, column=0, padx=4, pady=1)
         lab1.grid(row=0, column=1, padx=0, pady=1)
         lab2.grid(row=0, column=2, padx=0, pady=1)
         lab3.grid(row=0, column=3, padx=0, pady=1)
@@ -271,15 +279,13 @@ class MonitorTarefas():
                 list_par = stat_cor1
 
             if item['STATUS'] == 'Pendente':
-                # Definir ícone 
-                lab0.config(text='', background='blue')
+                lab0.config(background=list_par)
             elif item['STATUS'] == 'Executando':
-                # Definir ícone 
-                lab0.config(text='', background='yellow')
+                lab0.config(background='yellow')
             elif item['STATUS'] == 'Finalizado' == item['OBSERVAÇÃO']:
-                lab0.config(text='', background='green')
+                lab0.config(background='green')
             else:
-                lab0.config(text='', background='red')
+                lab0.config(background='red')
 
             lab1.config(text=item['STATUS'], background=list_par)
             lab2.config(text=item['ATIVIDADE'], background=list_par)

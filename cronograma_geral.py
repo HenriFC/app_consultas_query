@@ -1,6 +1,7 @@
 import json
 import shutil
 import tempfile
+from os import remove
 from datetime import date, datetime, timedelta
 from state_exec import estado_database
 CAMINHO_DB_JSON = 'data\\database.json'
@@ -20,6 +21,7 @@ def obter_cronograma_status():
 
                 try:
                     with open(PASTA_LOGS + arq_log_exec, 'r', encoding='utf-8') as temp_log:
+                        print(f'dentro do LOG {arq_log_exec}')
                         log_extraido = json.load(temp_log)
                         extracao[i]['HORA_INICIO_PLAN'] = log_extraido['HORA_INICIO_PLAN']
                         extracao[i]['DATA_INICIO_CONS'] = log_extraido['DATA_INICIO_CONS']
@@ -31,10 +33,15 @@ def obter_cronograma_status():
                         extracao[i]['STATUS'] = log_extraido['STATUS']
                         extracao[i]['OBSERVAÇÃO'] = log_extraido['OBSERVAÇÃO']
                         registros_atualizados.append(extracao[i])
+                    if extracao[i]['STATUS'] == 'Finalizado':
+                        print(f'removendo LOG {arq_log_exec}')
+                        remove(PASTA_LOGS + arq_log_exec)
                 except FileNotFoundError:
-                    pass
+                    print(f'Erro ao ler o LOG {arq_log_exec}')
+                    registros_atualizados.append(extracao[i])
             else:
                 registros_atualizados.append(extracao[i])
+            
         json.dump(registros_atualizados, file_temp, indent=4, ensure_ascii=False)
     shutil.move(file_temp.name, CAMINHO_HIST_CRONO)
 
@@ -96,10 +103,10 @@ def obter_cronograma_status():
                     "ATIVIDADE": key,
                     "DATA": data_atual,
                     "HORA_INICIO_PLAN": horario + ':00',
-                    "DATA_INICIO_CONS": "",
+                    "DATA_INICIO_CONS": "__.__.__",
                     "HORA_INICIO_CONS": "__:__:__",
                     "ATRASO": "__:__:__",
-                    "DATA_FIM_CONS": "",
+                    "DATA_FIM_CONS": "__.__.__",
                     "HORA_FIM_CONS": "__:__:__",
                     "TEMPO_EXEC": "__:__:__",
                     "NOME_ARQUIVO": value["nome"],
