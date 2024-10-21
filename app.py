@@ -435,12 +435,12 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             self.entry_horario12.insert(0, horarios[11])
             self.desablitar_campos()
             if estado_programa.obtem_status() == 'Executando':
-                #self.botao_start['state'] = 'normal'
                 self.botao_editar_query['state'] = 'disabled'
                 self.botao_excluir_query['state'] = 'disabled'
                 self.botao_nova_query['state'] = 'disabled'
                 self.botao_limpar_campos['state'] = 'disabled'
                 self.botao_save['state'] = 'disabled'
+                self.botao_editar_email['state'] = 'disabled'
             elif estado_programa.obtem_status() in ['Parado', 'Inicio']:
                 self.botao_start['state'] = 'normal'
                 self.botao_editar_query['state'] = 'normal'

@@ -21,7 +21,6 @@ def obter_cronograma_status():
 
                 try:
                     with open(PASTA_LOGS + arq_log_exec, 'r', encoding='utf-8') as temp_log:
-                        print(f'dentro do LOG {arq_log_exec}')
                         log_extraido = json.load(temp_log)
                         extracao[i]['HORA_INICIO_PLAN'] = log_extraido['HORA_INICIO_PLAN']
                         extracao[i]['DATA_INICIO_CONS'] = log_extraido['DATA_INICIO_CONS']
@@ -34,10 +33,8 @@ def obter_cronograma_status():
                         extracao[i]['OBSERVAÇÃO'] = log_extraido['OBSERVAÇÃO']
                         registros_atualizados.append(extracao[i])
                     if extracao[i]['STATUS'] == 'Finalizado':
-                        print(f'removendo LOG {arq_log_exec}')
                         remove(PASTA_LOGS + arq_log_exec)
                 except FileNotFoundError:
-                    print(f'Erro ao ler o LOG {arq_log_exec}')
                     registros_atualizados.append(extracao[i])
             else:
                 registros_atualizados.append(extracao[i])

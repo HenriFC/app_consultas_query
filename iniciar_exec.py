@@ -129,174 +129,191 @@ class GerenciadorTarefas:
             time.sleep(1)
 
         criar_log_execucao()
+        try:
+            with sync_playwright() as pw:
+                navegador = pw.chromium.launch(channel='msedge', headless=False)
+                pagina = navegador.new_page()
+                caminho_download_temp = os.path.join(PASTA_DOWNLOAD_TEMP, nome_arq)
+                caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
 
-        with sync_playwright() as pw:
-            navegador = pw.chromium.launch(channel='msedge', headless=False)
-            pagina = navegador.new_page()
-            caminho_download_temp = os.path.join(PASTA_DOWNLOAD_TEMP, nome_arq)
-            caminho_download_final = os.path.join(caminho_salvar_arq, nome_arq)
-
-            def inserir_email(pagina, tentativas=10, timeout=2000):
-                atualizar_log_execucao('OBSERVAÇÃO', 'Realizando login')
-                estado_database.define_status_database('Modificada')
-                pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=120000)
-                print('encerrou a espera pelo campo "email"')
-                pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span', timeout=120000)
-                print('encerrou a espera pelo botão "Próximo"')
-                for i in range(tentativas):
-                    try:
-                        pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=timeout)
-                        botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
-                        pagina.keyboard.insert_text(email_entrada)
-                        botao_proxima.click()
-                        return True
-                    except:
-                        print(f'Tentativa [{i}] - Não foi possível logar na plataforma')
-                        pagina.wait_for_timeout(1000)
-                return False
-
-            def clicar_em_executar(pagina, tentativas=10, timeout=2000):
-                botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
-                pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
-                for i in range(tentativas):
-                    try:
-                        botao_executar.click()
-                        global data_inicio
-                        global hora_inicio
-                        data_inicio = date.today().strftime('%d.%m.%Y')
-                        hora_inicio = datetime.now().strftime('%H:%M:%S')
-                        atualizar_log_execucao('DATA_INICIO_CONS', data_inicio, 'HORA_INICIO_PLAN', hora_inicio, 'OBSERVAÇÃO', 'Botão "Executar" pressionado. Aguardando início')
-                        estado_database.define_status_database('Modificada')
-                        return True
-                    except:
-                        print(f'Tentativa [{i}] - Não foi possível executar a consulta SQL')
-                return False
-
-            def acompanhar_execucao(pagina):
-                botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
-                botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
-                try:
-                    botao_cancelar.wait_for(state='visible', timeout=1800000)
-                    global data_final
-                    global hora_final
-                    data_final = date.today().strftime('%d.%m.%Y')
-                    hora_final = datetime.now().strftime('%H:%M:%S')
-
-                    atraso_decorrido_str = f"{data_inicio} {hora_inicio}"
-                    atraso_decorrido = datetime.now() - datetime.strptime(atraso_decorrido_str, '%d.%m.%Y %H:%M:%S')
-                    total_segundos = int(atraso_decorrido.total_seconds())
-                    horas, resto = divmod(total_segundos, 3600)
-                    minutos, segundos = divmod(resto, 60)
-                    atraso_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
-
-                    
-                    atualizar_log_execucao('DATA_INICIO_CONS', data_final, 'HORA_INICIO_CONS', hora_final, 'ATRASO', atraso_decorrido, 'OBSERVAÇÃO', 'Consulta em execução')
+                def inserir_email(pagina, tentativas=10, timeout=2000):
+                    atualizar_log_execucao('OBSERVAÇÃO', 'Realizando login')
                     estado_database.define_status_database('Modificada')
-                    botao_salvar_resultados.wait_for(state='visible', timeout=1800000)
-                    return True
-                except:
-                    print('Não foi possível encontrar o botão "Salvar Resultados". A consulta falhou.')
-                return False
-
-            def click_salvar_result(pagina, tentativas=10, timeout=2000):
-                botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
-                botao_salvar_csv_gdrive = pagina.get_by_role("menuitem", name="CSV (Google Drive) . Salve at")
-                for i in range(tentativas):
                     try:
-                        botao_salvar_resultados.click()
-                        data_atual = date.today().strftime('%d.%m.%Y')
-                        hora_atual = datetime.now().strftime('%H:%M:%S')
+                        pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=120000)
+                        print('encerrou a espera pelo campo "email"')
+                        pagina.wait_for_selector('xpath=//*[@id="identifierNext"]/div/button/span', timeout=120000)
+                        print('encerrou a espera pelo botão "Próximo"')
+                    except:
+                        return False
+                    for i in range(tentativas):
+                        try:
+                            pagina.wait_for_selector('xpath=//*[@id="identifierId"]', timeout=timeout)
+                            botao_proxima = pagina.locator('xpath=//*[@id="identifierNext"]/div/button/span')
+                            pagina.keyboard.insert_text(email_entrada)
+                            botao_proxima.click()
+                            return True
+                        except:
+                            print(f'Tentativa [{i}] - Não foi possível logar na plataforma')
+                            pagina.wait_for_timeout(1000)
+                    return False
 
-                        tempo_exec_str = f"{data_final} {hora_final}"
-                        tempo_exec = datetime.now() - datetime.strptime(tempo_exec_str, '%d.%m.%Y %H:%M:%S')
-                        total_segundos = int(tempo_exec.total_seconds())
+                def clicar_em_executar(pagina, tentativas=10, timeout=2000):
+                    try:
+                        botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
+                        pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
+                    except:
+                        return False
+
+                    for i in range(tentativas):
+                        try:
+                            botao_executar.click()
+                            global data_inicio
+                            global hora_inicio
+                            data_inicio = date.today().strftime('%d.%m.%Y')
+                            hora_inicio = datetime.now().strftime('%H:%M:%S')
+                            atualizar_log_execucao('DATA_INICIO_CONS', data_inicio, 'HORA_INICIO_PLAN', hora_inicio, 'OBSERVAÇÃO', 'Botão "Executar" pressionado. Aguardando início')
+                            estado_database.define_status_database('Modificada')
+                            return True
+                        except:
+                            print(f'Tentativa [{i}] - Não foi possível executar a consulta SQL')
+                    return False
+
+                def acompanhar_execucao(pagina):
+                    try:
+                        botao_cancelar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[4]/div/cfc-progress-button')
+                        botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+                    except:
+                        return False
+                    
+                    try:
+                        botao_cancelar.wait_for(state='visible', timeout=1800000)
+                        global data_final
+                        global hora_final
+                        data_final = date.today().strftime('%d.%m.%Y')
+                        hora_final = datetime.now().strftime('%H:%M:%S')
+
+                        atraso_decorrido_str = f"{data_inicio} {hora_inicio}"
+                        atraso_decorrido = datetime.now() - datetime.strptime(atraso_decorrido_str, '%d.%m.%Y %H:%M:%S')
+                        total_segundos = int(atraso_decorrido.total_seconds())
                         horas, resto = divmod(total_segundos, 3600)
                         minutos, segundos = divmod(resto, 60)
-                        tempo_exec = f'{horas:02}:{minutos:02}:{segundos:02}'
+                        atraso_decorrido = f'{horas:02}:{minutos:02}:{segundos:02}'
+
                         
-                        atualizar_log_execucao('DATA_FIM_CONS', data_atual, 'HORA_FIM_CONS', hora_atual, 'TEMPO_EXEC', tempo_exec, 'OBSERVAÇÃO', 'Exportando arquivo')
+                        atualizar_log_execucao('DATA_INICIO_CONS', data_final, 'HORA_INICIO_CONS', hora_final, 'ATRASO', atraso_decorrido, 'OBSERVAÇÃO', 'Consulta em execução')
                         estado_database.define_status_database('Modificada')
-                        pagina.wait_for_timeout(1000)
-                        botao_salvar_csv_gdrive.click()
+                        botao_salvar_resultados.wait_for(state='visible', timeout=1800000)
                         return True
                     except:
-                        print(f'Tentativa {i} - Não encontrou o botão "CSV (Google Drive)"')
-                return False
+                        print('Não foi possível encontrar o botão "Salvar Resultados". A consulta falhou.')
+                    return False
 
-            def nova_aba_gdrive(pagina, tentativas=10):
-                for i in range(tentativas):
+                def click_salvar_result(pagina, tentativas=10, timeout=2000):
                     try:
-                        with pagina.expect_popup() as pagina1_inform:
-                            pagina.get_by_role('button', name='Acesse o Google Drive.').click()
-                        pagina1 = pagina1_inform.value
-                        break
+                        botao_salvar_resultados = pagina.locator('xpath=//*[@id="_0rif_save-results-menu-button"]/span[1]')
+                        botao_salvar_csv_gdrive = pagina.get_by_role("menuitem", name="CSV (Google Drive) . Salve at")
                     except:
-                        print(f'Tentativa [{i}] - Não foi possível acessar o Google Drive')
+                        return False
+                    for i in range(tentativas):
+                        try:
+                            botao_salvar_resultados.click()
+                            data_atual = date.today().strftime('%d.%m.%Y')
+                            hora_atual = datetime.now().strftime('%H:%M:%S')
 
-                for i in range(tentativas):
-                    try:
-                        with pagina1.expect_download() as download_inform:
-                            try:
-                                pagina1.get_by_label('Fazer o download').click()
-                            except:
-                                pass
-                        print('solicitou download - fora do "with expect_download"')
-                        download = download_inform.value
-                        download.save_as(caminho_download_temp)
-                        print('salvou no caminho - após o "save_as(caminho download)"')
-                        break
-                    except:
-                        print(f'Tentativa [{i}] - Não foi possível acessar o botão "Fazer o download"')
-                for i in range(tentativas):  
-                    try:
-                        shutil.move(caminho_download_temp, caminho_download_final)
-                        atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Finalizado')
-                        estado_database.define_status_database('Modificada')
-                        break
-                    except:
-                        print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
+                            tempo_exec_str = f"{data_final} {hora_final}"
+                            tempo_exec = datetime.now() - datetime.strptime(tempo_exec_str, '%d.%m.%Y %H:%M:%S')
+                            total_segundos = int(tempo_exec.total_seconds())
+                            horas, resto = divmod(total_segundos, 3600)
+                            minutos, segundos = divmod(resto, 60)
+                            tempo_exec = f'{horas:02}:{minutos:02}:{segundos:02}'
+                            
+                            atualizar_log_execucao('DATA_FIM_CONS', data_atual, 'HORA_FIM_CONS', hora_atual, 'TEMPO_EXEC', tempo_exec, 'OBSERVAÇÃO', 'Exportando arquivo')
+                            estado_database.define_status_database('Modificada')
+                            pagina.wait_for_timeout(1000)
+                            botao_salvar_csv_gdrive.click()
+                            return True
+                        except:
+                            print(f'Tentativa {i} - Não encontrou o botão "CSV (Google Drive)"')
+                    return False
 
-                
-            # Início da execução
+                def nova_aba_gdrive(pagina, tentativas=10):
+                    for i in range(tentativas):
+                        try:
+                            with pagina.expect_popup() as pagina1_inform:
+                                pagina.get_by_role('button', name='Acesse o Google Drive.').click()
+                            pagina1 = pagina1_inform.value
+                            break
+                        except:
+                            print(f'Tentativa [{i}] - Não foi possível acessar o Google Drive')
 
-            pagina.goto(link)
+                    for i in range(tentativas):
+                        try:
+                            with pagina1.expect_download() as download_inform:
+                                try:
+                                    pagina1.get_by_label('Fazer o download').click()
+                                except:
+                                    pass
+                            print('solicitou download - fora do "with expect_download"')
+                            download = download_inform.value
+                            download.save_as(caminho_download_temp)
+                            print('salvou no caminho - após o "save_as(caminho download)"')
+                            break
+                        except:
+                            print(f'Tentativa [{i}] - Não foi possível acessar o botão "Fazer o download"')
+                    for i in range(tentativas):  
+                        try:
+                            shutil.move(caminho_download_temp, caminho_download_final)
+                            atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Finalizado')
+                            estado_database.define_status_database('Modificada')
+                            break
+                        except:
+                            print(f'Tentativa [{i}] - Não foi possível salvar o arquivo {nome_arq}.')
 
-            if inserir_email(pagina):
-                print('Email inserido.')
-            else:
-                print('Erro ao inserir email')
-                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível inserir e-mail')
-                estado_database.define_status_database('Modificada')
+                    
+                # Início da execução
 
-            if clicar_em_executar(pagina):
-                print('Consulta executada')
-            else:
-                print('Erro ao executar a consulta')
-                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível executar a consulta')
-                estado_database.define_status_database('Modificada')
+                pagina.goto(link)
 
-            if acompanhar_execucao(pagina):
-                pass
-            else:
-                print('Erro de execução')
-                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Consulta não finalizada')
-                estado_database.define_status_database('Modificada')
+                if inserir_email(pagina):
+                    print('Email inserido.')
+                else:
+                    atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível inserir e-mail')
+                    estado_database.define_status_database('Modificada')
+                    print('Erro ao inserir email')
+                    pagina.close()
 
-            if click_salvar_result(pagina):
-                print('Botão "Salvar Resultados" pressionado')
-            else:
-                print('Não foi possível acessar o botão "Salvar Resultados"')
-                atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível acessar Google Drive')
-                estado_database.define_status_database('Modificada')
+                if clicar_em_executar(pagina):
+                    print('Consulta executada')
+                else:
+                    print('Erro ao executar a consulta')
+                    atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível acessar a plataforma')
+                    estado_database.define_status_database('Modificada')
+                    pagina.close()
+
+                if acompanhar_execucao(pagina):
+                    pass
+                else:
+                    print('Erro de execução')
+                    atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Consulta não finalizada')
+                    estado_database.define_status_database('Modificada')
+
+                if click_salvar_result(pagina):
+                    print('Botão "Salvar Resultados" pressionado')
+                else:
+                    print('Não foi possível acessar o botão "Salvar Resultados"')
+                    atualizar_log_execucao( 'STATUS', 'Finalizado', 'OBSERVAÇÃO', 'Erro: Impossível acessar Google Drive')
+                    estado_database.define_status_database('Modificada')
 
 
-            nova_aba_gdrive(pagina)
+                nova_aba_gdrive(pagina)
 
 
-            pagina.close()
+                pagina.close()
 
-        print(f'[{threading.current_thread().name}] {id_tarefa} concluída.')
-
+            print(f'[{threading.current_thread().name}] {id_tarefa} concluída.')
+        except:
+            pass
 
     def dump_infos_exec(self, ):
 

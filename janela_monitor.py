@@ -54,9 +54,9 @@ class MonitorTarefas():
         self.frm_divisa1 = ttk.Frame(self.frm_fundo, relief='groove')
         self.frm_divisa1.place(relx=0.005, rely=0.06, relheight=0.0015, relwidth=0.77)
         self.frm_passado_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
-        self.frm_passado_back.place(relx=0.006, rely=0.11, relheight=0.5)
+        self.frm_passado_back.place(relx=0.006, rely=0.11, relheight=0.5, relwidth=0.88)
         self.frm_futuro_back = ttk.Frame(self.frm_fundo, relief='groove', style='frm_pass.TFrame', padding=2)
-        self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29)
+        self.frm_futuro_back.place(relx=0.006, rely=0.673, relheight=0.29, relwidth=0.88)
 
         self.frm_passado_finalizadas = ttk.Frame(self.frm_passado_back, relief='groove')
         self.frm_passado_finalizadas.place(relx=0.001, rely=0.065, relheight=0.46, relwidth=0.998)
@@ -152,7 +152,6 @@ class MonitorTarefas():
                         data_hj = datetime.strftime(datetime.now(), '%d.%m.%Y')
                         data_hj_convert = datetime.strptime(data_hj, '%d.%m.%Y')
                         dias_passou = timedelta.total_seconds(data_hj_convert - data_fim_cons) / 3600 / 24
-                        print(dias_passou)
                     if x['STATUS'] == 'Pendente' and int(dias_passou) <2:
                         itens_pendentes.append(x)
                     elif x['STATUS'] == 'Executando' and int(dias_passou) <2:
@@ -176,7 +175,7 @@ class MonitorTarefas():
 
     def insere_titulo(self, frame):
         
-        lab0 = ttk.Label(frame, width=4, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab0 = ttk.Label(frame, width=1, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
@@ -186,7 +185,7 @@ class MonitorTarefas():
         lab7 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab8 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
         lab9 = ttk.Label(frame, width=19, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
-        lab10 = ttk.Label(frame, width=21, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
+        lab10 = ttk.Label(frame, width=39, anchor='center', font=('Calibri', 9), justify='center', background=light_cian)
 
         lab0.config(text='*', border=10)
         lab1.config(text='Status')
@@ -222,7 +221,7 @@ class MonitorTarefas():
 
 
         while len(labels_lista) < len(itens):
-            lab0 = ttk.Label(frame, width=5, anchor='center', font=('Calibri', 9), justify='center')
+            lab0 = ttk.Label(frame, width=2, anchor='center', font=('Calibri', 9), justify='center', borderwidth=1, relief='solid')
             lab1 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
             lab2 = ttk.Label(frame, width=25, anchor='center', font=('Calibri', 9), justify='center')
             lab3 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
@@ -232,7 +231,7 @@ class MonitorTarefas():
             lab7 = ttk.Label(frame, width=14, anchor='center', font=('Calibri', 9), justify='center')
             lab8 = ttk.Label(frame, width=13, anchor='center', font=('Calibri', 9), justify='center')
             lab9 = ttk.Label(frame, width=19, anchor='center', font=('Calibri', 9), justify='center')
-            lab10 = ttk.Label(frame, width=21, anchor='center', font=('Calibri', 9), justify='center')
+            lab10 = ttk.Label(frame, width=39, anchor='center', font=('Calibri', 9), justify='center')
             labels_lista.append((lab0, lab1, lab2, lab3, lab4, lab5, lab6, lab7, lab8, lab9, lab10))
 
             lab0.grid(row=len(labels_lista) - 1, column=0, padx=2, pady=1)
@@ -279,11 +278,11 @@ class MonitorTarefas():
                 list_par = stat_cor1
 
             if item['STATUS'] == 'Pendente':
-                lab0.config(background=list_par)
+                lab0.config(background='gray')
             elif item['STATUS'] == 'Executando':
                 lab0.config(background='yellow')
             elif item['STATUS'] == 'Finalizado' == item['OBSERVAÇÃO']:
-                lab0.config(background='green')
+                lab0.config(background=verde_brilhante)
             else:
                 lab0.config(background='red')
 
