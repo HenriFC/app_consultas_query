@@ -7,8 +7,8 @@ from coreslayout import *
 from state_exec import estado_programa, estado_database
 from cronograma_geral import obter_cronograma_status
 
-CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
-PASTA_LOGS = 'data\\logs_exec_tarefas\\'
+CAMINHO_HIST_CRONO = 'database_cronograma.json'
+PASTA_LOGS = 'logs_exec_tarefas\\'
 global hora_atual
 hora_atual = datetime.now()
 hora_atual_exib_relog = hora_atual.strftime('%d/%m/%Y %H:%M:%S')

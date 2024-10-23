@@ -21,12 +21,12 @@ s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 s.configure('frm_pass.TFrame', background=light_cian)
 
-CAMINHO_DB_JSON = 'data\\database.json'
-CAMINHO_HIST_CRONO = 'data\\database_cronograma.json'
-CAMINHO_DB_EMAIL = 'data\\database_email.json'
-PASTA_DATABASES = 'data'
-PASTA_LOGS = 'data\\logs_exec_tarefas\\'
-PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp\\'
+CAMINHO_DB_JSON = 'database.json'
+CAMINHO_HIST_CRONO = 'database_cronograma.json'
+CAMINHO_DB_EMAIL = 'database_email.json'
+
+PASTA_LOGS = 'logs_exec_tarefas\\'
+PASTA_DOWNLOAD_TEMP = 'downloads_temp\\'
 
 global nome_antigo_query    
 
@@ -692,9 +692,6 @@ class AppConsultas(ValidarEntrys, MonitorTarefas):
             messagebox.showerror('ERRO', 'Base de dados não encontrada')
 
     def verificar_bases(self):
-        if not os.path.exists(PASTA_DATABASES):
-            os.makedirs(PASTA_DATABASES)
-
         if not os.path.exists(PASTA_LOGS):
             os.makedirs(PASTA_LOGS)
 
