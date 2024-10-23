@@ -12,10 +12,10 @@ from state_exec import estado_programa, estado_database
 
 
 
-PASTA_LOGS = 'data\\logs_exec_tarefas\\'
-PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp\\'
-CAMINHO_ARQ = 'data\\database_cronograma.json'
-CAMINHO_DB_EMAIL = 'data\\database_email.json'
+PASTA_LOGS = 'logs_exec_tarefas\\'
+PASTA_DOWNLOAD_TEMP = 'downloads_temp\\'
+CAMINHO_ARQ = 'database_cronograma.json'
+CAMINHO_DB_EMAIL = 'database_email.json'
 
 
 def obter_email():
