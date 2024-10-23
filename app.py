@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import shutil
 import tempfile
@@ -30,16 +29,7 @@ PASTA_DOWNLOAD_TEMP = 'data\\downloads_temp\\'
 
 global nome_antigo_query    
 
-def recurso_img(caminho_relativo):
-    try:
-        caminho_base = sys._MEIPASS
-    except AttributeError:
-        caminho_base = os.path.abspath(".")
-    return os.path.join(caminho_base, caminho_relativo)
 
-caminho_icone = recurso_img('icon.png')
-img_ico = PhotoImage(file=caminho_icone)
-jan_principal.iconphoto(True, img_ico)
 
 class ValidarEntrys():
 
