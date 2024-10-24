@@ -1,6 +1,6 @@
 from cx_Freeze import setup, Executable
 
-base = 'Win32GUI'
+base = 'Console'
 
 executables = [Executable("app.py", base=base)]
 
