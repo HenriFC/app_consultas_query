@@ -3,7 +3,7 @@ import sys
 import json
 import shutil
 import tempfile
-from tkinter import Tk, PhotoImage, Scrollbar, Toplevel
+from tkinter import Tk, Scrollbar, Toplevel
 from tkinter import ttk
 from tkinter import messagebox
 from cronograma_geral import obter_cronograma_status

@@ -87,7 +87,7 @@ class GerenciadorTarefas:
 
     def iniciar_tarefa(self, id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link):
         # Inicia uma nova tarefa em uma thread separada
-        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, hr_ini_consulta, hr_fim_consulta, nome_arq, caminho_salvar_arq, email_entrada, link))
+        thread_tarefa = threading.Thread(target=self.executar_tarefa, args=(id_tarefa, nome_arq, caminho_salvar_arq, email_entrada, link))
         thread_tarefa.start()
         self.threads_tarefas.append(thread_tarefa)
 
@@ -95,8 +95,6 @@ class GerenciadorTarefas:
         print(f'[{threading.current_thread().name}] {id_tarefa} iniciada.')
 
         ARQ_LOG_TAREFA = PASTA_LOGS + id_tarefa + '.json'
-        hora_atual = datetime.now().strftime('%H:%M')
-        data_atual = datetime.now().strftime('%Y-%m-%d')
         
         def criar_log_execucao():
             try:
@@ -158,7 +156,7 @@ class GerenciadorTarefas:
                             pagina.wait_for_timeout(1000)
                     return False
 
-                def clicar_em_executar(pagina, tentativas=10, timeout=2000):
+                def clicar_em_executar(pagina, tentativas=10):
                     try:
                         botao_executar = pagina.locator('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div')
                         pagina.wait_for_selector('xpath=//*[@id="_0rif_shared-query-editor-action-bar-bqui-1"]/mat-toolbar/div[3]/div/div/div[1]/cfc-action-bar-content-wrapper[2]/div', timeout=120000)
