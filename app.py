@@ -25,8 +25,8 @@ CAMINHO_DB_JSON = 'db_folder\\database.json'
 CAMINHO_HIST_CRONO = 'db_folder\\database_cronograma.json'
 CAMINHO_DB_EMAIL = 'db_folder\\database_email.json'
 
-PASTA_LOGS = 'logs_exec_tarefas\\'
-PASTA_DOWNLOAD_TEMP = 'downloads_temp\\'
+PASTA_LOGS = 'db_folder\\logs_exec_tarefas\\'
+PASTA_DOWNLOAD_TEMP = 'db_folder\\downloads_temp\\'
 
 global nome_antigo_query    
 
