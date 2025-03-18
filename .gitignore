@@ -1,6 +1,6 @@
 venv
-app.build/
-app.dist/
-_pycache_/
-downloads_temp/
-logs_exec_tarefas/
+app.build
+app.dist
+downloads_temp
+logs_exec_tarefas
+db_folder

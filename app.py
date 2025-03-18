@@ -21,9 +21,9 @@ s.configure('frm_status_stop.TFrame', background=vermelho0)
 s.configure('frm_back.TFrame', background=verde1)
 s.configure('frm_pass.TFrame', background=light_cian)
 
-CAMINHO_DB_JSON = 'database.json'
-CAMINHO_HIST_CRONO = 'database_cronograma.json'
-CAMINHO_DB_EMAIL = 'database_email.json'
+CAMINHO_DB_JSON = 'db_folder\\database.json'
+CAMINHO_HIST_CRONO = 'db_folder\\database_cronograma.json'
+CAMINHO_DB_EMAIL = 'db_folder\\database_email.json'
 
 PASTA_LOGS = 'logs_exec_tarefas\\'
 PASTA_DOWNLOAD_TEMP = 'downloads_temp\\'

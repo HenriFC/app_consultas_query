@@ -4,9 +4,9 @@ import tempfile
 from os import remove
 from datetime import date, datetime, timedelta
 from state_exec import estado_database
-CAMINHO_DB_JSON = 'database.json'
-CAMINHO_HIST_CRONO = 'database_cronograma.json'
-PASTA_LOGS = 'logs_exec_tarefas\\'
+CAMINHO_DB_JSON = 'db_folder\\database.json'
+CAMINHO_HIST_CRONO = 'db_folder\\database_cronograma.json'
+PASTA_LOGS = 'db_folder\\logs_exec_tarefas\\'
 
 # Criar JSON com o fluxo de execuções em ordem cronológica. Esse arquivo será utilizado para mapear quais processos serão, ou foram executados
 def obter_cronograma_status():
