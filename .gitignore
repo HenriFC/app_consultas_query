@@ -5,3 +5,5 @@ downloads_temp/
 logs_exec_tarefas/
 db_folder/
 app.dist/
+__pycache__/
+app.dist/
